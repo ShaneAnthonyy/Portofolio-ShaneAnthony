@@ -33,14 +33,12 @@ export const about = {
   ],
 }
 
-// `tier` is one of 'amateur' | 'intermediate' | 'expert'.
-// Edit freely — e.g. { name: 'Figma', tier: 'expert' }.
 export const skillGroups = [
   {
     label: 'Languages & Web',
     items: [
       { name: 'HTML', tier: 'intermediate' },
-      { name: 'CSS', tier: 'expert' },
+      { name: 'CSS', tier: 'intermediate' },
       { name: 'JavaScript', tier: 'intermediate' },
       { name: 'Python', tier: 'intermediate' },
       { name: 'PHP', tier: 'amateur' },
@@ -50,11 +48,11 @@ export const skillGroups = [
     label: 'Tools & Frameworks',
     items: [
       { name: 'React', tier: 'intermediate' },
-      { name: 'Visual Studio Code', tier: 'expert' },
-      { name: 'Figma', tier: 'expert' },
+      { name: 'Visual Studio Code', tier: 'intermediate' },
+      { name: 'Figma', tier: 'intermediate' },
       { name: 'GitHub', tier: 'amateur' },
       { name: 'Laravel', tier: 'amateur' },
-      { name: 'Vite', tier: 'intermediate' },
+      { name: 'Vite', tier: 'amateur' },
     ],
   },
   {
