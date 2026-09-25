@@ -41,7 +41,7 @@ export default function Contact() {
           <p className="section__eyebrow">06 — Contact</p>
           <h2 className="section__title">Get in touch</h2>
           <p className="section__sub">
-            Open to frontend internships, project collaboration, or research chat.
+            Open to frontend and UI/UX internships, project collaboration, or research chat.
           </p>
         </aside>
 

@@ -1,6 +1,6 @@
 export const profile = {
   name: 'Shane Anthony',
-  role: 'Computer Science Student — Aspiring Frontend Developer',
+  role: 'Frontend Developer | UI/UX Developer',
   location: 'Tangerang, Indonesia',
   cvUrl: '/Shane-Anthony-CV.pdf',
 }
@@ -131,6 +131,6 @@ export const contact = {
   linkedin: 'https://www.linkedin.com/in/shane-anthony26/',
   linkedinLabel: 'linkedin.com/in/shane-anthony26',
   location: 'Tangerang, Indonesia',
-  availability: 'Available for Frontend Internship',
+  availability: 'Available for Frontend / UI-UX Internship',
   responseTime: 'Open to interviews & collaboration',
 }

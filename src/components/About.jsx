@@ -8,7 +8,7 @@ export default function About() {
           <p className="section__eyebrow">02 — About</p>
           <h2 className="section__title">About me</h2>
           <p className="section__sub">
-            CS student focused on frontend craft, learning through real projects and research.
+            Frontend developer crafting clean interfaces and usable experiences through real projects.
           </p>
         </aside>
 
