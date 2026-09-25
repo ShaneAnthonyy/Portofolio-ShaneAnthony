@@ -7,7 +7,7 @@ export const profile = {
 
 export const stats = [
   { label: 'Projects', value: '6' },
-  { label: 'Skills', value: '10' },
+  { label: 'Skills', value: '16' },
   { label: 'GPA / 4.00', value: '3.48' },
 ]
 
@@ -41,7 +41,9 @@ export const skillGroups = [
       { name: 'CSS', tier: 'intermediate' },
       { name: 'JavaScript', tier: 'intermediate' },
       { name: 'Python', tier: 'intermediate' },
+      { name: 'C', tier: 'intermediate' },
       { name: 'PHP', tier: 'amateur' },
+      { name: 'Java', tier: 'amateur' },
     ],
   },
   {
@@ -52,6 +54,7 @@ export const skillGroups = [
       { name: 'Figma', tier: 'intermediate' },
       { name: 'GitHub', tier: 'amateur' },
       { name: 'Laravel', tier: 'amateur' },
+      { name: 'MySQL', tier: 'amateur' },
       { name: 'Vite', tier: 'amateur' },
     ],
   },
@@ -132,5 +135,5 @@ export const contact = {
   linkedinLabel: 'linkedin.com/in/shane-anthony26',
   location: 'Tangerang, Indonesia',
   availability: 'Available for Frontend Internship',
-  responseTime: 'Usually replies within 1–2 days',
+  responseTime: 'Open to interviews & collaboration',
 }

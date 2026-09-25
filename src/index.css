@@ -947,6 +947,10 @@ a.contact__item:hover {
   border-color: rgba(29, 78, 216, 0.45);
 }
 
+.contact__item--static {
+  cursor: default;
+}
+
 .contact__label {
   font-size: 0.75rem;
   text-transform: uppercase;

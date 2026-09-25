@@ -17,7 +17,11 @@ export default function Contact() {
     const body = encodeURIComponent(
       `Hi Shane,\n\n${form.message}\n\n— ${form.name} (${form.email})`
     )
-    window.location.href = `mailto:${contact.email}?subject=${subject}&body=${body}`
+    window.open(
+      `https://mail.google.com/mail/?view=cm&fs=1&to=${contact.email}&su=${subject}&body=${body}`,
+      '_blank',
+      'noopener'
+    )
     setSent(true)
   }
 
@@ -68,10 +72,10 @@ export default function Contact() {
                     </button>
                   </span>
                 </div>
-                <a className="contact__item" href={contact.phoneHref}>
+                <div className="contact__item contact__item--static">
                   <span className="contact__label">Phone / WhatsApp</span>
                   <span className="contact__value">{contact.phoneDisplay}</span>
-                </a>
+                </div>
                 <a
                   className="contact__item"
                   href={contact.linkedin}
@@ -125,11 +129,11 @@ export default function Contact() {
 
               <div className="contact__actions">
                 <MagneticButton as="button" type="submit" className="btn btn--primary">
-                  Send via email
+                  Send via Gmail
                 </MagneticButton>
-                <span className="contact__hint">Opens your email app — nothing is stored.</span>
+                <span className="contact__hint">Opens Gmail compose in a new tab — nothing is stored.</span>
               </div>
-              {sent && <p className="contact__note" role="status">Opening your email app…</p>}
+              {sent && <p className="contact__note" role="status">Opening Gmail compose…</p>}
             </form>
           </div>
         </div>
