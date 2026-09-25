@@ -12,7 +12,7 @@ export const stats = [
 ]
 
 export const about = {
-  summary: `Computer Science student interested in Frontend Development and building clean, responsive, and user-friendly websites. Has a solid foundation in HTML, CSS, JavaScript, and web development gained through academic projects and self-directed learning. Open to real-world work experience to sharpen technical skills and contribute to a development team as a Frontend Developer Intern.`,
+  summary: `Passionate Computer Science student and aspiring Frontend Developer dedicated to crafting user-centric and responsive websites. Equipped with technical skills in HTML, CSS, JavaScript, ReactJS, and UI prototyping via Figma. Eager to apply my problem-solving abilities and self-learning drive in a real-world setting as a Frontend Developer Intern.`,
   education: [
     {
       period: 'Sept 2024 — Present',

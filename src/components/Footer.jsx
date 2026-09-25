@@ -8,7 +8,7 @@ export default function Footer() {
         <p>
           {profile.name} · {profile.location}
         </p>
-        <p>&copy; {year}. Built with React.</p>
+        <p>&copy; {year}. Designed & Built by Shane Anthony.</p>
       </div>
     </footer>
   )
