@@ -10,7 +10,15 @@ function GitHubIcon() {
 
 function FigmaIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      aria-hidden="true"
+    >
       <path d="M5.5 1h3a2 2 0 0 1 0 4h-3V1Z" fill="currentColor" stroke="none" opacity="0.9" />
       <path d="M2.5 1h3v4h-3a2 2 0 0 1 0-4Z" />
       <path d="M2.5 5h3v4h-3a2 2 0 0 1 0-4Z" />

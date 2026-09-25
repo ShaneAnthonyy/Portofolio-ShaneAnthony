@@ -126,11 +126,8 @@ export const certificates = [
 ]
 
 export const contact = {
-  phone: '087888960500',
   phoneDisplay: '+62 878-8896-0500',
-  phoneHref: 'tel:+6287888960500',
   email: 'shaneanthony736@gmail.com',
-  handle: 'shane-anthony26',
   linkedin: 'https://www.linkedin.com/in/shane-anthony26/',
   linkedinLabel: 'linkedin.com/in/shane-anthony26',
   location: 'Tangerang, Indonesia',

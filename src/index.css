@@ -149,11 +149,6 @@ main {
   min-width: 0;
 }
 
-.section__head {
-  margin-bottom: 0;
-  max-width: none;
-}
-
 .section__eyebrow {
   font-family: var(--font-mono);
   font-size: 0.78rem;
@@ -401,7 +396,7 @@ main {
 
 /* ---------- Buttons ---------- */
 
-.magnetic-btn {
+.action-btn {
   display: inline-flex;
 }
 
@@ -647,13 +642,6 @@ main {
   color: var(--muted);
   background: var(--bg);
   white-space: nowrap;
-}
-
-.tier--expert {
-  color: var(--bg);
-  background: var(--text);
-  border-color: var(--text);
-  font-weight: 700;
 }
 
 .tier--intermediate {

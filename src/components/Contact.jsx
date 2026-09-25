@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import MagneticButton from './MagneticButton.jsx'
+import ActionButton from './ActionButton.jsx'
 import { contact } from '../data/content.js'
 
 export default function Contact() {
@@ -13,12 +13,11 @@ export default function Contact() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    const subject = encodeURIComponent(`Internship / collaboration — ${form.name || 'website'}`)
     const body = encodeURIComponent(
       `Hi Shane,\n\n${form.message}\n\n— ${form.name} (${form.email})`
     )
     window.open(
-      `https://mail.google.com/mail/?view=cm&fs=1&to=${contact.email}&su=${subject}&body=${body}`,
+      `https://mail.google.com/mail/?view=cm&fs=1&to=${contact.email}&body=${body}`,
       '_blank',
       'noopener'
     )
@@ -128,9 +127,9 @@ export default function Contact() {
               </label>
 
               <div className="contact__actions">
-                <MagneticButton as="button" type="submit" className="btn btn--primary">
+                <ActionButton as="button" type="submit" className="btn btn--primary">
                   Send via Gmail
-                </MagneticButton>
+                </ActionButton>
                 <span className="contact__hint">Opens Gmail compose in a new tab — nothing is stored.</span>
               </div>
               {sent && <p className="contact__note" role="status">Opening Gmail compose…</p>}

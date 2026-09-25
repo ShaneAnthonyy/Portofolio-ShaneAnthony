@@ -1,4 +1,4 @@
-import MagneticButton from './MagneticButton.jsx'
+import ActionButton from './ActionButton.jsx'
 import { profile, stats, contact } from '../data/content.js'
 
 export default function Hero() {
@@ -14,19 +14,19 @@ export default function Hero() {
         <p className="hero__role">{profile.role}</p>
 
         <div className="hero__actions">
-          <MagneticButton
+          <ActionButton
             className="btn btn--primary"
             onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}
           >
             View my projects
-          </MagneticButton>
-          <MagneticButton
+          </ActionButton>
+          <ActionButton
             className="btn btn--ghost"
             onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
           >
             Contact me
-          </MagneticButton>
-          <MagneticButton
+          </ActionButton>
+          <ActionButton
             as="a"
             href={profile.cvUrl}
             target="_blank"
@@ -34,7 +34,7 @@ export default function Hero() {
             className="btn btn--ghost"
           >
             My CV
-          </MagneticButton>
+          </ActionButton>
         </div>
 
         <dl className="hero__stats">
