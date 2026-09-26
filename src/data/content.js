@@ -15,16 +15,16 @@ export const about = {
   summary: `Passionate Computer Science student and aspiring Frontend Developer dedicated to crafting user-centric and responsive websites. Equipped with technical skills in HTML, CSS, JavaScript, ReactJS, and UI prototyping via Figma. Eager to apply my problem-solving abilities and self-learning drive in a real-world setting as a Frontend Developer Intern.`,
   education: [
     {
+      period: 'July 2021 — July 2024',
+      school: 'SMAKN Anglo Lippo Cikarang, Bekasi',
+      detail: 'Natural Science',
+      note: 'Final Score 84 / 100',
+    },
+    {
       period: 'Sept 2024 — Present',
       school: 'Bina Nusantara University, Tangerang',
       detail: 'Computer Science',
       note: 'GPA 3.48 / 4.00',
-    },
-    {
-      period: 'July 2021 — July 2024',
-      school: 'SMAN Anglo Lippo Cikarang, Bekasi',
-      detail: 'Natural Science',
-      note: 'Final Score 84 / 100',
     },
   ],
   languages: [
