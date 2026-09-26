@@ -15,7 +15,7 @@ export default function About() {
         <div className="section__body">
           <div className="about__grid">
             <div className="about__image">
-              <img src="/photo2.png" alt={profile.name} className="about__photo" />
+              <img src="/photo1.png" alt={profile.name} className="about__photo" />
             </div>
 
             <div className="about__content">
