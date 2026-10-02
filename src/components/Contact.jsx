@@ -1,8 +1,14 @@
 import { useState } from 'react'
 import ActionButton from './ActionButton.jsx'
 import { contact } from '../data/content.js'
+import { CONTACT_FISH } from '../data/fauna.js'
+import AmbientFish from './AmbientFish.jsx'
+import { typeTimelines, useTypeReveal } from '../animation/typography.js'
+import { choreographyBuilders, useSectionChoreography } from '../animation/sectionChoreography.js'
 
 export default function Contact() {
+  const typeRef = useTypeReveal(typeTimelines.contact, 'contact')
+  const choreoRef = useSectionChoreography(choreographyBuilders.contact, 'choreo-contact')
   const [form, setForm] = useState({ name: '', email: '', message: '' })
   const [sent, setSent] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -35,19 +41,21 @@ export default function Contact() {
   }
 
   return (
-    <section id="contact" className="section contact">
+    <section id="contact" className="section contact" ref={typeRef}>
+      <AmbientFish sectionId="contact" defs={CONTACT_FISH} mode="ambient" speed={0.11} trimTo={2} />
       <div className="section__layout">
         <aside className="section__rail">
-          <p className="section__eyebrow">06 — Contact</p>
-          <h2 className="section__title">Get in touch</h2>
+          <p className="section__eyebrow">— 38 cm · Final station</p>
+          <h2 className="section__title"><span className="contact-rail__l1">Open</span><span className="contact-rail__l2">Channel</span></h2>
           <p className="section__sub">
-            Open to frontend and UI/UX internships, project collaboration, or research chat.
+            Open to Software Developer internships, project collaboration, or research chat.
           </p>
         </aside>
 
         <div className="section__body">
-          <div className="contact__grid">
+          <div className="contact__grid" ref={choreoRef}>
             <div className="contact__info">
+              <p className="contact__console-head">Communication console</p>
               <p className="contact__availability">
                 <span className="contact__dot" aria-hidden="true" />
                 {contact.availability}
@@ -58,9 +66,7 @@ export default function Contact() {
                 <div className="contact__item">
                   <span className="contact__label">Email</span>
                   <span className="contact__row">
-                    <a className="contact__value contact__link" href={`mailto:${contact.email}`}>
-                      {contact.email}
-                    </a>
+                    <span className="contact__value">{contact.email}</span>
                     <button
                       type="button"
                       className="contact__copy"
@@ -88,6 +94,7 @@ export default function Contact() {
             </div>
 
             <form className="contact__form" onSubmit={handleSubmit}>
+              <p className="contact__transmission">Transmission</p>
               <div className="field-row">
                 <label className="field">
                   <span className="field__label">Name</span>

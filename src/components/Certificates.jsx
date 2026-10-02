@@ -1,10 +1,12 @@
 import { certificates } from '../data/content.js'
+import { typeTimelines, useTypeReveal } from '../animation/typography.js'
+import { choreographyBuilders, useSectionChoreography } from '../animation/sectionChoreography.js'
 
 function ExternalIcon() {
   return (
     <svg
-      width="15"
-      height="15"
+      width="13"
+      height="13"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -21,40 +23,48 @@ function ExternalIcon() {
 }
 
 export default function Certificates() {
+  const total = certificates.length
+  const typeRef = useTypeReveal(typeTimelines.certificates, 'certificates')
+  const choreoRef = useSectionChoreography(choreographyBuilders.certificates, 'choreo-certificates')
   return (
-    <section id="certificates" className="section certificates">
+    <section id="certificates" className="section certificates" ref={typeRef}>
       <div className="section__layout">
         <aside className="section__rail">
-          <p className="section__eyebrow">05 — Certificates</p>
-          <h2 className="section__title">Certificates</h2>
+          <p className="section__eyebrow">— 34 cm · Expedition record</p>
+          <h2 className="section__title">Credential Cabinet</h2>
           <p className="section__sub">
-            Verified credentials and coursework.
+            Verified learning records and formal training collected along the dive.
+          </p>
+          <p className="cabinet__count" aria-label={`${total} credential${total === 1 ? '' : 's'} logged`}>
+            <span className="cabinet__count-now">Credentials / {String(total).padStart(2, '0')}</span>
           </p>
         </aside>
 
         <div className="section__body">
-          <div className="certs__grid">
+          <div className="cabinet-flow" ref={choreoRef}>
             {certificates.map((cert, index) => (
-              <article key={cert.title} className="cert-card">
-                <span className="cert-card__index">{String(index + 1).padStart(2, '0')}</span>
-                <span className="cert-card__issuer">{cert.issuer}</span>
-                <h3 className="cert-card__title">{cert.title}</h3>
-                <p className="cert-card__meta">
-                  {cert.detail}
-                  {cert.date ? ` · ${cert.date}` : ''}
-                </p>
-                <div className="cert-card__footer">
-                  <a
-                    className="cert-card__link"
-                    href={cert.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label={`View certificate: ${cert.title}`}
-                  >
-                    <ExternalIcon />
-                    <span>View certificate</span>
-                  </a>
+              <article key={cert.title} className="cabinet-record">
+                <span className="cabinet-record__no" aria-hidden="true">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                <div className="cabinet-record__body">
+                  <p className="cabinet-record__issuer">{cert.issuer}</p>
+                  <h3 className="cabinet-record__title">{cert.title}</h3>
+                  <p className="cabinet-record__meta">
+                    {cert.detail}
+                    {cert.date ? ` · ${cert.date}` : ''}
+                  </p>
                 </div>
+                <a
+                  className="cabinet-record__link"
+                  href={cert.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={`View certificate: ${cert.title}`}
+                >
+                  <span>View certificate</span>
+                  <ExternalIcon />
+                </a>
               </article>
             ))}
           </div>

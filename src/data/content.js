@@ -1,6 +1,6 @@
 export const profile = {
   name: 'Shane Anthony',
-  role: 'Frontend Developer | UI/UX Developer',
+  role: 'Software Developer',
   location: 'Tangerang, Indonesia',
   cvUrl: '/Shane-Anthony-CV.pdf',
 }
@@ -12,7 +12,7 @@ export const stats = [
 ]
 
 export const about = {
-  summary: `Passionate Computer Science student and aspiring Frontend Developer dedicated to crafting user-centric and responsive websites. Equipped with technical skills in HTML, CSS, JavaScript, ReactJS, and UI prototyping via Figma. Eager to apply my problem-solving abilities and self-learning drive in a real-world setting as a Frontend Developer Intern.`,
+  summary: `Passionate Computer Science student and aspiring Software Developer dedicated to bridging the gap between intelligent systems and engaging digital experiences. Equipped with technical skills in frontend development (ReactJS, JavaScript, CSS), UI/UX prototyping (Figma), and AI engineering, including Machine Learning and Natural Language Processing. Eager to apply my problem-solving abilities and self-learning drive in a real-world setting to build responsive, smart applications as a Software Developer Intern.`,
   education: [
     {
       period: 'July 2021 — July 2024',
@@ -23,7 +23,7 @@ export const about = {
     {
       period: 'Sept 2024 — Present',
       school: 'Bina Nusantara University, Tangerang',
-      detail: 'Computer Science',
+      detail: 'Computer Science - Artificial Intelligence',
       note: 'GPA 3.48 / 4.00',
     },
   ],
@@ -131,6 +131,8 @@ export const contact = {
   linkedin: 'https://www.linkedin.com/in/shane-anthony26/',
   linkedinLabel: 'linkedin.com/in/shane-anthony26',
   location: 'Tangerang, Indonesia',
-  availability: 'Available for Frontend / UI-UX Internship',
+  availability: 'Available for Software Developer Internship',
   responseTime: 'Open to interviews & collaboration',
 }
+
+export const portfolioSectionIds = ['home', 'about', 'skills', 'projects', 'certificates', 'contact']

@@ -6,17 +6,22 @@
     <meta name="color-scheme" content="light dark" />
     <script>
       try {
-        var t = localStorage.getItem('shane-theme');
-        if (t !== 'light' && t !== 'dark') {
-          t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        var t = localStorage.getItem("shane-theme");
+        if (t !== "light" && t !== "dark") {
+          t = window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
         }
         document.documentElement.dataset.theme = t;
       } catch (e) {
-        document.documentElement.dataset.theme = 'light';
+        document.documentElement.dataset.theme = "light";
       }
     </script>
-    <title>Shane Anthony — Frontend Developer | UI/UX Developer</title>
-    <meta name="description" content="Portfolio of Shane Anthony — frontend developer & UI/UX developer." />
+    <title>Shane Anthony — Software Developer</title>
+    <meta
+      name="description"
+      content="Portfolio of Shane Anthony — Software Developer"
+    />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

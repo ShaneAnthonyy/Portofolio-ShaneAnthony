@@ -1,0 +1,68 @@
+{
+  "name": "Elegant Living Aquarium",
+  "principle": "Aquarium is environment. Portfolio is subject. Content always wins.",
+  "sections": ["home", "about", "skills", "projects", "certificates", "contact"],
+  "depthLabels": ["descending · 08 cm", "reef · 15 cm", "specimens · 24 cm", "quiet water · 32 cm", "toward surface · 38 cm"],
+  "colors": {
+    "light": {
+      "bg": "#f8fafc",
+      "bgAlt": "#ffffff",
+      "line": "rgba(15,23,42,0.10)",
+      "text": "#0f172a",
+      "muted": "#5b6478",
+      "accent": "#1d4ed8",
+      "accentInk": "#1538a6",
+      "accentSoft": "rgba(29,78,216,0.08)"
+    },
+    "dark": {
+      "bg": "#0d1b2a",
+      "bgAlt": "#1b263b",
+      "line": "rgba(180,200,230,0.14)",
+      "text": "#eaf0fa",
+      "muted": "#9aa9c4",
+      "accent": "#7aa8ff",
+      "accentInk": "#b9d0ff"
+    },
+    "aqua": {
+      "gradient": ["#10293f", "#0b1e33", "#081627", "#060f1c"],
+      "ink": "#e9eef6",
+      "muted": "#9fb0c8",
+      "accent": "#8fb4e8",
+      "line": "rgba(180,200,230,0.14)"
+    }
+  },
+  "typography": {
+    "display": "Inter Tight",
+    "body": "Inter",
+    "mono": "JetBrains Mono",
+    "hero": "clamp(3.5rem,9vw,6rem)/800/-0.03em",
+    "sectionTitle": "clamp(1.9rem,3vw,2.5rem)/700/-0.02em",
+    "eyebrow": "0.72rem mono uppercase 0.14em"
+  },
+  "layout": {
+    "maxWidth": 1160,
+    "sectionPadding": "140px 32px 120px",
+    "grid": "280px 1fr",
+    "gap": 64,
+    "radiusLg": 18,
+    "radiusMd": 12
+  },
+  "glass": {
+    "border": "1px solid rgba(180,200,230,0.14)",
+    "blur": 12,
+    "shadow": "0 24px 48px rgba(0,0,0,0.32)"
+  },
+  "navigation": {
+    "resting": "attached frame",
+    "floating": "centered capsule 999px rgba(10,22,36,0.72) blur 18px",
+    "dockDelayMs": 1100,
+    "disabledWhen": ["prefers-reduced-motion", "mobile-open"]
+  },
+  "motion": { "ease": "cubic-bezier(0.22,1,0.36,1)", "reveal": "0.7s +14px stagger 60ms" },
+  "assets": {
+    "skillFish": "PNG kept — voxel 3D detail lost in flat SVG",
+    "substrate": "PNG kept, lazy+async",
+    "unused": []
+  },
+  "rules": ["no cursor effects", "no neon/cartoon/game UI", "visual quality over technical completeness", "no out-of-scope work without asking"]
+}
