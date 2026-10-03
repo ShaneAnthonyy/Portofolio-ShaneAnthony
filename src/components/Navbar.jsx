@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import useSectionProgress from '../hooks/useSectionProgress.js'
 import { scrollToSection } from '../animation/scrollTo.js'
 import { useGSAP } from '../animation/gsap.js'
@@ -58,12 +58,8 @@ function MoonIcon() {
 
 export default function Navbar({ diveActive = false, entered = true, diveProgress = 1, performanceMode = 'normal', onPerformanceModeChange = null }) {
   const [open, setOpen] = useState(false)
-  const [phase, setPhase] = useState('resting')
   const [theme, setTheme] = useState(getInitialTheme)
-  const [dockTarget, setDockTarget] = useState(null)
-  const [dockReady, setDockReady] = useState(false)
   const themeToggleRef = useRef(null)
-  const themeSlotRef = useRef(null)
   const headerRef = useRef(null)
   const linksRef = useRef(null)
   const logoRef = useRef(null)
@@ -78,8 +74,6 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
   const isNavDebug =
     typeof window !== 'undefined' &&
     new URLSearchParams(window.location.search).has('nav-debug')
-  const scrollEndRef = useRef(0)
-  const dockEndRef = useRef(0)
   // Single source of section/scroll state shared with the portfolio.
   const { activeId, scrollY, reduced } = useSectionProgress()
   // Single visual truth: clicked target while navigating, otherwise the
@@ -87,63 +81,19 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
   const displayedActiveId = pendingNavId ?? activeId
   const scrolled = scrollY > 12
   const introHidden = diveActive && !entered
-  const docking = diveActive && !reduced && diveProgress >= 0.96
-  const keepThemeFixed = diveActive && (diveProgress < 1 || !dockReady)
-  const holdNavbarPosition = diveActive && (diveProgress < 1 || (docking && !dockReady))
-  const dockTransform = dockTarget
-    ? 'translate3d(' + dockTarget.x + 'px, ' + dockTarget.y + 'px, 0) scale(0.96)'
-    : 'translate3d(0, 0, 0) scale(1)'
-
+  const holdNavbarPosition = diveActive && diveProgress < 1
+  
   useEffect(() => {
     document.documentElement.dataset.theme = theme
     window.localStorage.setItem('shane-theme', theme)
   }, [theme])
 
+  // Dive lock: keep the mobile menu closed while the navbar position is
+  // held for the cinematic. No scroll-phase state remains (no capsule).
   useEffect(() => {
-    if (holdNavbarPosition) {
-      window.clearTimeout(scrollEndRef.current)
-      window.clearTimeout(dockEndRef.current)
-      setOpen(false)
-      setPhase('resting')
-      return
-    }
-    const toResting = () => setPhase('resting')
-
-    const y = scrollY
-    if (reduced || y < 40) {
-      window.clearTimeout(scrollEndRef.current)
-      window.clearTimeout(dockEndRef.current)
-      setPhase('resting')
-      return
-    }
-    // SCROLLING: compact floating capsule while moving
-    setPhase((p) => (p === 'scrolling' ? p : 'scrolling'))
-    window.clearTimeout(scrollEndRef.current)
-    window.clearTimeout(dockEndRef.current)
-    // scroll stopped -> DOCKING: expand and merge into top edge
-    scrollEndRef.current = window.setTimeout(() => {
-      setPhase('docking')
-      // docking finished -> RESTING bar
-      dockEndRef.current = window.setTimeout(toResting, 650)
-    }, 180)
-
-    return () => {
-      window.clearTimeout(scrollEndRef.current)
-      window.clearTimeout(dockEndRef.current)
-    }
-  }, [scrollY, reduced, holdNavbarPosition])
-
-  useLayoutEffect(() => {
-    if (!diveActive || reduced || diveProgress < 0.96) {
-      if (dockTarget) setDockTarget(null)
-      if (dockReady) setDockReady(false)
-      return
-    }
-    if (dockTarget || !themeToggleRef.current || !themeSlotRef.current) return
-    const start = themeToggleRef.current.getBoundingClientRect()
-    const end = themeSlotRef.current.getBoundingClientRect()
-    setDockTarget({ x: end.left - start.left, y: end.top - start.top })
-  }, [diveActive, reduced, diveProgress, dockTarget, dockReady])
+    if (!holdNavbarPosition) return
+    setOpen(false)
+  }, [holdNavbarPosition])
 
   const handleLinkClick = (id) => {
     setOpen(false)
@@ -240,7 +190,7 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
     { scope: headerRef, dependencies: [entered, reduced] }
   )
 
-  // Traveling active indicator: discrete sync on section/phase change.
+  // Traveling active indicator: discrete sync on section change.
   // No scroll listeners, no per-frame state; reduced motion keeps the
   // instant per-link underline instead.
   useGSAP(
@@ -249,10 +199,10 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
       const container = linksRef.current
       const moved = prevActiveRef.current !== null && prevActiveRef.current !== displayedActiveId
       prevActiveRef.current = displayedActiveId
-      const ok = syncIndicator(container, { animate: moved && phase === 'resting' })
+      const ok = syncIndicator(container, { animate: moved })
       if (ok) {
         setTravelOn((v) => (v ? v : true))
-        if (moved && phase === 'resting') {
+        if (moved) {
           nudgeActiveLabel(container.querySelector('.navbar__link.is-active'))
         }
       }
@@ -260,25 +210,19 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
       window.addEventListener('resize', onResize)
       return () => window.removeEventListener('resize', onResize)
     },
-    { scope: headerRef, dependencies: [displayedActiveId, phase, reduced, entered] }
+    { scope: headerRef, dependencies: [displayedActiveId, reduced, entered] }
   )
 
   const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))
   // Phase 12: adaptive performance toggle. OFF = NORMAL, ON = LITE.
   const lite = performanceMode === 'lite'
 
-  const phaseClass =
-    phase === 'scrolling' ? 'nav-phase--scrolling' : phase === 'docking' ? 'nav-phase--docking' : 'nav-phase--resting'
-
   return (
     <header
       ref={headerRef}
-      className={`navbar ${scrolled ? 'is-scrolled' : ''} ${phaseClass} ${
-        (phase === 'scrolling' || phase === 'docking') && !open ? 'is-detached' : ''
-      } ${phase === 'docking' && !open ? 'is-docking' : ''}`}
-      data-nav-phase={phase}
+      className={`navbar ${scrolled ? 'is-scrolled' : ''}`}
       data-intro-hidden={introHidden || undefined}
-      data-dive-locked={keepThemeFixed || undefined}
+      data-dive-locked={(diveActive && !entered) || undefined}
     >
       <div className="navbar__inner">
         <a
@@ -319,9 +263,17 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
         </nav>
 
         <div className="navbar__actions">
-          {keepThemeFixed && (
-            <span ref={themeSlotRef} className="theme-toggle-slot" aria-hidden="true" />
-          )}
+          <button
+            type="button"
+            className="theme-toggle"
+            ref={themeToggleRef}
+            onClick={toggleTheme}
+            aria-pressed={theme === 'dark'}
+            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+          </button>
           <button
             type="button"
             className={`lite-toggle${lite ? ' is-on' : ''}`}
@@ -336,21 +288,6 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
             <span className="lite-toggle__label" aria-hidden="true">
               Lite
             </span>
-          </button>
-          <button
-            type="button"
-            className="theme-toggle"
-            ref={themeToggleRef}
-            style={{ transform: keepThemeFixed ? dockTransform : undefined }}
-            onClick={toggleTheme}
-            onTransitionEnd={(event) => {
-              if (event.propertyName === 'transform' && docking) setDockReady(true)
-            }}
-            aria-pressed={theme === 'dark'}
-            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-          >
-            {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
           </button>
           <button
             className={`navbar__toggle ${open ? 'is-open' : ''}`}

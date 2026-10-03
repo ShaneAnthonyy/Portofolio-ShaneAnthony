@@ -1,7 +1,7 @@
 import { EASE, INDICATOR_DURATION, gsap } from './gsap.js'
 
 // Measures the active link inside the links container and moves the shared
-// underline indicator to it. Discrete calls only (activeId / phase / resize)
+// underline indicator to it. Discrete calls only (section change / resize)
 // — never per scroll frame. Falls back to instant set when animate=false.
 export function syncIndicator(container, { animate = true } = {}) {
   if (!container || container.offsetWidth === 0) return false

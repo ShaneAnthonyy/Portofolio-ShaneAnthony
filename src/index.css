@@ -222,11 +222,14 @@ main {
 /* Phase 12: adaptive performance toggle. Understated pill in the existing
    navbar action cluster — same radius/border language as theme-toggle. */
 .lite-toggle {
+  box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 7px;
+  width: auto;
   height: 38px;
+  margin: 0;
   padding: 0 14px;
   border-radius: 999px;
   border: 1px solid var(--line);
@@ -234,12 +237,18 @@ main {
   color: var(--muted);
   font-family: var(--font-mono);
   font-size: 0.68rem;
+  font-weight: 400;
   line-height: 1;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  position: relative;
-  top: 1px;
-  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+  vertical-align: middle;
+  transform: none;
+  translate: none;
+  flex: 0 0 auto;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    background 0.2s ease;
 }
 
 .lite-toggle:hover {
@@ -332,12 +341,6 @@ html[data-perf='lite'] .aqua-root.is-portfolio-unlocked .webgl-backdrop canvas {
 }
 
 .navbar__links.has-travel-indicator .navbar__link::after {
-  display: none;
-}
-
-.navbar.is-detached .navbar__indicator,
-.navbar.nav-phase--scrolling .navbar__indicator,
-.navbar.nav-phase--docking .navbar__indicator {
   display: none;
 }
 
@@ -1758,23 +1761,16 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   white-space: nowrap;
 }
 
-/* ---------- Navigation: RESTING -> SCROLLING -> DOCKING -> RESTING morph ---------- */
+/* ---------- Navigation: stable full-width bar, compact glass on scroll ---------- */
 .navbar {
   transition:
-    background 0.55s var(--ease-water),
-    border-color 0.55s var(--ease-water),
-    top 0.55s var(--ease-water),
-    left 0.55s var(--ease-water),
-    right 0.55s var(--ease-water),
-    width 0.55s var(--ease-water),
-    max-width 0.55s var(--ease-water),
-    border-radius 0.55s var(--ease-water),
-    padding 0.55s var(--ease-water),
-    box-shadow 0.55s var(--ease-water),
-    transform 0.55s var(--ease-water),
-    opacity 0.75s var(--ease-water),
-    backdrop-filter 0.55s var(--ease-water),
-    -webkit-backdrop-filter 0.55s var(--ease-water);
+    background 0.4s var(--ease-water),
+    border-color 0.4s var(--ease-water),
+    padding 0.4s var(--ease-water),
+    box-shadow 0.4s var(--ease-water),
+    opacity 0.4s var(--ease-water),
+    backdrop-filter 0.4s var(--ease-water),
+    -webkit-backdrop-filter 0.4s var(--ease-water);
 }
 
 .navbar__logo,
@@ -1835,14 +1831,6 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
     background 0.2s ease;
 }
 
-.theme-toggle-slot {
-  flex: 0 0 38px;
-  width: 38px;
-  height: 38px;
-  visibility: hidden;
-  pointer-events: none;
-}
-
 .aqua-root .navbar {
   border-bottom: 1px solid var(--aqua-line);
 }
@@ -1851,116 +1839,6 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   background: var(--aqua-nav-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-}
-
-/* SCROLLING: compact floating glass capsule */
-.navbar.is-detached,
-.navbar.nav-phase--scrolling {
-  top: 12px;
-  left: 50%;
-  right: auto;
-  transform: translateX(-50%);
-  width: max-content;
-  max-width: calc(100vw - 32px);
-  padding: 8px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--aqua-line);
-  background: var(--aqua-nav-detached);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  box-shadow: var(--aqua-nav-shadow);
-}
-
-/* DOCKING: expand and merge into the top edge */
-.navbar.is-docking,
-.navbar.nav-phase--docking {
-  top: 0;
-  left: 50%;
-  right: auto;
-  transform: translateX(-50%);
-  width: min(880px, calc(100vw - 24px));
-  max-width: calc(100vw - 24px);
-  padding: 12px 22px;
-  border-radius: 0 0 18px 18px;
-  border: 1px solid var(--aqua-line);
-  border-top-color: transparent;
-  background: var(--aqua-nav-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  box-shadow: var(--aqua-nav-shadow);
-}
-
-.navbar.is-detached .navbar__inner,
-.navbar.nav-phase--scrolling .navbar__inner,
-.navbar.nav-phase--docking .navbar__inner {
-  gap: 14px;
-}
-
-.navbar.is-detached .navbar__logo,
-.navbar.nav-phase--scrolling .navbar__logo {
-  font-size: 0.95rem;
-  padding: 6px 10px;
-}
-
-.navbar.nav-phase--docking .navbar__logo {
-  font-size: 1rem;
-  padding: 4px 8px;
-}
-
-.navbar.is-detached .navbar__links,
-.navbar.nav-phase--scrolling .navbar__links {
-  gap: 4px;
-}
-
-.navbar.nav-phase--docking .navbar__links {
-  gap: 10px;
-}
-
-.navbar.is-detached .navbar__link,
-.navbar.nav-phase--scrolling .navbar__link {
-  font-size: 0.84rem;
-  padding: 8px 12px;
-  border-radius: 999px;
-}
-
-.navbar.nav-phase--docking .navbar__link {
-  font-size: 0.88rem;
-  padding: 7px 10px;
-  border-radius: 999px;
-}
-
-.navbar.is-detached .navbar__link.is-active,
-.navbar.nav-phase--scrolling .navbar__link.is-active,
-.navbar.nav-phase--docking .navbar__link.is-active {
-  background: var(--aqua-pill-bg);
-  color: var(--aqua-ink);
-}
-
-.navbar.is-detached .navbar__link::after,
-.navbar.nav-phase--scrolling .navbar__link::after,
-.navbar.nav-phase--docking .navbar__link::after {
-  display: none;
-}
-
-.navbar.is-detached .theme-toggle,
-.navbar.nav-phase--scrolling .theme-toggle {
-  width: 32px;
-  height: 32px;
-}
-
-.navbar.is-detached .lite-toggle,
-.navbar.nav-phase--scrolling .lite-toggle {
-  height: 32px;
-  padding: 0 12px;
-}
-
-.navbar.nav-phase--docking .theme-toggle {
-  width: 34px;
-  height: 34px;
-}
-
-.navbar.nav-phase--docking .lite-toggle {
-  height: 34px;
 }
 
 .section__layout {
@@ -2381,9 +2259,6 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   .aqua-root.is-entered:not(.is-replaying) .aqua-bubble-layer__bubble { animation: none !important; opacity: var(--bubble-opacity); }
   .aqua-root.is-entered:not(.is-replaying) .aqua-bubble-layer.bubble-debug .aqua-bubble-layer__bubble { animation: none !important; opacity: 1; }
   .navbar,
-  .navbar.is-detached,
-  .navbar.nav-phase--scrolling,
-  .navbar.nav-phase--docking,
   .fish__visual,
   .specimen-panel,
   .guide-pop,
