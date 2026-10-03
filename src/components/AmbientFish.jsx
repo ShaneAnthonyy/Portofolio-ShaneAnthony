@@ -23,7 +23,17 @@ export default function AmbientFish({
       typeof window !== 'undefined' &&
       window.matchMedia('(max-width: 720px)').matches
   )
-  const list = compact ? defs.slice(0, trimTo) : defs
+  // Phase 12: lite starts with a single fish (no prop drilling — the drift
+  // loop additionally halves its cadence live via dataset.perf).
+  const [liteInit] = useState(
+    () =>
+      typeof document !== 'undefined' &&
+      document.documentElement.dataset.perf === 'lite'
+  )
+  const list = (compact ? defs.slice(0, trimTo) : defs).slice(
+    0,
+    liteInit ? 1 : defs.length
+  )
 
   const { ents, registerVisual, ready } = useFishDrift({
     layerRef,

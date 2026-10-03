@@ -9,6 +9,7 @@ import Contact from './components/Contact.jsx'
 import Footer from './components/Footer.jsx'
 import Separator from './components/Separator.jsx'
 import useSectionProgress, { refreshSectionProgress } from './hooks/useSectionProgress.js'
+import { usePerformanceMode } from './animation/quality.js'
 
 // Keep the WebGL environment in its own lazy chunk.
 const AquariumDivePrototype = lazy(() => import('./components/AquariumDivePrototype.jsx'))
@@ -44,6 +45,11 @@ const BUBBLES = [
 
 export default function App() {
   const progress = useSectionProgress()
+  // Phase 12: shared adaptive performance mode (normal | lite).
+  const [performanceMode, setPerformanceMode] = usePerformanceMode()
+  const lite = performanceMode === 'lite'
+  // Lite renders fewer bubble nodes (no hidden animated DOM left running).
+  const activeBubbles = lite ? BUBBLES.filter((_, i) => i % 3 === 0) : BUBBLES
   const [webglFailed, setWebglFailed] = useState(false)
   const [webglHealthy, setWebglHealthy] = useState(false)
   const [introComplete, setIntroComplete] = useState(false)
@@ -83,7 +89,7 @@ export default function App() {
     // eslint-disable-next-line no-console
     console.log(
       '[bubble-debug]',
-      'count:', BUBBLES.length,
+      'count:', activeBubbles.length,
       'live-layers:', layerCounts,
       'layer-opacity:', layerEl ? getComputedStyle(layerEl).opacity : null,
       'entered:', visualEntered,
@@ -193,9 +199,9 @@ export default function App() {
         '--aqua-deep-a': 0.58 + bubbleDepth * 0.12,
       }}
     >
-      <Navbar diveActive={shouldDive} entered={portfolioEntered} diveProgress={diveProgress ?? progress.dive} />
+      <Navbar diveActive={shouldDive} entered={portfolioEntered} diveProgress={diveProgress ?? progress.dive} performanceMode={performanceMode} onPerformanceModeChange={setPerformanceMode} />
       <div className={`aqua-bubble-layer${isBubbleDebug ? ' bubble-debug' : ''}`} aria-hidden="true">
-        {BUBBLES.map((bubble) => (
+        {activeBubbles.map((bubble) => (
           <span
             key={`${bubble.depth}-${bubble.x}`}
             className={`aqua-bubble-layer__bubble aqua-bubble-layer__bubble--${bubble.depth}`}
@@ -231,6 +237,7 @@ export default function App() {
               diveProgress={diveProgress}
               introComplete={introComplete}
               replaying={replaying}
+              qualityMode={performanceMode}
               onReplayComplete={finishReplay}
               onHealthy={() => setWebglHealthy(true)}
               onFail={() => {

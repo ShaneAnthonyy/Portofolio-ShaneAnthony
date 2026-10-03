@@ -30,6 +30,7 @@ export default function useFishDrift({
   const visuals = useRef({})
   const visibleRef = useRef(true)
   const rafRef = useRef(0)
+  const frameRef = useRef(0)
   const cfgRef = useRef(null)
   const [ready, setReady] = useState(false)
   cfgRef.current = { defs, bandFor, xRangeFor, speedFor, scaleFor, spread, extraPaint, onHidden }
@@ -89,11 +90,17 @@ export default function useFishDrift({
   }, [])
 
   // Single drift loop: slow calm swim + soft bounce inside the band.
+  // Phase 12: lite halves integration cadence (checked live per frame so
+  // the navbar toggle applies without remounting or prop drilling).
   useEffect(() => {
     const step = () => {
+      frameRef.current += 1
       const cfg = cfgRef.current
       const layer = layerRef.current
-      if (layer && visibleRef.current) {
+      const liteNow =
+        typeof document !== 'undefined' &&
+        document.documentElement.dataset.perf === 'lite'
+      if (layer && visibleRef.current && (!liteNow || frameRef.current % 2 === 0)) {
         const W = layer.clientWidth
         const H = layer.clientHeight
         for (const e of ents.current) {

@@ -56,7 +56,7 @@ function MoonIcon() {
   )
 }
 
-export default function Navbar({ diveActive = false, entered = true, diveProgress = 1 }) {
+export default function Navbar({ diveActive = false, entered = true, diveProgress = 1, performanceMode = 'normal', onPerformanceModeChange = null }) {
   const [open, setOpen] = useState(false)
   const [phase, setPhase] = useState('resting')
   const [theme, setTheme] = useState(getInitialTheme)
@@ -264,6 +264,8 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
   )
 
   const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))
+  // Phase 12: adaptive performance toggle. OFF = NORMAL, ON = LITE.
+  const lite = performanceMode === 'lite'
 
   const phaseClass =
     phase === 'scrolling' ? 'nav-phase--scrolling' : phase === 'docking' ? 'nav-phase--docking' : 'nav-phase--resting'
@@ -320,6 +322,21 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
           {keepThemeFixed && (
             <span ref={themeSlotRef} className="theme-toggle-slot" aria-hidden="true" />
           )}
+          <button
+            type="button"
+            className={`lite-toggle${lite ? ' is-on' : ''}`}
+            onClick={() => onPerformanceModeChange && onPerformanceModeChange(lite ? 'normal' : 'lite')}
+            aria-pressed={lite}
+            aria-label={lite ? 'Switch to normal performance mode' : 'Switch to lite performance mode'}
+            title={lite ? 'Lite mode on: switch to normal' : 'Switch to lite mode'}
+            inert={introHidden ? '' : undefined}
+            aria-hidden={introHidden || undefined}
+          >
+            <span className="lite-toggle__dot" aria-hidden="true" />
+            <span className="lite-toggle__label" aria-hidden="true">
+              Lite
+            </span>
+          </button>
           <button
             type="button"
             className="theme-toggle"

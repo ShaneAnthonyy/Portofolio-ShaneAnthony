@@ -219,6 +219,73 @@ main {
   color: var(--accent-ink);
 }
 
+/* Phase 12: adaptive performance toggle. Understated pill in the existing
+   navbar action cluster — same radius/border language as theme-toggle. */
+.lite-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--bg-alt);
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  line-height: 1;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  position: relative;
+  top: 1px;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.lite-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+.lite-toggle__dot {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.4;
+}
+
+.lite-toggle__label {
+  display: block;
+  line-height: 1;
+}
+
+.lite-toggle.is-on {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+.lite-toggle.is-on .lite-toggle__dot {
+  opacity: 1;
+  background: var(--success);
+  box-shadow: 0 0 6px var(--success);
+}
+
+/* Phase 12: lite drops full-screen backdrop blurs (biggest CSS GPU cost).
+   Card/navbar blurs stay for readability (small surfaces). */
+html[data-perf='lite'] .webgl-backdrop::after,
+html[data-perf='lite'] .aqua-root.is-portfolio-unlocked .webgl-backdrop::after {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+html[data-perf='lite'] .webgl-backdrop canvas,
+html[data-perf='lite'] .aqua-root.is-portfolio-unlocked .webgl-backdrop canvas {
+  filter: none;
+}
+
 .navbar__inner {
   max-width: var(--max-width);
   margin: 0 auto;
@@ -1713,7 +1780,8 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
 .navbar__logo,
 .navbar__links,
 .navbar__toggle,
-.navbar__mobile {
+.navbar__mobile,
+.lite-toggle {
   transition: opacity 0.75s var(--ease-water), translate 0.75s var(--ease-water);
 }
 
@@ -1731,7 +1799,8 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
 .navbar[data-intro-hidden='true'] .navbar__logo,
 .navbar[data-intro-hidden='true'] .navbar__links,
 .navbar[data-intro-hidden='true'] .navbar__toggle,
-.navbar[data-intro-hidden='true'] .navbar__mobile {
+.navbar[data-intro-hidden='true'] .navbar__mobile,
+.navbar[data-intro-hidden='true'] .lite-toggle {
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
@@ -1879,8 +1948,18 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   height: 32px;
 }
 
+.navbar.is-detached .lite-toggle,
+.navbar.nav-phase--scrolling .lite-toggle {
+  height: 32px;
+  padding: 0 12px;
+}
+
 .navbar.nav-phase--docking .theme-toggle {
   width: 34px;
+  height: 34px;
+}
+
+.navbar.nav-phase--docking .lite-toggle {
   height: 34px;
 }
 
