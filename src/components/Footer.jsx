@@ -53,9 +53,9 @@ export default function Footer({ hidden = false }) {
       <CategoryCard>
       <div className="footer__inner" ref={choreoRef}>
         <div className="footer__close">
-          <p className="footer__eyebrow">Final depth · 42 cm</p>
-          <p className="footer__title">End of the Dive</p>
-          <p className="footer__line">Thank you for exploring.</p>
+          <p className="footer__eyebrow">Portfolio</p>
+          <p className="footer__title">Thanks for visiting</p>
+          <p className="footer__line">Thank you for visiting.</p>
         </div>
         <p>
           {profile.name} · {profile.location}

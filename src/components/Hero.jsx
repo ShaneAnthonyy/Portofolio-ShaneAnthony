@@ -58,7 +58,7 @@ export default function Hero({ onDiveAgain }) {
         <button
           type="button"
           className="hero__replay"
-          aria-label="Dive again to the aquarium"
+          aria-label="Dive again"
           onClick={onDiveAgain}
         >
           <svg className="hero__replay-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">

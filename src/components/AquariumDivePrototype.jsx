@@ -675,7 +675,7 @@ function buildScene({ hideFarRocks, liteWater = false } = {}) {
   return { scene, water, waterMat, waterVolMat, disposables, temp, rockDefs, kelpDefs, trackLoaded, retireTemp, lightsBase }
 }
 
-export default function AquariumDivePrototype({ backdrop = false, integrated = false, onHealthy, onFail, onReplayComplete, children, diveProgress, introComplete = false, replaying = false, qualityMode = 'normal' } = {}) {
+export default function AquariumDivePrototype({ backdrop = false, integrated = false, onHealthy, onFail, onReturnComplete, onProgress, probeRef = null, children, diveProgress, introComplete = false, returningToP0 = false, qualityMode = 'normal' } = {}) {
   const mountRef = useRef(null)
   const heroRevealRef = useRef(null)
   const [debug, setDebug] = useState({ p: 0, phase: 'FRONT' })
@@ -688,8 +688,10 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
   progRef.current = prog
   const diveProgressRef = useRef(diveProgress)
   diveProgressRef.current = diveProgress
-  const replayingRef = useRef(replaying)
-  replayingRef.current = replaying
+  // Return-to-P0 mirror (DIVE AGAIN): temporary visual rewind in the
+  // existing tick. Not a replay — no auto-dive follows.
+  const returningRef = useRef(returningToP0)
+  returningRef.current = returningToP0
   const sceneCommandRef = useRef(null)
   const backdropRef = useRef(backdrop)
   const integratedRef = useRef(integrated)
@@ -698,8 +700,8 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
   const qualityModeRef = useRef(qualityMode)
   qualityModeRef.current = qualityMode
   const runtimeApplyRef = useRef(null)
-  const cbRef = useRef({ onHealthy, onFail, onReplayComplete })
-  cbRef.current = { onHealthy, onFail, onReplayComplete }
+  const cbRef = useRef({ onHealthy, onFail, onReturnComplete, onProgress })
+  cbRef.current = { onHealthy, onFail, onReturnComplete, onProgress }
 
   useLayoutEffect(() => {
     if (!integratedRef.current || !prog.reduced || !sceneCommandRef.current) return
@@ -713,6 +715,65 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       typeof window !== 'undefined' &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches
     let cancelled = false
+
+    // Phase 13C: real readiness. Every fetch the active mode starts is
+    // tracked; each contributes only when it settles (placed OR handled
+    // absence). 100% additionally requires confirmed rendered frames.
+    // All starts below run synchronously, so every settle observes the
+    // final total. No timers, no interpolation. Declared here (before
+    // first use) so no call can execute before initialization.
+    const readiness = { total: 0, settled: 0, frames: 0, healthy: false }
+    // Phase 14B: DEV-probe settle log (one entry per tracked fetch, bounded).
+    // Written only; read by DiveProbe at 2Hz. Zero cost when probe absent
+    // (array push per settle, no per-frame work).
+    const readyT0 = performance.now()
+    const settleLog = []
+    const pendingStarts = new Map()
+    const emit = (p) => {
+      try {
+        cbRef.current.onProgress && cbRef.current.onProgress(p)
+      } catch { /* progress is advisory only */ }
+    }
+    const maybeHealthy = () => {
+      if (cancelled || readiness.healthy) return
+      if (readiness.settled < readiness.total) return
+      if (readiness.frames < 3) return
+      readiness.healthy = true
+      emit(1)
+      try {
+        cbRef.current.onHealthy && cbRef.current.onHealthy()
+      } catch { /* advisory only */ }
+    }
+    const noteSettle = (promise, ok) => {
+      if (!cancelled) {
+        const started = pendingStarts.get(promise)
+        pendingStarts.delete(promise)
+        settleLog.push({
+          label: started ? started.label : 'asset',
+          ms: performance.now() - (started ? started.start : readyT0),
+          ok: ok !== false,
+        })
+        if (flog && started && settleLog.length <= 30) {
+          try {
+            flog(`settle ${started.label} ${(performance.now() - started.start).toFixed(0)}ms`)
+          } catch { /* logging only */ }
+        }
+      }
+      if (cancelled || readiness.healthy) return
+      readiness.settled += 1
+      const total = Math.max(readiness.total, 1)
+      emit(0.15 + (0.7 * Math.min(readiness.settled, total)) / total)
+      maybeHealthy()
+    }
+    const track = (promise, label = 'asset') => {
+      readiness.total += 1
+      pendingStarts.set(promise, { label, start: performance.now() })
+      promise.then(
+        () => noteSettle(promise, true),
+        () => noteSettle(promise, false),
+      )
+      return promise
+    }
 
     let renderer = null
     // Phase 12: INIT-time quality (antialias is construction-only and is
@@ -782,9 +843,11 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
     renderer.domElement.style.position = 'absolute'
     renderer.domElement.style.inset = '0'
     mount.appendChild(renderer.domElement)
+    emit(0.08)
 
     const sceneData = buildScene({ hideFarRocks: !backdropRef.current, liteWater: !qState.runtime.waterHigh })
     const { scene, waterMat, waterVolMat, disposables, temp, rockDefs, kelpDefs, trackLoaded, retireTemp, lightsBase } = sceneData
+    emit(0.15)
     // Minecraft "SCROLL ME" sign: world-space prop, right of the tank.
     // World parent (furniture, not tank contents); nothing scrolls in DOM.
     const sign = createScrollSign(THREE, disposables)
@@ -818,7 +881,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         return
       }
 
-      const hidden = replayingRef.current || !wide || diveP >= 0.94
+      const hidden = returningRef.current || !wide || diveP >= 0.94
       const fade = hidden
         ? 0
         : 1 - smooth(
@@ -1222,7 +1285,20 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
 
     const applyProgress = (p) => {
       const { pos, tgt } = sampleKeys(p)
-      camera.position.set(...pos)
+      // Phase 15A: narrow-portrait pullback. Desktop camera distance fits
+      // an 8-unit tank in landscape, but at phone aspect (~0.46) the same
+      // frustum crops the tank and title. Dolly back along the view axis
+      // (angles/FOV/KEYS untouched), easing to 1.0 before P4 so the
+      // underwater endpoint stays pixel-identical. Tablet/desktop unaffected.
+      let px = pos[0], py = pos[1], pz = pos[2]
+      const aspectNow = camera.aspect || 1
+      if (aspectNow < 0.7) {
+        const k = 1 + 0.35 * (1 - smooth(Math.min(Math.max((p - 0.7) / 0.2, 0), 1)))
+        px = tgt[0] + (pos[0] - tgt[0]) * k
+        py = tgt[1] + (pos[1] - tgt[1]) * k
+        pz = tgt[2] + (pos[2] - tgt[2]) * k
+      }
+      camera.position.set(px, py, pz)
       camera.lookAt(...tgt)
       // Staged ENTER: explicit surface knots, then submerged. P0 water
       // rests near-invisible; pre-ENTER values hold from p=0.70 up.
@@ -1283,9 +1359,10 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
     const loadRequired = (name, url, place, opts = {}) => {
       const log = opts.log ? (...a) => dlog('[floor-poc]', ...a) : () => {}
       log('load start', new URL(url, window.location.href).href)
-      loader
-        .loadAsync(url)
-        .then((gltf) => {
+      return track(
+        loader
+          .loadAsync(url)
+          .then((gltf) => {
           if (cancelled) return
           const res = place(gltf.scene)
           if (!res.ok) {
@@ -1314,7 +1391,9 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         .catch(() => {
           console.warn(`[dive-poc] ${name} missing/unreadable — keeping TEMP primitive`)
           log('TEMP_FLOOR_VISIBLE', 'loader rejected')
-        })
+        }),
+        name
+      )
     }
 
     // Optional-silent: absent stays absent, no fallback, no noise.
@@ -1323,9 +1402,10 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
     const loadOptional = (name, url, place, opts = {}) => {
       const log = opts.log ? flog : () => {}
       log('load start', new URL(url, window.location.href).href)
-      loader
-        .loadAsync(url)
-        .then((gltf) => {
+      return track(
+        loader
+          .loadAsync(url)
+          .then((gltf) => {
           if (cancelled) return
           const res = place(gltf.scene)
           if (!res.ok) {
@@ -1347,7 +1427,9 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
           log('loader error', err?.message || err)
           log('FISH_TEMP_FALLBACK', 'loader rejected')
           /* silent by design (unless opts.log) */
-        })
+        }),
+        name
+      )
     }
 
     // ---- Open-air dive environment (distant sky dome + matte ground + table) ----
@@ -2054,7 +2136,9 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
 
       const skyLoader = new THREE.TextureLoader()
       const loadSky = (url, mat) => {
-        skyLoader.loadAsync(url).then((tex) => {
+        // Phase 13C: tracked settle (placed OR fallback background).
+        track(
+          skyLoader.loadAsync(url).then((tex) => {
           if (cancelled) return
           // Phase 12R: cap sky dims before GPU upload (lite 512).
           const cap = qState.runtime.texCap
@@ -2088,7 +2172,9 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
             flog('sky tex ' + url + ' ' + iw + 'x' + ih + ' aspect=' + (ih ? (iw / ih).toFixed(4) : '?'))
           }
           if (reduced) rerender()
-        }).catch(() => { /* sky stays on fallback background */ })
+        }, () => { /* sky stays on fallback background */ }),
+        url.split('/').pop()
+        )
       }
       loadSky('/aquarium/sky/sky-morning.png', poc.skyDayMat)
       loadSky('/aquarium/sky/sky-night.png', poc.skyNightMat)
@@ -2218,11 +2304,15 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
             { key: 'roughnessMap', suf: 'rough_2k.png', srgb: false, cap: 1024 },
             { key: 'aoMap', suf: 'ao_2k.jpg', srgb: false, cap: 1024 },
           ]
-        : [{ key: 'map', suf: 'diff_2k.jpg', srgb: true, cap: Math.min(1024, qState.runtime.texCap) }]
-      hillChannels.forEach(({ key, suf, srgb, cap, normalScale }) => {
-        hillTexLoader
-          .loadAsync(`${hillTexBase}_${suf}`)
-          .then((tex) => {
+        : [{ key: 'map', url: '/aquarium/lite/grass_ground_lite.jpg', srgb: true, cap: Math.min(1024, qState.runtime.texCap) }]
+      // Phase 15I: Lite fetches a pre-downscaled 1024 ground JPEG instead
+      // of the full 2K source. The 512 runtime cap still governs upload.
+      hillChannels.forEach(({ key, suf, url, srgb, cap, normalScale }) => {
+        // Phase 13C: tracked settle (textured OR untextured fallback).
+        track(
+          hillTexLoader
+            .loadAsync(url || `${hillTexBase}_${suf}`)
+            .then((tex) => {
             if (cancelled) return
             try {
               let finalTex = tex
@@ -2256,10 +2346,11 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
             } catch (err) {
               /* channel stays untextured */
             }
-          })
-          .catch(() => {
+          }, () => {
             /* channel stays untextured */
-          })
+          }),
+          `hill-${suf}`
+        )
       })
       if (HILL_DEBUG) {
         let tankC = 'n/a'
@@ -2304,9 +2395,11 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
 
       // True 3D title above the aquarium (world-space geometry, not overlay).
       // Sized/placed from live tank bounds; dissolves with the scene plate.
-      new FontLoader()
-        .loadAsync('/aquarium/fonts/BoldsPixels.typeface.json')
-        .then((font) => {
+      // Phase 13C: tracked settle (titled OR absent; scene valid either way).
+      track(
+        new FontLoader()
+          .loadAsync('/aquarium/fonts/BoldsPixels.typeface.json')
+          .then((font) => {
           if (cancelled) return
           const geo = new TextGeometry('LET\u2019S GO DEEPER', {
             font,
@@ -2363,10 +2456,11 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
           titleState.baseZ = group.position.z
           if (lastP >= 0.94) group.visible = false
           if (reduced) rerender()
-        })
-        .catch(() => {
+        }, () => {
           /* title stays absent; scene remains valid */
-        })
+        }),
+        'font-title'
+      )
 
       const readTheme = () => (document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light')
       const applyThemeTarget = () => {
@@ -2384,8 +2478,13 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
 
       // Stand: footprint ~1:1 with tank (XZ independent), height fills
       // tankBottom-ground gap. Top flush with tank base, feet on ground.
-      // Phase 12: lite skips this 4k decorative prop (no fetch at all).
-      if (qState.runtime.extras) loadOptional('room-table', '/aquarium/room/props/side_table/side_table_01_4k.gltf', (root) => {
+      // Compact Lite uses the embedded 512px table; Normal keeps source.
+      const roomTableUrl = qState.runtime.extras
+        ? '/aquarium/room/props/side_table/side_table_01_4k.gltf'
+        : qState.mode === 'lite' && mount.clientWidth < 720
+          ? '/aquarium/lite/side-table-lite.glb'
+          : null
+      if (roomTableUrl) loadOptional('room-table', roomTableUrl, (root) => {
         const junk = []
         root.traverse((n) => {
           if (n.isCamera || n.isLight) junk.push(n)
@@ -2487,9 +2586,11 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
     })
 
     // Required: floor slab, top surface at y=0.
+    // Phase 15H: Lite fetches the pre-downscaled derivative (512px
+    // textures, identical geometry) instead of the full-res source.
     loadRequired(
       'floor.glb',
-      '/aquarium/floor.glb',
+      qState.mode === 'lite' ? '/aquarium/lite/floor.glb' : '/aquarium/floor.glb',
       (root) => {
         let meshes = 0
         let kids = 0
@@ -2655,7 +2756,9 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
 
     // Optional-silent: coral clusters near existing rocks.
     // Phase 12: lite skips this decorative load (absent stays absent by design).
-    if (qState.runtime.extras) loadOptional('coral', '/aquarium/coral.glb', (root) => {
+    // Phase 15B: compact viewports keep it — 7KB fetch, thinned to 2 clusters
+    // by applyCompact, same as kelp.
+    if (qState.runtime.extras || mount.clientWidth < 720) loadOptional('coral', '/aquarium/coral.glb', (root) => {
       // Strip export helpers so they are never cloned into instances.
       const junk = []
       root.traverse((n) => {
@@ -2711,10 +2814,14 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
     // FISH_CFG.s is length-corrected per body plan so final world sizes
     // match the old A/B/C (OLD finals: A 0.744x0.500x0.299,
     // B 0.536x0.360x0.215, C 0.387x0.260x0.156).
+    // Phase 15G: Lite fetches pre-downscaled derivatives (512px textures,
+    // identical geometry) instead of downloading full-res sources first.
+    // Normal keeps the originals. The 512 runtime cap stays as safety net.
+    const fishBase = qState.mode === 'lite' ? '/aquarium/lite' : '/aquarium'
     const FISH_SOURCES = [
-      { name: 'fish-a', url: '/aquarium/fish_a.glb', cfg: FISH_CFG[0] },
-      { name: 'fish-b', url: '/aquarium/fish_b.glb', cfg: FISH_CFG[1] },
-      { name: 'fish-c', url: '/aquarium/fish_c.glb', cfg: FISH_CFG[2] },
+      { name: 'fish-a', url: `${fishBase}/fish_a.glb`, cfg: FISH_CFG[0] },
+      { name: 'fish-b', url: `${fishBase}/fish_b.glb`, cfg: FISH_CFG[1] },
+      { name: 'fish-c', url: `${fishBase}/fish_c.glb`, cfg: FISH_CFG[2] },
     ]
     const FISH_OLD_FINALS = [
       [0.744, 0.5, 0.299],
@@ -2808,12 +2915,14 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
     // goldfish so swimOne/transition/reduced-motion apply unchanged.
     // No TEMP koi exists, so no slot is retired.
     // Phase 12: lite skips these decorative extras (essential fish_a/b/c stay).
-    if (!backdropRef.current && qState.runtime.extras) {
+    // Phase 15C: compact viewports keep a single representative koi-a.
+    if (!backdropRef.current && (qState.runtime.extras || mount.clientWidth < 720)) {
       const KOI_SOURCES = [
         { name: 'butterfly-koi-a', url: '/aquarium/butterfly_koi_a.glb', cfg: KOI_CFG[0], glow: 0.1 },
         { name: 'butterfly-koi-b', url: '/aquarium/butterfly_koi_b.glb', cfg: KOI_CFG[1], glow: 0.04 },
       ]
-      KOI_SOURCES.forEach(({ name, url, cfg, glow }) => {
+      const koiSources = qState.runtime.extras ? KOI_SOURCES : KOI_SOURCES.slice(0, 1)
+      koiSources.forEach(({ name, url, cfg, glow }) => {
         loadOptional(
           name,
           url,
@@ -2876,12 +2985,14 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
     // Floor-walking shrimp (PoC only): one instance per GLB, grounded on
     // the sand. No TEMP shrimp exists, so no slot is retired.
     // Phase 12: lite skips these decorative extras.
-    if (!backdropRef.current && qState.runtime.extras) {
+    // Phase 15C: compact viewports keep a single representative shrimp-a.
+    if (!backdropRef.current && (qState.runtime.extras || mount.clientWidth < 720)) {
       const SHRIMP_SOURCES = [
         { name: 'shrimp-a', url: '/aquarium/shrimp_a.glb', cfg: SHRIMP_CFG[0] },
         { name: 'shrimp-b', url: '/aquarium/shrimp_b.glb', cfg: SHRIMP_CFG[1] },
       ]
-      SHRIMP_SOURCES.forEach(({ name, url, cfg }) => {
+      const shrimpSources = qState.runtime.extras ? SHRIMP_SOURCES : SHRIMP_SOURCES.slice(0, 1)
+      shrimpSources.forEach(({ name, url, cfg }) => {
         loadOptional(
           name,
           url,
@@ -2942,7 +3053,19 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
     // terrain height in poc.ground space (immune to seatTable shifts);
     // poc.ground carries the P1 install-hide, plus a manual late guard.
     // Phase 12: lite skips trees (outdoor decor, not tank composition).
-    if (!backdropRef.current && poc.ground && qState.runtime.extras) {
+    // Phase 15J: compact viewports restore ONE decimated tree-lite clone
+    // (left-near silhouette); Normal keeps all 4 from the original.
+    if (!backdropRef.current && poc.ground && (qState.runtime.extras || mount.clientWidth < 720)) {
+      // 4-tree frame, empty center: near pair flanks at P0, far pair
+      // continues the forest (see tree_visible.js for NDC verification).
+      const TREE_CFG = [
+        { name: 'tree-left-near', x: -20, z: -18, s: 8.0, rotY: 0.4, ph: 0 },
+        { name: 'tree-left-far', x: -12.5, z: -27, s: 5.5, rotY: 1.7, ph: 1.9 },
+        { name: 'tree-right-near', x: 19, z: -18, s: 7.0, rotY: 2.5, ph: 3.8 },
+        { name: 'tree-right-far', x: 12.5, z: -27, s: 5.0, rotY: 3.6, ph: 5.1 },
+      ]
+      const treeCfgs = qState.runtime.extras ? TREE_CFG : TREE_CFG.slice(0, 1)
+      const treeUrl = qState.mode === 'lite' ? '/aquarium/lite/tree-lite.glb' : '/aquarium/environment/tree.glb'
       const sstepT = (t) => {
         const c = Math.min(Math.max(t, 0), 1)
         return c * c * (3 - 2 * c)
@@ -2975,14 +3098,6 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         }
         return (h + fw) * blend
       }
-      // 4-tree frame, empty center: near pair flanks at P0, far pair
-      // continues the forest (see tree_visible.js for NDC verification).
-      const TREE_CFG = [
-        { name: 'tree-left-near', x: -20, z: -18, s: 8.0, rotY: 0.4, ph: 0 },
-        { name: 'tree-left-far', x: -12.5, z: -27, s: 5.5, rotY: 1.7, ph: 1.9 },
-        { name: 'tree-right-near', x: 19, z: -18, s: 7.0, rotY: 2.5, ph: 3.8 },
-        { name: 'tree-right-far', x: 12.5, z: -27, s: 5.0, rotY: 3.6, ph: 5.1 },
-      ]
       const placeTreeClone = (src, cfg) => {
         const root = src.clone(true)
         root.updateMatrixWorld(true)
@@ -3087,9 +3202,11 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         }
         return true
       }
-      loader
-        .loadAsync('/aquarium/environment/tree.glb')
-        .then((gltf) => {
+      // Phase 13C: tracked settle (treed OR treeless; Normal + compact).
+      track(
+        loader
+          .loadAsync(treeUrl)
+          .then((gltf) => {
           if (cancelled) return
           const src = gltf.scene
           const junk = []
@@ -3109,23 +3226,30 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
           }
           flog('tree.glb src size=' + fmtV(sd))
           let okCount = 0
-          TREE_CFG.forEach((cfg) => {
+          treeCfgs.forEach((cfg) => {
             if (placeTreeClone(src, cfg)) okCount++
           })
-          flog('trees active ' + okCount + '/' + TREE_CFG.length)
+          flog('trees active ' + okCount + '/' + treeCfgs.length)
           applyCompact(mount.clientWidth)
           if (reduced) rerender()
-        })
-        .catch(() => {
+        }, () => {
           flog('tree.glb missing/unreadable — no trees')
-        })
+        }),
+        'tree'
+      )
 
       // Voxel meadow tufts (PoC only): deterministic instanced grass in
       // ground-local space (P1 install-hide + seatTable ride come free with
       // poc.ground). One shared blade geometry, 3 palette materials, fully
       // static — no motion-system involvement.
       // Phase 12: lite skips the meadow (outdoor decor).
-      if (qState.runtime.extras) {
+      // Phase 15B: compact viewports keep the procedural meadow/shrubs —
+      // zero download, instanced static geometry, same install-hide behavior.
+      if (qState.runtime.extras || mount.clientWidth < 720) {
+        // Phase 15D: compact viewports render half the instances (first
+        // half of the rng-scattered lists = uniform thinning, identical
+        // layout). Desktop keeps full density.
+        const thinCompact = mount.clientWidth < 720 ? 0.5 : 1
         const rng = (() => {
           let a = 1337
           return () => {
@@ -3271,7 +3395,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         perVariant.forEach((list, vi) => {
           const im = new THREE.InstancedMesh(bladeGeo, grassMats[vi], Math.max(list.length, 1))
           list.forEach((m, ii) => im.setMatrixAt(ii, m))
-          im.count = list.length
+          im.count = Math.floor(list.length * thinCompact)
           im.instanceMatrix.needsUpdate = true
           im.castShadow = false
           im.receiveShadow = true
@@ -3369,7 +3493,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         leafMats4.forEach((list, vi) => {
           const im = new THREE.InstancedMesh(cubeGeo, bushLeafMats[vi], Math.max(list.length, 1))
           list.forEach((m, ii) => im.setMatrixAt(ii, m))
-          im.count = list.length
+          im.count = Math.floor(list.length * thinCompact)
           im.instanceMatrix.needsUpdate = true
           im.castShadow = false
           im.receiveShadow = true
@@ -3380,7 +3504,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         {
           const im = new THREE.InstancedMesh(cubeGeo, stemMat, Math.max(stemMats4.length, 1))
           stemMats4.forEach((m, ii) => im.setMatrixAt(ii, m))
-          im.count = stemMats4.length
+          im.count = Math.floor(stemMats4.length * thinCompact)
           im.instanceMatrix.needsUpdate = true
           im.castShadow = false
           im.receiveShadow = true
@@ -3454,12 +3578,12 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
 
     let raf = 0
     let displayed = reduced ? 1 : 0
-    let healthyFired = false
+    // Phase 13C: a rendered frame counts toward readiness; 100% additionally
+    // requires every tracked settle (see maybeHealthy). Same RAF, same sites.
     const markHealthy = () => {
-      if (!healthyFired) {
-        healthyFired = true
-        cbRef.current.onHealthy && cbRef.current.onHealthy()
-      }
+      if (cancelled) return
+      readiness.frames += 1
+      maybeHealthy()
     }
 
     if (backdropRef.current) {
@@ -3543,34 +3667,46 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         return max > 0 ? Math.min(Math.max(window.scrollY / max, 0), 1) : 0
       }
       let lastT = performance.now()
-      let replayStartedAt = null
-      let replayFrom = 0
-      let replayCompleteSent = false
+      // Return-to-P0 rewind state (DIVE AGAIN): animated in this same tick,
+      // parked at 0 with a single completion callback. No second RAF.
+      let returnStartedAt = null
+      let returnFrom = 0
+      let returnDoneSent = false
+      // Phase 14B DEV probe: per-frame counters into probeRef (when passed).
+      // renderer.info resets per render() call, so freeze accumulation for
+      // the frame and reset manually — counters only, rendering untouched.
+      // Zero cost when probeRef is null.
+      const probeActive = probeRef != null
+      const probeSize = probeActive ? new THREE.Vector2() : null
+      let probeMs = 0
+      if (probeActive) renderer.info.autoReset = false
       const tick = () => {
         const now = performance.now()
         qState.frame += 1
-        const dt = Math.min((now - lastT) / 1000, 0.1)
+        const rawMs = now - lastT
+        const dt = Math.min(rawMs / 1000, 0.1)
         lastT = now
+        if (probeActive) renderer.info.reset()
         const goal = target()
-        if (integratedRef.current && replayingRef.current) {
-          if (replayStartedAt == null) {
-            replayStartedAt = now
-            replayFrom = displayed
-            replayCompleteSent = false
+        if (integratedRef.current && returningRef.current) {
+          if (returnStartedAt == null) {
+            returnStartedAt = now
+            returnFrom = displayed
+            returnDoneSent = false
           }
-          const t = Math.min((now - replayStartedAt) / 1900, 1)
+          const t = Math.min((now - returnStartedAt) / 1800, 1)
           const eased = t * t * (3 - 2 * t)
-          displayed = replayFrom * (1 - eased)
+          displayed = returnFrom * (1 - eased)
           if (t >= 1) {
             displayed = 0
-            if (!replayCompleteSent) {
-              replayCompleteSent = true
-              cbRef.current.onReplayComplete && cbRef.current.onReplayComplete()
+            if (!returnDoneSent) {
+              returnDoneSent = true
+              cbRef.current.onReturnComplete && cbRef.current.onReturnComplete()
             }
           }
         } else {
-          replayStartedAt = null
-          replayCompleteSent = false
+          returnStartedAt = null
+          returnDoneSent = false
           displayed += (goal - displayed) * 0.1
           if (Math.abs(goal - displayed) < 0.0005) displayed = goal
         }
@@ -3583,6 +3719,35 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         onFrame(mount.clientWidth, mount.clientHeight)
         renderFrame(displayed, now / 1000)
         markHealthy()
+        if (probeActive && probeRef) {
+          probeMs = probeMs ? probeMs * 0.95 + rawMs * 0.05 : rawMs
+          const pr = probeRef.current || (probeRef.current = { settles: settleLog })
+          const info = renderer.info
+          pr.calls = info.render.calls
+          pr.tris = info.render.triangles
+          pr.points = info.render.points
+          pr.geos = info.memory.geometries
+          pr.texs = info.memory.textures
+          pr.ms = probeMs
+          pr.mode = qState.mode
+          try {
+            pr.phase = phaseOf(displayed)
+          } catch { /* advisory only */ }
+          pr.pr = renderer.getPixelRatio()
+          renderer.getDrawingBufferSize(probeSize)
+          pr.bufW = Math.round(probeSize.x)
+          pr.bufH = Math.round(probeSize.y)
+          if (trans) {
+            pr.rtW = trans.sceneRT.width
+            pr.rtH = trans.sceneRT.height
+          } else {
+            pr.rtW = 0
+            pr.rtH = 0
+          }
+          pr.shadow = qState.runtime.shadows ? qState.runtime.shadowSize : 0
+          pr.ready = `${Math.min(readiness.settled, Math.max(readiness.total, 1))}/${Math.max(readiness.total, 1)}`
+          pr.frames = readiness.frames
+        }
         // Phase 12: the old code pushed a React state update every RAF.
         // Throttle to phase changes / configured cadence instead.
         {
@@ -3627,10 +3792,10 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
   }, [qualityMode])
 
   const revealProgress = integratedRef.current
-    ? replaying ? debug.p : diveProgress ?? prog.dive
+    ? returningToP0 ? debug.p : diveProgress ?? prog.dive
     : debug.p
   const rp = smooth(Math.min(Math.max((revealProgress - 0.94) / 0.06, 0), 1))
-  const revealed = revealProgress >= 0.94 && !replaying
+  const revealed = revealProgress >= 0.94
 
   useLayoutEffect(() => {
     if (heroRevealRef.current) heroRevealRef.current.inert = !revealed
@@ -3654,13 +3819,12 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         <div
           ref={heroRevealRef}
           className="hero-reveal"
-          aria-hidden={!revealed || replaying}
           style={{
             position: introComplete ? 'relative' : 'fixed',
             inset: introComplete ? undefined : 0,
             zIndex: 10,
-            opacity: replaying ? 0 : rp,
-            visibility: revealed || replaying || rp > 0 ? 'visible' : 'hidden',
+            opacity: rp,
+            visibility: revealed || rp > 0 ? 'visible' : 'hidden',
             pointerEvents: revealed ? 'auto' : 'none',
             transform: `translate3d(0, ${8 * (1 - rp)}px, 0) scale(${0.985 + 0.015 * rp})`,
             transition: 'opacity 0.75s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.75s cubic-bezier(0.2, 0.8, 0.2, 1)',

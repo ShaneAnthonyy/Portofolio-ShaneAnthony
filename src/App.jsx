@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useLayoutEffect, useState } from 'react'
+import { Suspense, lazy, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import Navbar from './components/Navbar.jsx'
 import Hero from './components/Hero.jsx'
 import About from './components/About.jsx'
@@ -8,6 +8,8 @@ import Certificates from './components/Certificates.jsx'
 import Contact from './components/Contact.jsx'
 import Footer from './components/Footer.jsx'
 import Separator from './components/Separator.jsx'
+import LoadingScreen from './components/LoadingScreen.jsx'
+import DiveProbe, { isProbeEnabled } from './components/DiveProbe.jsx'
 import useSectionProgress, { refreshSectionProgress } from './hooks/useSectionProgress.js'
 import { usePerformanceMode } from './animation/quality.js'
 
@@ -53,23 +55,62 @@ export default function App() {
   const [webglFailed, setWebglFailed] = useState(false)
   const [webglHealthy, setWebglHealthy] = useState(false)
   const [introComplete, setIntroComplete] = useState(false)
-  const [replaying, setReplaying] = useState(false)
   const [reducedDiveActive, setReducedDiveActive] = useState(false)
+  // Return-to-P0 interaction (DIVE AGAIN): temporary visual rewind driven
+  // by the existing Dive RAF. Not a replay — no auto-dive follows.
+  const [returningToP0, setReturningToP0] = useState(false)
+  // Park gate: set only by onReturnComplete at P0. The gated clear below
+  // requires it, so a stale near-zero dive can never clear the return
+  // state at return START.
+  const [returnParked, setReturnParked] = useState(false)
+  // Loading gate: blocks the dive until the Dive reports real readiness
+  // (tracked asset settles + confirmed frames). Starts at 0; only real
+  // readiness events move it. No timer-based fake progress.
+  const [gateEntered, setGateEntered] = useState(false)
+  const [loadProgress, setLoadProgress] = useState(0)
+  // Phase 14B DEV-only probe (?dive-probe=1 in dev): zero production trace.
+  const showProbe = isProbeEnabled()
+  const diveProbeRef = useRef(null)
   const canReplay = !isDivePoc && !webglFailed
   const shouldDive = canReplay && (!progress.reduced || reducedDiveActive)
   const entered = !shouldDive || introComplete || progress.dive >= 0.995
-  const portfolioEntered = entered && !replaying
-  const portfolioUnlocked = !shouldDive || (introComplete && !replaying)
+  const portfolioEntered = entered
+  const portfolioUnlocked = !shouldDive || (introComplete && !returningToP0)
   const bubbleDepth = Math.min(Math.max(progress.t, 0), 1)
-  const visualEntered = entered || replaying || shouldDive && progress.dive >= 0.94
-  const diveProgress = replaying ? 0 : introComplete ? 1 : reducedDiveActive ? progress.dive : undefined
+  const visualEntered = entered || shouldDive && progress.dive >= 0.94
+  const diveProgress = (introComplete && !returningToP0) ? 1 : reducedDiveActive ? progress.dive : undefined
   const reveal = Math.min(Math.max((progress.dive - 0.94) / 0.06, 0), 1)
-  const backgroundBlur = replaying ? 1.5 : introComplete || progress.dive < 0.94 ? 0 : (1 - reveal) * 1.5
-  const atmosphereBlur = replaying ? 6 : shouldDive && progress.dive >= 0.94 ? 2 + (1 - reveal) * 2 : 2
+  const backgroundBlur = introComplete || progress.dive < 0.94 ? 0 : (1 - reveal) * 1.5
+  const atmosphereBlur = shouldDive && progress.dive >= 0.94 ? 2 + (1 - reveal) * 2 : 2
 
   useEffect(() => {
     refreshSectionProgress()
   }, [shouldDive])
+
+  // No dive to wait for (reduced motion / WebGL failure): gate is ready.
+  useEffect(() => {
+    if (!shouldDive) setLoadProgress(1)
+  }, [shouldDive])
+
+  // Lock scroll while the gate is up so the dive starts cleanly on ENTER.
+  useEffect(() => {
+    if (gateEntered || isDivePoc) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = prev
+    }
+  }, [gateEntered])
+
+  const loadReady = loadProgress >= 1 || webglFailed || !shouldDive
+  const enterPortfolio = () => {
+    setGateEntered(true)
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+    requestAnimationFrame(refreshSectionProgress)
+  }
+  const handleDiveProgress = (p) => {
+    setLoadProgress((prev) => Math.max(prev, Math.min(Math.max(p, 0), 1)))
+  }
 
   // DEV-only bubble census (?bubble-debug=1): read-only log confirming the
   // live bubbles exist, layer/enter state, and a sample computed rect.
@@ -101,18 +142,63 @@ export default function App() {
   }, [isBubbleDebug])
 
   useLayoutEffect(() => {
-    if (shouldDive && !replaying && !introComplete && progress.dive >= 0.995) setIntroComplete(true)
-  }, [shouldDive, replaying, introComplete, progress.dive])
+    // Return-to-P0 has priority: stale completion progress must never trip
+    // the normal pipeline while a return is active.
+    if (shouldDive && !introComplete && !returningToP0 && progress.dive >= 0.995) setIntroComplete(true)
+  }, [shouldDive, introComplete, returningToP0, progress.dive])
 
   useLayoutEffect(() => {
-    if (!shouldDive || !introComplete || replaying) return
+    if (!shouldDive || !introComplete || returningToP0) return
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
     const frame = requestAnimationFrame(refreshSectionProgress)
     return () => cancelAnimationFrame(frame)
-  }, [shouldDive, introComplete, replaying])
+  }, [shouldDive, introComplete, returningToP0])
 
+  const diveAgain = () => {
+    // Cinematic return to P0: the Dive rewinds over ~1.8s in its own RAF,
+    // then onReturnComplete parks at the start. Reduced motion snaps.
+    if (progress.reduced) {
+      setIntroComplete(false)
+      setReducedDiveActive(true)
+    } else if (introComplete && !returningToP0) {
+      setReturnParked(false)
+      setReturningToP0(true)
+    }
+  }
+
+  const handleReturnComplete = () => {
+    // P0 reached: park at the spacer top and force a fresh progress
+    // recompute. Flags clear only in the gated effect below, once fresh
+    // progress.dive ≈ 0 is OBSERVED — never on stale pre-park values.
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+    refreshSectionProgress()
+    setReturnParked(true)
+  }
+
+  // Gated park commit: clears the return state only after the P0 park AND
+  // fresh near-zero progress are both observed. The trip in the same pass
+  // then evaluates fresh ≈0, so stale completion values can never re-fire
+  // it. Every path terminates: the park commit re-renders on its own, and
+  // the recompute notify re-renders when dive changes. No timers.
+  useLayoutEffect(() => {
+    if (!returningToP0 || !introComplete || !returnParked || progress.dive >= 0.05) return
+    setReturnParked(false)
+    setReturningToP0(false)
+    setIntroComplete(false)
+  }, [returningToP0, introComplete, returnParked, progress.dive])
+
+  // Post-restore remeasure: the 0 → 400vh spacer restore shifts every
+  // section offset, so refresh cached geometry once it has committed.
+  // Idempotent and harmless on the reduced path.
+  useLayoutEffect(() => {
+    if (returningToP0 || introComplete) return
+    refreshSectionProgress()
+  }, [returningToP0, introComplete])
+
+  // Input stays captured for the return's lifetime so user scroll cannot
+  // fight the rewind. Reduced motion never enters the return path.
   useEffect(() => {
-    if (!replaying || progress.reduced) return
+    if (!returningToP0 || progress.reduced) return
     const preventScroll = (event) => event.preventDefault()
     const preventScrollKeys = (event) => {
       if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(event.key)) {
@@ -127,21 +213,7 @@ export default function App() {
       window.removeEventListener('touchmove', preventScroll, true)
       window.removeEventListener('keydown', preventScrollKeys, true)
     }
-  }, [replaying, progress.reduced])
-
-  const replayDive = () => {
-    if (progress.reduced) {
-      setIntroComplete(false)
-      setReducedDiveActive(true)
-    } else if (introComplete && !replaying) {
-      setReplaying(true)
-    }
-  }
-
-  const finishReplay = () => {
-    setIntroComplete(false)
-    setReplaying(false)
-  }
+  }, [returningToP0, progress.reduced])
 
   useEffect(() => {
     if (isDivePoc || !portfolioUnlocked) return
@@ -183,7 +255,7 @@ export default function App() {
 
   return (
     <div
-      className={`aqua-root${visualEntered ? ' is-entered' : ''}${portfolioUnlocked ? ' is-portfolio-unlocked' : ''}${replaying ? ' is-replaying' : ''}${webglHealthy ? ' has-webgl' : ''}`}
+      className={`aqua-root${visualEntered ? ' is-entered' : ''}${portfolioUnlocked ? ' is-portfolio-unlocked' : ''}${webglHealthy ? ' has-webgl' : ''}`}
       style={{
         '--intro-background-blur': `${backgroundBlur}px`,
         '--aqua-atmosphere-blur': `${atmosphereBlur}px`,
@@ -218,7 +290,6 @@ export default function App() {
       </div>
       <main
         inert={!portfolioUnlocked ? '' : undefined}
-        aria-hidden={!portfolioUnlocked || undefined}
       >
         {shouldDive ? (
           <Suspense
@@ -236,20 +307,26 @@ export default function App() {
               integrated
               diveProgress={diveProgress}
               introComplete={introComplete}
-              replaying={replaying}
+              returningToP0={returningToP0}
               qualityMode={performanceMode}
-              onReplayComplete={finishReplay}
-              onHealthy={() => setWebglHealthy(true)}
+              onReturnComplete={handleReturnComplete}
+              onProgress={handleDiveProgress}
+              probeRef={showProbe ? diveProbeRef : null}
+              onHealthy={() => {
+                setWebglHealthy(true)
+                setLoadProgress(1)
+              }}
               onFail={() => {
                 setWebglHealthy(false)
                 setWebglFailed(true)
+                setLoadProgress(1)
               }}
             >
-              <Hero onDiveAgain={canReplay ? replayDive : undefined} />
+              <Hero onDiveAgain={canReplay ? diveAgain : undefined} />
             </AquariumDivePrototype>
           </Suspense>
         ) : (
-          <Hero onDiveAgain={canReplay ? replayDive : undefined} />
+          <Hero onDiveAgain={canReplay ? diveAgain : undefined} />
         )}
         <div
           className="portfolio-sections"
@@ -258,17 +335,21 @@ export default function App() {
           aria-hidden={!portfolioUnlocked || undefined}
         >
           <About />
-          <Separator label="reef · 15 cm" />
+          <Separator />
           <Skills />
-          <Separator label="specimens · 24 cm" />
+          <Separator />
           <Projects />
-          <Separator label="credentials · 34 cm" />
+          <Separator />
           <Certificates />
-          <Separator label="toward surface · 38 cm" />
+          <Separator />
           <Contact />
         </div>
       </main>
       <Footer hidden={!portfolioUnlocked} />
+      {!gateEntered && !isDivePoc && (
+        <LoadingScreen progress={loadProgress} ready={loadReady} onEnter={enterPortfolio} />
+      )}
+      {showProbe && <DiveProbe target={diveProbeRef} />}
     </div>
   )
 }

@@ -5,52 +5,50 @@ import useFishDrift from '../hooks/useFishDrift.js'
 import { typeTimelines, useTypeReveal } from '../animation/typography.js'
 import { choreographyBuilders, useSectionChoreography } from '../animation/sectionChoreography.js'
 
-// Depth-map zone per fish. INTERMEDIATE specimens only — amateur fish are
-// reserved for later sections and never render here. All 7 may be hovered
-// and caught. Every intermediate image file is used.
+// Swim band per fish. Intermediate skills only — others render in later
+// sections and never render here. All 7 may be hovered and selected.
+// Every intermediate image file is used.
 const FISH_DEFS = [
-  // SURFACE — comfortable / frequently used
   { img: '/skill/intermediate1.png', skill: 'HTML', tier: 'intermediate', depth: 'back', zone: 'surface', w: 66 },
   { img: '/skill/intermediate2.png', skill: 'CSS', tier: 'intermediate', depth: 'back', zone: 'surface', w: 60 },
   { img: '/skill/intermediate3.png', skill: 'JavaScript', tier: 'intermediate', depth: 'back', zone: 'surface', w: 84 },
   { img: '/skill/intermediate6.png', skill: 'React', tier: 'intermediate', depth: 'front', zone: 'surface', w: 100 },
   { img: '/skill/intermediate7.png', skill: 'Visual Studio Code', tier: 'intermediate', depth: 'front', zone: 'surface', w: 56 },
-  // MID WATER — working knowledge
   { img: '/skill/intermediate4.png', skill: 'Python', tier: 'intermediate', depth: 'front', zone: 'mid', w: 88 },
-  // LOWER DEPTH — developing / foundational
   { img: '/skill/intermediate5.png', skill: 'C', tier: 'intermediate', depth: 'back', zone: 'lower', w: 68 },
 ]
 
 // Supporting index: every skill discoverable without interaction.
-// Fish-less skills (Figma, Vite, Problem solving, Teamwork) live here.
+// Visual swim bands (surface/mid/lower) are preserved for composition;
+// display groups below follow the professional category map.
 const ZONES = [
   {
-    id: 'surface',
-    no: '01',
-    label: 'Surface',
-    cm: '08 CM',
-    desc: 'Comfortable / frequently used',
-    skills: ['React', 'JavaScript', 'HTML', 'CSS', 'Visual Studio Code'],
+    id: 'frontend',
+    label: 'Frontend Development',
+    desc: 'Interfaces I can ship',
+    skills: ['React', 'JavaScript', 'HTML', 'CSS'],
   },
   {
-    id: 'mid',
-    no: '02',
-    label: 'Mid Water',
-    cm: '18 CM',
+    id: 'backend',
+    label: 'Backend Development',
     desc: 'Working knowledge',
-    skills: ['Python', 'Figma', 'GitHub', 'MySQL', 'Vite', 'Problem solving', 'Teamwork'],
+    skills: ['Python', 'C', 'PHP', 'Java', 'MySQL'],
   },
   {
-    id: 'lower',
-    no: '03',
-    label: 'Lower Depth',
-    cm: '28 CM',
-    desc: 'Developing / foundational',
-    skills: ['PHP', 'Java', 'C', 'Laravel'],
+    id: 'tools',
+    label: 'Tools & Frameworks',
+    desc: 'Daily workflow',
+    skills: ['Visual Studio Code', 'Figma', 'GitHub', 'Vite', 'Laravel'],
+  },
+  {
+    id: 'professional',
+    label: 'Professional Skills',
+    desc: 'How I work',
+    skills: ['Problem solving', 'Teamwork'],
   },
 ]
 
-// Concise neutral specimen notes, one per swimming intermediate fish.
+// Concise neutral skill notes, one per swimming fish.
 const PRIMARY_DESC = {
   React: 'Component-driven interfaces',
   JavaScript: 'Interactive web behavior',
@@ -172,7 +170,7 @@ export default function Skills() {
     setHoveredId((h) => (h === id ? null : h))
   }
 
-  // Press / touch-hold: contain the fish inside a visible bubble field.
+  // Press / touch-hold: pause the fish while interacting.
   const hold = (id) => {
     pause(id)
     setHeldId(id)
@@ -191,21 +189,22 @@ export default function Skills() {
 
   const releaseFish = () => setSelectedId(null)
 
-  const renderVisualLayer = (depth) => {
+  // All fish visuals render in the back layer (behind content).
+  // The invisible hit-target layer above content owns all interaction,
+  // so moving visuals behind changes nothing about catchability.
+  const renderVisualLayer = () => {
     if (!ready) return null
-    return FISH_DEFS.map((d, i) =>
-      d.depth !== depth ? null : (
-        <FishSkill
-          key={i}
-          fish={{ ...d, w: ents.current[i]?.w ?? d.w }}
-          hovered={hoveredId === i}
-          held={heldId === i}
-          below={hoveredId === i && hoverBelow}
-          selected={selectedId === i}
-          outerRef={registerVisual(i)}
-        />
-      )
-    )
+    return FISH_DEFS.map((d, i) => (
+      <FishSkill
+        key={i}
+        fish={{ ...d, w: ents.current[i]?.w ?? d.w }}
+        hovered={hoveredId === i}
+        held={heldId === i}
+        below={hoveredId === i && hoverBelow}
+        selected={selectedId === i}
+        outerRef={registerVisual(i)}
+      />
+    ))
   }
 
   const renderHitLayer = () => {
@@ -223,7 +222,7 @@ export default function Skills() {
           type="button"
           className={`fish-hit${isSel ? ' is-selected' : ''}${isHeld ? ' is-held' : ''}`}
           style={{ width: w }}
-          aria-label={`${d.skill} (${d.tier}) — press and hold to contain, release to view skill`}
+          aria-label={`${d.skill} — select to view details`}
           aria-pressed={isSel}
           onMouseEnter={() => pause(i)}
           onMouseLeave={() => resume(i)}
@@ -260,23 +259,20 @@ export default function Skills() {
       style={{ position: 'relative', overflow: 'hidden' }}
     >
       <div ref={layerBackRef} className="fish-layer fish-layer--back" aria-hidden="true">
-        {renderVisualLayer('back')}
+        {renderVisualLayer()}
       </div>
 
       <div className="section__layout" style={{ position: 'relative', zIndex: 10 }}>
         <aside className="section__rail">
-          <p className="section__eyebrow">— 18 cm · Depth Map</p>
-          <h2 className="section__title"><span className="skills-rail__l1">Skill Depth</span><span className="skills-rail__l2">Map</span></h2>
+          <h2 className="section__title"><span className="skills-rail__l1">Skill</span><span className="skills-rail__l2">Map</span></h2>
           <p className="section__sub">
-            Tools I can ship with, from surface-level fluency to deeper working knowledge.
+            Technologies I can ship with, from interfaces to working systems.
           </p>
-          <p className="section__meta">01 / Surface · 02 / Mid Water · 03 / Lower Depth</p>
         </aside>
 
         <div className="section__body">
           <div className="depth-map" ref={choreoRef}>
             <div className="depth-map__head">
-              <span className="depth-map__label">Observation field</span>
               <button
                 type="button"
                 className="guide-btn"
@@ -292,9 +288,7 @@ export default function Skills() {
               {ZONES.map((zone) => (
                 <li key={zone.id} className={`depth-zone depth-zone--${zone.id}`}>
                   <p className="depth-zone__head">
-                    <span className="depth-zone__no">{zone.no}</span>
                     <span className="depth-zone__label">{zone.label}</span>
-                    <span className="depth-zone__cm">{zone.cm}</span>
                   </p>
                   <p className="depth-zone__desc">{zone.desc}</p>
                   <ul className="depth-zone__index" aria-label={`${zone.label} skills`}>
@@ -315,21 +309,14 @@ export default function Skills() {
         </div>
       </div>
 
-      <div className="fish-layer fish-layer--front" aria-hidden="true">
-        {renderVisualLayer('front')}
-      </div>
-
-      {/* Interaction layer above the content, visuals stay behind/around it */}
+      {/* Interaction layer above the content, all fish visuals behind it */}
       <div className="fish-hit-layer">
         {renderHitLayer()}
       </div>
 
       {selected && (
-        <div className="specimen-panel" role="dialog" aria-label={`${selected.skill} specimen`} aria-modal="false">
+        <div className="specimen-panel" role="dialog" aria-label={`${selected.skill} details`} aria-modal="false">
           <div className="specimen-panel__card">
-            <span className="specimen-panel__index">
-              Specimen {String((selected.id ?? 0) + 1).padStart(2, '0')}
-            </span>
             <strong className="specimen-panel__name">{selected.skill}</strong>
             <span className="specimen-panel__meta">
               <TierLabel tier={selected.tier} />
@@ -345,9 +332,9 @@ export default function Skills() {
               type="button"
               className="specimen-panel__close"
               onClick={releaseFish}
-              aria-label={`Release ${selected.skill} and return it to the reef`}
+              aria-label={`Close ${selected.skill} details`}
             >
-              Release
+              Close
             </button>
           </div>
         </div>
@@ -363,10 +350,10 @@ export default function Skills() {
             tabIndex={-1}
           />
           <div className="guide-pop" role="dialog" aria-modal="false" aria-label="How to explore skills">
-            <strong className="guide-pop__title">Field guide</strong>
+            <strong className="guide-pop__title">How to explore</strong>
             <ul className="guide-pop__list">
-              <li><span>Press / hold</span> — contain the fish in a bubble</li>
-              <li><span>Release</span> — open its specimen label</li>
+              <li><span>Hover</span> — preview a skill</li>
+              <li><span>Select</span> — open its details</li>
               <li><span>Keyboard</span> — Enter / Space selects</li>
             </ul>
             <button

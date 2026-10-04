@@ -45,8 +45,7 @@ export default function Contact() {
       <AmbientFish sectionId="contact" defs={CONTACT_FISH} mode="ambient" speed={0.11} trimTo={2} />
       <div className="section__layout">
         <aside className="section__rail">
-          <p className="section__eyebrow">— 38 cm · Final station</p>
-          <h2 className="section__title"><span className="contact-rail__l1">Open</span><span className="contact-rail__l2">Channel</span></h2>
+          <h2 className="section__title"><span className="contact-rail__l1">Contact</span><span className="contact-rail__l2">Me</span></h2>
           <p className="section__sub">
             Open to Software Developer internships, project collaboration, or research chat.
           </p>
@@ -55,7 +54,7 @@ export default function Contact() {
         <div className="section__body">
           <div className="contact__grid" ref={choreoRef}>
             <div className="contact__info">
-              <p className="contact__console-head">Communication console</p>
+              <p className="contact__console-head">Contact details</p>
               <p className="contact__availability">
                 <span className="contact__dot" aria-hidden="true" />
                 {contact.availability}
@@ -94,7 +93,7 @@ export default function Contact() {
             </div>
 
             <form className="contact__form" onSubmit={handleSubmit}>
-              <p className="contact__transmission">Transmission</p>
+              <p className="contact__transmission">Send a message</p>
               <div className="field-row">
                 <label className="field">
                   <span className="field__label">Name</span>

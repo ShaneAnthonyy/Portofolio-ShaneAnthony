@@ -30,10 +30,9 @@ export default function Certificates() {
     <section id="certificates" className="section certificates" ref={typeRef}>
       <div className="section__layout">
         <aside className="section__rail">
-          <p className="section__eyebrow">— 34 cm · Expedition record</p>
-          <h2 className="section__title">Credential Cabinet</h2>
+          <h2 className="section__title">Certifications</h2>
           <p className="section__sub">
-            Verified learning records and formal training collected along the dive.
+            Verified learning records and formal training.
           </p>
           <p className="cabinet__count" aria-label={`${total} credential${total === 1 ? '' : 's'} logged`}>
             <span className="cabinet__count-now">Credentials / {String(total).padStart(2, '0')}</span>
