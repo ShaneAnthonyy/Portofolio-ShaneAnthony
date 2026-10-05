@@ -1703,7 +1703,16 @@ html:not([data-theme='dark']) .contact__hint {
 @media (max-width: 720px) {
   .aqua-root #home.hero {
     padding: calc(var(--mobile-navbar-clearance) + 12px) 22px 32px;
-    align-items: safe center;
+    grid-template-rows: auto auto;
+    align-content: safe center;
+    align-items: start;
+  }
+
+  .aqua-root #home .hero__replay {
+    position: static;
+    justify-self: center;
+    margin: 24px 0 0;
+    transform: none;
   }
 
   .aqua-root #home .hero__content {
