@@ -1265,6 +1265,12 @@ html:not([data-theme='dark']) .contact__hint {
 }
 
 @media (max-width: 720px) {
+  :root {
+    --mobile-navbar-row-height: 54px;
+    --mobile-navbar-padding-block: 20px;
+    --mobile-navbar-clearance: calc(var(--mobile-navbar-row-height) + var(--mobile-navbar-padding-block) + var(--mobile-navbar-padding-block) + 1px);
+  }
+
   .navbar__links {
     display: none;
   }
@@ -1272,7 +1278,11 @@ html:not([data-theme='dark']) .contact__hint {
   /* Deterministic mobile row: always tall enough to fully contain the
      38px action controls, so the bottom border sits below them. */
   .navbar__inner {
-    min-height: 54px;
+    min-height: var(--mobile-navbar-row-height);
+  }
+
+  .navbar {
+    padding-block: var(--mobile-navbar-padding-block);
   }
 
   .navbar__actions {
@@ -1692,7 +1702,8 @@ html:not([data-theme='dark']) .contact__hint {
 
 @media (max-width: 720px) {
   .aqua-root #home.hero {
-    padding: 76px 22px 32px;
+    padding: calc(var(--mobile-navbar-clearance) + 12px) 22px 32px;
+    align-items: safe center;
   }
 
   .aqua-root #home .hero__content {
