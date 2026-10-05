@@ -11,10 +11,7 @@ export default function Footer({ hidden = false }) {
   const year = new Date().getFullYear()
   const footRef = useRef(null)
   const typeRef = useTypeReveal(typeTimelines.footer, 'footer')
-  // Meta lines only (eyebrow/title/line owned by typography).
   const choreoRef = useSectionChoreography(choreographyBuilders.footer, 'choreo-footer')
-  // Bed emergence: stepped opacity from footer visibility. One observer,
-  // no scroll listener, no rAF — same family as the reveal system.
   const [bed, setBed] = useState(0)
 
   useEffect(() => {
@@ -54,8 +51,7 @@ export default function Footer({ hidden = false }) {
       <div className="footer__inner" ref={choreoRef}>
         <div className="footer__close">
           <p className="footer__eyebrow">Portfolio</p>
-          <p className="footer__title">Thanks for visiting</p>
-          <p className="footer__line">Thank you for visiting.</p>
+          <p className="footer__title">Thank You for visiting.</p>
         </div>
         <p>
           {profile.name} · {profile.location}

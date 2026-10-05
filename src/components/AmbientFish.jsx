@@ -6,9 +6,6 @@ const ROWS = { top: [0.06, 0.3], mid: [0.38, 0.62], bottom: [0.68, 0.9], bed: [0
 const SIDES = { left: [0.02, 0.16], right: [0.84, 0.98], full: [0.04, 0.96] }
 const SPREAD = [0, 2, 4, 1, 3]
 
-// Section fauna: ambient swimming (About/Projects/Contact) or hover-only
-// identification (Footer). No catch, no panel, no global-bubble reuse.
-// mode: 'ambient' | 'hover'. trimTo: max fish on narrow viewports.
 export default function AmbientFish({
   sectionId,
   defs,
@@ -23,8 +20,6 @@ export default function AmbientFish({
       typeof window !== 'undefined' &&
       window.matchMedia('(max-width: 720px)').matches
   )
-  // Phase 12: lite starts with a single fish (no prop drilling — the drift
-  // loop additionally halves its cadence live via dataset.perf).
   const [liteInit] = useState(
     () =>
       typeof document !== 'undefined' &&

@@ -13,15 +13,12 @@ import DiveProbe, { isProbeEnabled } from './components/DiveProbe.jsx'
 import useSectionProgress, { refreshSectionProgress } from './hooks/useSectionProgress.js'
 import { usePerformanceMode } from './animation/quality.js'
 
-// Keep the WebGL environment in its own lazy chunk.
 const AquariumDivePrototype = lazy(() => import('./components/AquariumDivePrototype.jsx'))
 
 const isDivePoc =
   typeof window !== 'undefined' &&
   new URLSearchParams(window.location.search).get('webgl-poc') === '1'
 
-// DEV-only bubble diagnostics (?bubble-debug=1): read-only census log +
-// obvious-bubble styling. Query-gated, zero production impact.
 const isBubbleDebug =
   typeof window !== 'undefined' &&
   new URLSearchParams(window.location.search).has('bubble-debug')
@@ -47,28 +44,17 @@ const BUBBLES = [
 
 export default function App() {
   const progress = useSectionProgress()
-  // Phase 12: shared adaptive performance mode (normal | lite).
   const [performanceMode, setPerformanceMode] = usePerformanceMode()
   const lite = performanceMode === 'lite'
-  // Lite renders fewer bubble nodes (no hidden animated DOM left running).
   const activeBubbles = lite ? BUBBLES.filter((_, i) => i % 3 === 0) : BUBBLES
   const [webglFailed, setWebglFailed] = useState(false)
   const [webglHealthy, setWebglHealthy] = useState(false)
   const [introComplete, setIntroComplete] = useState(false)
   const [reducedDiveActive, setReducedDiveActive] = useState(false)
-  // Return-to-P0 interaction (DIVE AGAIN): temporary visual rewind driven
-  // by the existing Dive RAF. Not a replay — no auto-dive follows.
   const [returningToP0, setReturningToP0] = useState(false)
-  // Park gate: set only by onReturnComplete at P0. The gated clear below
-  // requires it, so a stale near-zero dive can never clear the return
-  // state at return START.
   const [returnParked, setReturnParked] = useState(false)
-  // Loading gate: blocks the dive until the Dive reports real readiness
-  // (tracked asset settles + confirmed frames). Starts at 0; only real
-  // readiness events move it. No timer-based fake progress.
   const [gateEntered, setGateEntered] = useState(false)
   const [loadProgress, setLoadProgress] = useState(0)
-  // Phase 14B DEV-only probe (?dive-probe=1 in dev): zero production trace.
   const showProbe = isProbeEnabled()
   const diveProbeRef = useRef(null)
   const canReplay = !isDivePoc && !webglFailed
@@ -87,12 +73,10 @@ export default function App() {
     refreshSectionProgress()
   }, [shouldDive])
 
-  // No dive to wait for (reduced motion / WebGL failure): gate is ready.
   useEffect(() => {
     if (!shouldDive) setLoadProgress(1)
   }, [shouldDive])
 
-  // Lock scroll while the gate is up so the dive starts cleanly on ENTER.
   useEffect(() => {
     if (gateEntered || isDivePoc) return
     const prev = document.body.style.overflow
@@ -112,8 +96,6 @@ export default function App() {
     setLoadProgress((prev) => Math.max(prev, Math.min(Math.max(p, 0), 1)))
   }
 
-  // DEV-only bubble census (?bubble-debug=1): read-only log confirming the
-  // live bubbles exist, layer/enter state, and a sample computed rect.
   useEffect(() => {
     if (!isBubbleDebug) return
     const layerEl = document.querySelector('.aqua-bubble-layer')
@@ -142,8 +124,6 @@ export default function App() {
   }, [isBubbleDebug])
 
   useLayoutEffect(() => {
-    // Return-to-P0 has priority: stale completion progress must never trip
-    // the normal pipeline while a return is active.
     if (shouldDive && !introComplete && !returningToP0 && progress.dive >= 0.995) setIntroComplete(true)
   }, [shouldDive, introComplete, returningToP0, progress.dive])
 
@@ -155,8 +135,6 @@ export default function App() {
   }, [shouldDive, introComplete, returningToP0])
 
   const diveAgain = () => {
-    // Cinematic return to P0: the Dive rewinds over ~1.8s in its own RAF,
-    // then onReturnComplete parks at the start. Reduced motion snaps.
     if (progress.reduced) {
       setIntroComplete(false)
       setReducedDiveActive(true)
@@ -167,19 +145,11 @@ export default function App() {
   }
 
   const handleReturnComplete = () => {
-    // P0 reached: park at the spacer top and force a fresh progress
-    // recompute. Flags clear only in the gated effect below, once fresh
-    // progress.dive ≈ 0 is OBSERVED — never on stale pre-park values.
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
     refreshSectionProgress()
     setReturnParked(true)
   }
 
-  // Gated park commit: clears the return state only after the P0 park AND
-  // fresh near-zero progress are both observed. The trip in the same pass
-  // then evaluates fresh ≈0, so stale completion values can never re-fire
-  // it. Every path terminates: the park commit re-renders on its own, and
-  // the recompute notify re-renders when dive changes. No timers.
   useLayoutEffect(() => {
     if (!returningToP0 || !introComplete || !returnParked || progress.dive >= 0.05) return
     setReturnParked(false)
@@ -187,16 +157,11 @@ export default function App() {
     setIntroComplete(false)
   }, [returningToP0, introComplete, returnParked, progress.dive])
 
-  // Post-restore remeasure: the 0 → 400vh spacer restore shifts every
-  // section offset, so refresh cached geometry once it has committed.
-  // Idempotent and harmless on the reduced path.
   useLayoutEffect(() => {
     if (returningToP0 || introComplete) return
     refreshSectionProgress()
   }, [returningToP0, introComplete])
 
-  // Input stays captured for the return's lifetime so user scroll cannot
-  // fight the rewind. Reduced motion never enters the return path.
   useEffect(() => {
     if (!returningToP0 || progress.reduced) return
     const preventScroll = (event) => event.preventDefault()
@@ -244,7 +209,6 @@ export default function App() {
     return () => obs.disconnect()
   }, [portfolioUnlocked])
 
-  // Keep the isolated development route, after all hooks are declared.
   if (isDivePoc) {
     return (
       <Suspense fallback={null}>
@@ -262,9 +226,6 @@ export default function App() {
         '--bubble-background-opacity': 0.14 + bubbleDepth * 0.06,
         '--bubble-midground-opacity': 0.22 + bubbleDepth * 0.1,
         '--bubble-foreground-opacity': 0.18 + bubbleDepth * 0.08,
-        // Water-column absorption deepens with scroll depth (shared progress,
-        // no new listener): far environment desaturates/darkens, top stays
-        // clearer so daylight still enters from above.
         '--aqua-sat': 0.58 - bubbleDepth * 0.08,
         '--aqua-top-a': 0.3 - bubbleDepth * 0.06,
         '--aqua-mid-a': 0.48 + bubbleDepth * 0.12,
@@ -296,7 +257,6 @@ export default function App() {
             fallback={
               <>
                 <div id="portfolio-dive" className="portfolio-dive-spacer" aria-hidden="true" />
-                {/* Keep the Home anchor measurable while the lazy dive chunk loads. */}
                 <div aria-hidden="true" style={{ visibility: 'hidden', pointerEvents: 'none' }}>
                   <Hero />
                 </div>
@@ -334,7 +294,7 @@ export default function App() {
           inert={!portfolioUnlocked ? '' : undefined}
           aria-hidden={!portfolioUnlocked || undefined}
         >
-          <About />
+          <About unlocked={portfolioUnlocked} />
           <Separator />
           <Skills />
           <Separator />

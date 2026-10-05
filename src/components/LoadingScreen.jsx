@@ -5,7 +5,7 @@ export default function LoadingScreen({ progress = 0, ready = false, onEnter = n
   const filled = Math.round((pct / 100) * BLOCKS)
   return (
     <div className="loading-screen" role="status" aria-label="Loading portfolio">
-      <div className="loading-screen__inner">
+      <div className={`loading-screen__inner${ready ? ' is-ready' : ''}`}>
         <p className="loading-screen__label">{ready ? 'READY' : 'LOADING...'}</p>
         <div
           className={`loading-screen__bar${ready ? ' is-ready' : ''}`}
@@ -23,7 +23,7 @@ export default function LoadingScreen({ progress = 0, ready = false, onEnter = n
             />
           ))}
         </div>
-        <p className="loading-screen__pct" aria-live="polite">{ready ? 'READY' : `${pct}%`}</p>
+        {!ready && <p className="loading-screen__pct" aria-live="polite">{pct}%</p>}
         {ready && (
           <button type="button" className="loading-screen__enter" onClick={onEnter} autoFocus>
             ENTER PORTFOLIO

@@ -23,6 +23,10 @@
   text-align: center;
 }
 
+.loading-screen__inner.is-ready {
+  gap: 12px;
+}
+
 .loading-screen__label {
   font-family: var(--font-mono);
   font-size: 1.4rem;
@@ -42,6 +46,8 @@
 .loading-screen__bar.is-ready {
   opacity: 0;
   pointer-events: none;
+  height: 0;
+  overflow: hidden;
 }
 
 .loading-screen__block {
@@ -72,6 +78,10 @@
   border-radius: 999px;
   padding: 12px 28px;
   margin-top: 8px;
+}
+
+.loading-screen__inner.is-ready .loading-screen__enter {
+  margin-top: 0;
 }
 
 /* ---------- Phase 14B DEV-only dive probe (never rendered in prod) ---------- */
@@ -314,8 +324,6 @@ main {
   color: var(--accent-ink);
 }
 
-/* Phase 12: adaptive performance toggle. Understated pill in the existing
-   navbar action cluster — same radius/border language as theme-toggle. */
 .lite-toggle {
   box-sizing: border-box;
   display: inline-flex;
@@ -377,8 +385,6 @@ main {
   box-shadow: 0 0 6px var(--success);
 }
 
-/* Phase 12: lite drops full-screen backdrop blurs (biggest CSS GPU cost).
-   Card/navbar blurs stay for readability (small surfaces). */
 html[data-perf='lite'] .webgl-backdrop::after,
 html[data-perf='lite'] .aqua-root.is-portfolio-unlocked .webgl-backdrop::after {
   -webkit-backdrop-filter: none;
@@ -415,9 +421,6 @@ html[data-perf='lite'] .aqua-root.is-portfolio-unlocked .webgl-backdrop canvas {
   position: relative;
 }
 
-/* GSAP traveling active indicator: one shared underline that moves between
-   links. Hidden wherever the pill background (detached/docking) or the
-   mobile list owns the active state instead. */
 .navbar__indicator {
   position: absolute;
   left: 0;
@@ -439,8 +442,6 @@ html[data-perf='lite'] .aqua-root.is-portfolio-unlocked .webgl-backdrop canvas {
   display: none;
 }
 
-/* While GSAP owns logo/links/toggle visuals for the entry sweep, the CSS
-   intro transitions stay off so tweens don't smear. */
 .navbar.gsap-entry .navbar__logo,
 .navbar.gsap-entry .navbar__links,
 .navbar.gsap-entry .theme-toggle {
@@ -732,8 +733,6 @@ html[data-perf='lite'] .aqua-root.is-portfolio-unlocked .webgl-backdrop canvas {
   font-weight: 400;
 }
 
-/* Light-mode only: ghost buttons read as soft aquarium glass instead of
-   white pills; inactive nav labels use the strengthened aqua muted. */
 html:not([data-theme='dark']) .btn--ghost {
   background: var(--aqua-panel-bg);
   border-color: var(--aqua-line);
@@ -745,36 +744,8 @@ html:not([data-theme='dark']) .navbar__link {
 
 /* ---------- Projects ---------- */
 
-.project-card__embed-fallback {
-  width: 100%;
-  min-height: 220px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  color: #c8d8ee;
-  font-size: 0.9rem;
-  font-weight: 600;
-  background: rgba(6, 15, 28, 0.5);
-  border: 1px dashed rgba(180, 200, 230, 0.25);
-  border-radius: 8px;
-  padding: 32px 20px;
-  transition: border-color 0.2s ease, background 0.2s ease;
-}
 
-.project-card__embed-fallback small {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  font-weight: 400;
-  letter-spacing: 0.06em;
-  color: rgba(159, 176, 200, 0.8);
-}
 
-.project-card__embed-fallback:hover {
-  border-color: rgba(143, 180, 232, 0.55);
-  background: rgba(143, 180, 232, 0.08);
-}
 
 .sr-only {
   position: absolute;
@@ -1065,9 +1036,6 @@ a.contact__item:hover {
   border-color: rgba(31, 73, 91, 0.35);
 }
 
-/* Light-only contact surface: the form panel shares the cloud glass family
-   at a touch brighter opacity. Channel entries are hairline console rows
-   (see below) and stay transparent. */
 html:not([data-theme='dark']) .aqua-root .contact__form {
   background: linear-gradient(rgba(167, 196, 202, 0.08), rgba(167, 196, 202, 0.08)), rgba(188, 200, 202, 0.43);
 }
@@ -1201,9 +1169,6 @@ html:not([data-theme='dark']) .aqua-root .contact__form {
   margin: 0;
 }
 
-/* Contact supporting copy sits at body tier (these fall through to the
-   weak base muted without an aqua override). Light-only so dark keeps its
-   current rendering. */
 html:not([data-theme='dark']) .contact__response,
 html:not([data-theme='dark']) .contact__hint {
   color: var(--aqua-body);
@@ -1275,8 +1240,6 @@ html:not([data-theme='dark']) .contact__hint {
     display: none;
   }
 
-  /* Deterministic mobile row: always tall enough to fully contain the
-     38px action controls, so the bottom border sits below them. */
   .navbar__inner {
     min-height: var(--mobile-navbar-row-height);
   }
@@ -1302,8 +1265,6 @@ html:not([data-theme='dark']) .contact__hint {
     justify-content: center;
   }
 
-  /* Contained focus ring: same 2px accent indication, tightened so it
-     stays inside the navbar visual area. */
   .navbar__toggle:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
@@ -1374,8 +1335,6 @@ html:not([data-theme='dark']) .contact__hint {
   --aqua-line: rgba(14, 48, 69, 0.30);
   --aqua-ink: #0d263b;
   --aqua-muted: #2c4a5e;
-  /* Dedicated body/description tier: darker than muted for dynamic
-     water backgrounds, softer than ink to preserve hierarchy. */
   --aqua-body: #183f55;
   --aqua-accent: #477EA0;
   --aqua-bg-0: #b9d1dc;
@@ -1384,15 +1343,10 @@ html:not([data-theme='dark']) .contact__hint {
   --aqua-bg-3: #7399ab;
   --aqua-glow: rgba(255, 255, 255, 0.55);
   --aqua-text-shadow: none;
-  /* Cloud gray-blue glass: cloud fill under a faint aqua veil, layered
-     in one token so every panel inherits the balance. Background water
-     stays visible through it (~0.34 alpha). */
   --aqua-card-bg: linear-gradient(rgba(167, 196, 202, 0.08), rgba(167, 196, 202, 0.08)), rgba(188, 200, 202, 0.34);
   --aqua-card-shadow: 0 16px 36px rgba(30, 60, 90, 0.12), inset 0 1px 0 rgba(255, 251, 243, 0.45);
   --aqua-card-shadow-hover: 0 16px 36px rgba(30, 60, 90, 0.16), inset 0 1px 0 rgba(255, 251, 243, 0.45);
   --aqua-card-border-hover: rgba(80, 100, 104, 0.32);
-  /* Panel frame borders: muted warm-gray-blue. --aqua-line is left alone
-     so approved dividers and depth lines keep their visibility. */
   --aqua-frame: rgba(90, 101, 99, 0.20);
   --aqua-frame-hover: rgba(80, 100, 104, 0.30);
   --aqua-nav-bg: linear-gradient(rgba(167, 196, 202, 0.08), rgba(167, 196, 202, 0.08)), rgba(184, 200, 204, 0.56);
@@ -1407,8 +1361,6 @@ html:not([data-theme='dark']) .contact__hint {
   --aqua-thumb: rgba(25, 65, 95, 0.50);
   --mobile-menu-bg: rgba(196, 218, 228, 0.97);
   --ease-water: cubic-bezier(0.22, 1, 0.36, 1);
-  /* Tier badges: muted steel-blue (active) vs quiet blue-gray (neutral).
-     Light values here; dark mirrors live in [data-theme='dark'] below. */
   --tier-int-bg: rgba(30, 90, 120, 0.10);
   --tier-int-border: rgba(30, 90, 120, 0.34);
   --tier-int-ink: #1e4f7a;
@@ -1426,7 +1378,6 @@ html:not([data-theme='dark']) .contact__hint {
   --aqua-line: rgba(180, 200, 230, 0.14);
   --aqua-ink: #e9eef6;
   --aqua-muted: #9fb0c8;
-  /* Dark mirror = current dark body rendering; no dark redesign. */
   --aqua-body: #9fb0c8;
   --aqua-accent: #8fb4e8;
   --aqua-bg-0: #10293f;
@@ -1447,17 +1398,14 @@ html:not([data-theme='dark']) .contact__hint {
   --aqua-pill-border: rgba(180, 200, 230, 0.2);
   --aqua-panel-bg: rgba(10, 22, 36, 0.92);
   --aqua-input-bg: rgba(6, 15, 28, 0.6);
-  /* Dark mobile menu: same navy family as the dark detached navbar. */
   --mobile-menu-bg: rgba(10, 22, 36, 0.97);  --aqua-track: #060f1c;
   --aqua-thumb: rgba(143, 180, 232, 0.25);
-  /* Dark mirrors of tier tokens = current dark rendering, unchanged. */
   --tier-int-bg: rgba(122, 168, 255, 0.14);
   --tier-int-border: rgba(29, 78, 216, 0.35);
   --tier-int-ink: #b9d0ff;
   --tier-am-bg: #0d1b2a;
   --tier-am-border: rgba(180, 200, 230, 0.14);
   --tier-am-ink: #9aa9c4;
-  /* Dark mirrors: current dark rendering, unchanged. */
   --aqua-frame: rgba(180, 200, 230, 0.14);
   --aqua-frame-hover: rgba(143, 180, 232, 0.38);
 }
@@ -1471,7 +1419,6 @@ html:not([data-theme='dark']) .contact__hint {
   min-height: 100dvh;
 }
 
-/* WebGL canvas layer; its pointer events never block the portfolio. */
 .webgl-backdrop {
   position: fixed;
   inset: 0;
@@ -1511,7 +1458,6 @@ html:not([data-theme='dark']) .contact__hint {
   opacity: 1;
 }
 
-/* Phase 2: soften and tint only the world behind portfolio content. */
 .aqua-root.is-portfolio-unlocked .webgl-backdrop canvas {
   opacity: 0.62;
   filter: blur(3px) saturate(var(--aqua-sat, 0.58)) hue-rotate(-10deg) contrast(0.8) brightness(0.88);
@@ -1538,12 +1484,6 @@ html:not([data-theme='dark']) .contact__hint {
   backdrop-filter: blur(1px) saturate(0.78) contrast(0.92) brightness(0.9);
 }
 
-/* Dedicated bubble layer: direct child of .aqua-root, sibling of
-   .webgl-backdrop and main. Fixed, explicit z-index, no filtered ancestors.
-   The layer itself never hides children via parent opacity — bubbles carry
-   no animation until the portfolio is entered, so base opacity 0 keeps them
-   invisible during the dive (a paused animation with negative delay would
-   freeze them mid-flight and leak into P0). */
 .aqua-bubble-layer {
   position: fixed;
   inset: 0;
@@ -1576,14 +1516,10 @@ html:not([data-theme='dark']) .contact__hint {
   will-change: transform, opacity;
 }
 
-/* Animation attaches only while the portfolio is entered and not replaying:
-   P0/paused-dive shows nothing, P1 starts mid-phase via negative delays
-   (no intro pop), replay detaches it again. */
 .aqua-root.is-entered:not(.is-replaying) .aqua-bubble-layer__bubble {
   animation: aqua-bubble-rise var(--bubble-duration) linear var(--bubble-delay) infinite;
 }
 
-/* Tiny highlight, scales with the bubble (no fixed-pixel glint). */
 .aqua-bubble-layer__bubble::before {
   content: '';
   position: absolute;
@@ -1608,8 +1544,6 @@ html:not([data-theme='dark']) .contact__hint {
   --bubble-opacity: var(--bubble-foreground-opacity, 0.18);
 }
 
-/* DEV-only (?bubble-debug=1): make the SAME real bubbles obvious for
-   verification — full opacity, static, white, ~1.5x size. Query-gated. */
 .aqua-bubble-layer.bubble-debug {
   opacity: 1 !important;
   visibility: visible !important;
@@ -1645,7 +1579,6 @@ html:not([data-theme='dark']) .contact__hint {
   height: 400vh;
 }
 
-/* Phase A: the dive consumes the intro scroll, then the hero becomes page top. */
 .aqua-root #home.hero {
   min-height: 100svh;
   display: grid;
@@ -1721,13 +1654,65 @@ html:not([data-theme='dark']) .contact__hint {
   }
 }
 
-/* Let the rendered sky show through while WebGL is healthy. */
+@media (max-width: 720px) and (max-height: 830px) {
+  .aqua-root #home .hero__stats {
+    margin-top: 44px;
+  }
+}
+
 .aqua-root.has-webgl {
   background: transparent;
 }
 
 .aqua-root.has-webgl.is-portfolio-unlocked {
   background: linear-gradient(to bottom, var(--aqua-bg-0) 0%, var(--aqua-bg-1) 24%, var(--aqua-bg-2) 58%, var(--aqua-bg-3) 100%);
+}
+
+html[data-perf='lite'] {
+  --lite-top: var(--aqua-bg-0);
+  --lite-bottom: var(--aqua-bg-1);
+  --lite-tint: 14%;
+  --lite-hero: color-mix(in srgb, var(--aqua-accent) var(--lite-tint), var(--lite-top));
+}
+
+html[data-theme='dark'][data-perf='lite'] {
+  --lite-bottom: var(--aqua-bg-2);
+}
+
+html[data-perf='lite'] #about {
+  border-top: none;
+}
+
+html[data-perf='lite'] .aqua-root.is-portfolio-unlocked #home.hero {
+  background: var(--lite-top);
+  background: var(--lite-hero);
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+html[data-perf='lite'] .portfolio-sections {
+  background: linear-gradient(180deg, var(--lite-top), var(--lite-bottom));
+  background:
+    radial-gradient(120% 55% at 50% 0%,
+      color-mix(in srgb, var(--aqua-accent) 8%, transparent),
+      transparent 70%),
+    linear-gradient(180deg,
+      var(--lite-hero) 0%,
+      var(--lite-top) 38%,
+      var(--lite-bottom) 100%);
+}
+
+html[data-theme='dark'][data-perf='lite'] .portfolio-sections {
+  background: linear-gradient(180deg, var(--lite-top), var(--lite-bottom));
+  background: linear-gradient(180deg,
+    var(--lite-hero) 0%,
+    var(--aqua-bg-1) 45%,
+    var(--lite-bottom) 100%);
+}
+
+html[data-perf='lite'] .aqua-root .footer {
+  background: var(--lite-bottom);
 }
 
 .aqua-root::before {
@@ -1804,13 +1789,10 @@ html:not([data-theme='dark']) .contact__hint {
   padding: 4px;
 }
 
-/* Light-only glass floor panel: translucent cloud gray-blue so water,
-   substrate and fauna stay visible. Dark keeps its own floor. */
 html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   background: linear-gradient(rgba(167, 196, 202, 0.08), rgba(167, 196, 202, 0.08)), rgba(184, 198, 200, 0.38);
 }
 
-/* Real aquarium glass: fine border, controlled blur, soft offset shadow */
 .aqua-card {
   position: relative;
   border-radius: 18px;
@@ -1837,11 +1819,6 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   image-rendering: auto;
 }
 
-/* Retire game type: map legacy class to quiet mono */
-.font-pixel {
-  font-family: var(--font-mono);
-  letter-spacing: 0.08em;
-}
 
 /* ---------- Section separator ---------- */
 .depth-gap {
@@ -1956,7 +1933,6 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   z-index: 1;
 }
 
-/* fish layers inside #skills — visual depth only, never interactive */
 .fish-layer {
   position: absolute;
   inset: 0;
@@ -1965,7 +1941,6 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
 }
 
 .fish-layer--back { z-index: 0; opacity: 0.8; filter: blur(0.5px) brightness(0.82); }
-.fish-layer--front { z-index: 20; }
 
 .fish-layer .aqua-card,
 #skills .aqua-card { z-index: 10; }
@@ -2000,9 +1975,6 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   max-width: 10ch;
 }
 
-/* Constrain the swimming field to the centered composition instead of the
-   full viewport width. Layer transforms are static; fish keep their own
-   per-frame transforms. */
 #skills .fish-layer,
 #skills .fish-hit-layer {
   left: 50%;
@@ -2033,7 +2005,6 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   filter: var(--aqua-fish-filter) drop-shadow(0 4px 14px rgba(0, 0, 0, 0.45)) brightness(1.06);
 }
 
-/* selected: softly leave the scene — fade / dissolve / scale down, never game-like */
 .fish.is-selected .fish__visual {
   opacity: 0;
   transform: scaleX(var(--fish-dir, 1)) scale(0.55);
@@ -2054,7 +2025,6 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   to { transform: rotate(2deg) translateY(-3px); }
 }
 
-/* interaction hit layer above the card; visuals stay behind/around */
 .fish-hit-layer {
   position: absolute;
   inset: 0;
@@ -2089,7 +2059,6 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   outline-offset: 2px;
 }
 
-/* premium specimen panel outside the fish */
 .specimen-panel {
   position: absolute;
   left: 50%;
@@ -2118,13 +2087,6 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   gap: 8px;
 }
 
-.specimen-panel__index {
-  font-family: var(--font-mono);
-  font-size: 0.66rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--aqua-muted);
-}
 
 .specimen-panel__name {
   font-weight: 700;
@@ -2169,7 +2131,6 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
-/* guide ? button + popover / bottom sheet */
 .guide-btn {
   margin-left: auto;
   flex-shrink: 0;
@@ -2266,12 +2227,26 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
     width: auto;
     max-width: none;
   }
+
+  .guide-pop--mobile {
+    position: fixed;
+    top: 16px;
+    right: auto;
+    bottom: auto;
+    left: 16px;
+    z-index: 19;
+    width: min(340px, calc(100vw - 32px));
+    max-width: none;
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+    animation: none;
+  }
+
   .specimen-panel {
     top: 56px;
   }
 }
 
-/* Elegant skill tooltip (replaces pixel textbox) */
 .fish-tip {
   position: absolute;
   bottom: calc(100% + 8px);
@@ -2382,437 +2357,70 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   .footer-floor { transition: none; }
 }
 
-/* ---------- About: naturalist specimen plate ---------- */
 
-.section__layout--specimen {
-  grid-template-columns: 1fr;
-  gap: 48px;
-}
 
-.section__layout--specimen .section__rail {
-  position: static;
-  border-right: none;
-  border-bottom: 1px solid var(--line);
-  padding-right: 0;
-  padding-bottom: 24px;
-  min-height: 0;
-  max-width: 640px;
-}
 
-.specimen {
-  border: 1px solid var(--aqua-frame);
-  border-radius: 22px;
-  background: var(--aqua-card-bg);
-  box-shadow: var(--aqua-card-shadow), inset 0 0 0 1px rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  padding: clamp(24px, 4vw, 44px);
-  overflow: hidden;
-}
 
-.specimen__plate {
-  display: grid;
-  grid-template-columns: 220px minmax(0, 1fr) 250px;
-  gap: clamp(24px, 4vw, 56px);
-  align-items: start;
-}
-
-/* Porthole: vertical elliptical specimen frame, portrait stays sharp. */
-.specimen__porthole {
-  position: relative;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-}
-
-.specimen__photo {
-  display: block;
-  width: 100%;
-  max-width: 220px;
-  aspect-ratio: 3 / 4;
-  object-fit: cover;
-  border-radius: 50% / 44%;
-  border: 1px solid var(--aqua-line);
-  outline: 1px solid rgba(255, 255, 255, 0.14);
-  outline-offset: 6px;
-  box-shadow: 0 24px 48px rgba(10, 40, 60, 0.28);
-  position: relative;
-}
-
-.specimen__porthole::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(220px, 100%);
-  aspect-ratio: 3 / 4;
-  border-radius: 50% / 44%;
-  background: linear-gradient(115deg, transparent 55%, rgba(255, 255, 255, 0.10) 72%, transparent 88%);
-  pointer-events: none;
-  animation: specimen-sheen 7s ease-in-out infinite alternate;
-}
-
-@keyframes specimen-sheen {
-  from { opacity: 0.5; }
-  to { opacity: 1; }
-}
-
-.specimen__figcap {
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.1em;
-  color: var(--aqua-muted);
-}
-
-/* Identity: specimen label, name, caption, field notes. */
-.specimen__specimen-no {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.22em;
+#about .section__title,
+#projects .section__title {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(3.75rem, 4.7vw, 4.25rem);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
-  color: var(--aqua-muted);
-  margin: 0 0 10px;
-}
-
-.specimen__name {
-  font-size: clamp(2rem, 4.5vw, 3rem);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1.05;
+  font-style: normal;
   color: var(--aqua-ink);
-  margin: 0 0 10px;
-}
-
-.specimen__descriptor {
-  font-family: var(--font-mono);
-  font-size: 0.74rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--aqua-muted);
-  margin: 0 0 20px;
-  padding-bottom: 18px;
-  border-bottom: 1px solid var(--aqua-line);
-}
-
-.specimen__caption {
-  font-size: 1.02rem;
-  line-height: 1.7;
-  color: var(--aqua-ink);
-  max-width: 46ch;
-  margin: 0 0 18px;
-}
-
-.specimen__notes-toggle {
-  font-family: var(--font-mono);
-  font-size: 0.74rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--aqua-pill-text);
-  background: var(--aqua-pill-bg);
-  border: 1px solid var(--aqua-pill-border);
-  border-radius: 999px;
-  padding: 9px 18px;
-  transition: border-color 0.2s ease;
-}
-
-.specimen__notes-toggle:hover {
-  border-color: var(--aqua-card-border-hover);
-}
-
-.specimen__notes {
-  margin-top: 16px;
-  border-left: 2px solid var(--aqua-pill-border);
-  padding: 4px 0 4px 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  font-size: 0.92rem;
-  line-height: 1.7;
-  color: var(--aqua-body);
-  max-width: 60ch;
-}
-
-.specimen__notes[hidden] {
-  display: none;
-}
-
-.specimen__notes-langs {
-  font-family: var(--font-mono);
-  font-size: 0.76rem;
-  letter-spacing: 0.04em;
-  margin: 0;
-}
-
-/* Callouts: annotations with leader lines toward the plate. */
-.specimen__callouts {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.specimen__callout {
-  position: relative;
-  display: flex;
-  gap: 12px;
-  padding: 12px 0 12px 28px;
-  opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 0.5s var(--ease-water), transform 0.5s var(--ease-water);
-}
-
-/* Leader line + numbered endpoint marker. */
-.specimen__callout::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 26px;
-  width: 16px;
-  height: 1px;
-  background: var(--aqua-muted);
-  opacity: 0.55;
-  transition: opacity 0.2s ease, background 0.2s ease;
-}
-
-.specimen__callout::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 23px;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  border: 1px solid var(--aqua-muted);
-  background: transparent;
-  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.specimen__callout:hover::before {
-  opacity: 1;
-  background: var(--aqua-ink);
-}
-
-.specimen__callout:hover::after {
-  background: var(--aqua-ink);
-  border-color: var(--aqua-ink);
-  box-shadow: 0 0 10px rgba(143, 180, 232, 0.5);
-}
-
-.reveal.is-visible .specimen__callout {
-  opacity: 1;
-  transform: none;
-}
-
-.reveal.is-visible .specimen__callout:nth-child(2) { transition-delay: 80ms; }
-.reveal.is-visible .specimen__callout:nth-child(3) { transition-delay: 140ms; }
-.reveal.is-visible .specimen__callout:nth-child(4) { transition-delay: 200ms; }
-.reveal.is-visible .specimen__callout:nth-child(5) { transition-delay: 260ms; }
-
-.specimen__callout-no {
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.1em;
-  color: var(--aqua-muted);
-  padding-top: 3px;
-}
-
-.specimen__callout-body {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.specimen__callout-title {
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--aqua-muted);
-}
-
-.specimen__callout:hover .specimen__callout-title {
-  color: var(--aqua-ink);
-}
-
-.specimen__callout-line {
-  font-size: 0.9rem;
-  color: var(--aqua-ink);
-  line-height: 1.5;
-}
-
-/* Dive log: horizontal education timeline. */
-.specimen__divelog {
-  margin-top: clamp(28px, 4vw, 44px);
-  padding-top: 24px;
-  border-top: 1px solid var(--aqua-line);
-}
-
-.specimen__divelog-label {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--aqua-muted);
-  margin: 0 0 20px;
-}
-
-.specimen__divelog-track {
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 24px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.specimen__divelog-track::before {
-  content: '';
-  position: absolute;
-  top: 5px;
-  left: 12px;
-  right: 12px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--aqua-line) 12%, var(--aqua-line) 88%, transparent);
-}
-
-.specimen__divelog-stop {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding-top: 22px;
-}
-
-.specimen__divelog-dot {
-  position: absolute;
-  top: 1px;
-  left: 8px;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  border: 1px solid var(--aqua-muted);
-  background: var(--aqua-card-bg);
-}
-
-.specimen__divelog-stop.is-live .specimen__divelog-dot {
-  background: #7fc79a;
-  border-color: #7fc79a;
-  animation: specimen-pulse 2.2s ease-in-out infinite;
-}
-
-@keyframes specimen-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(127, 199, 154, 0.55); }
-  50% { box-shadow: 0 0 0 7px rgba(127, 199, 154, 0); }
-}
-
-.specimen__divelog-node {
-  font-weight: 700;
-  font-size: 0.94rem;
-  color: var(--aqua-ink);
-}
-
-.specimen__divelog-meta {
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.04em;
-  color: var(--aqua-muted);
-  line-height: 1.6;
-}
-
-@media (max-width: 900px) {
-  .specimen__plate {
-    grid-template-columns: 200px minmax(0, 1fr);
-  }
-
-  .specimen__callouts {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0 32px;
-    border-top: 1px solid var(--aqua-line);
-    padding-top: 12px;
-  }
-
-  .specimen__divelog-track {
-    grid-template-columns: 1fr;
-    gap: 0;
-  }
-
-  .specimen__divelog-track::before {
-    top: 12px;
-    bottom: 12px;
-    left: 5px;
-    right: auto;
-    width: 1px;
-    height: auto;
-    background: linear-gradient(180deg, transparent, var(--aqua-line) 12%, var(--aqua-line) 88%, transparent);
-  }
-
-  .specimen__divelog-stop {
-    padding-top: 0;
-    padding-left: 28px;
-    padding-bottom: 22px;
-  }
-
-  .specimen__divelog-stop:last-child {
-    padding-bottom: 0;
-  }
-
-  .specimen__divelog-dot {
-    top: 5px;
-    left: 1px;
-  }
 }
 
 @media (max-width: 720px) {
-  .specimen {
-    border-radius: 18px;
-    padding: 22px;
-  }
-
-  .specimen__plate {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .specimen__porthole {
-    align-items: flex-start;
-  }
-
-  .specimen__photo {
-    max-width: 190px;
-  }
-
-  .specimen__porthole::after {
-    left: 0;
-    transform: none;
-    width: min(190px, 100%);
-  }
-
-  .specimen__callouts {
-    grid-template-columns: minmax(0, 1fr);
+  #about .section__title,
+  #projects .section__title {
+    font-size: clamp(2.625rem, 10vw, 3rem);
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .specimen__callout {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
-  .specimen__porthole::after {
-    animation: none;
-  }
-  .specimen__divelog-stop.is-live .specimen__divelog-dot {
-    animation: none;
-  }
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* ---------- Skills: skill depth map ---------- */
 
@@ -2825,7 +2433,6 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   color: var(--aqua-muted);
 }
 
-/* Open observation field: no heavy panel, background stays visible. */
 .depth-map {
   position: relative;
 }
@@ -2843,13 +2450,6 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   pointer-events: auto;
 }
 
-.depth-map__label {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--aqua-muted);
-}
 
 .depth-map__zones {
   display: flex;
@@ -2879,12 +2479,6 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   margin: 0 0 4px;
 }
 
-.depth-zone__no {
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.1em;
-  color: var(--aqua-muted);
-}
 
 .depth-zone__label {
   font-size: 0.78rem;
@@ -2894,26 +2488,7 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   color: var(--aqua-ink);
 }
 
-.depth-zone__cm {
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.1em;
-  color: var(--aqua-muted);
-  margin-left: auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-}
 
-/* Short hairline tying the depth value to its own zone header. */
-.depth-zone__cm::before {
-  content: '';
-  display: inline-block;
-  width: 56px;
-  height: 1px;
-  background: var(--aqua-line);
-  opacity: 0.6;
-}
 
 .depth-zone__desc {
   margin: 0 0 12px;
@@ -2947,7 +2522,6 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   padding: 2px 8px;
 }
 
-/* Held fish: visible containment bubble ring. */
 .fish.is-held::after {
   content: '';
   position: absolute;
@@ -3003,7 +2577,6 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
 
 /* ---------- Shared section fauna (ambient + footer hover) ---------- */
 
-/* Ambient fish layer: behind section content, never interactive. */
 .ambient-fish-layer {
   position: absolute;
   inset: 0;
@@ -3016,8 +2589,6 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   opacity: 0.9;
 }
 
-/* Footer hover targets: small focusable identifiers, catch-free.
-   pointer-events:auto re-enables ONLY the hit — the layer stays none. */
 .ambient-hit {
   position: absolute;
   top: 0;
@@ -3066,10 +2637,6 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   transform: translateX(-50%) translateY(0);
 }
 
-/* Footer fish strip: bottom-dwelling band inside the footer bar.
-   Foreground layering is LOCAL to the footer stacking context
-   (.aqua-root .footer is z-11): creatures top footer background, card,
-   and content, while bubbles (15) and navbar (20) stay above at root. */
 .footer {
   position: relative;
 }
@@ -3083,10 +2650,6 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   z-index: 1;
 }
 
-/* Aquarium bed: organic substrate strip along the footer bottom (lower
-   third), BELOW content (z-1) and fauna (z-25). Irregular top edge from
-   offset lobes + faint gravel speckle; opacity stepped by footer
-   visibility (inline style). No 3D, no loops — DOM only. */
 .footer-floor {
   position: absolute;
   inset: auto 0 0 0;
@@ -3153,8 +2716,6 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   }
 }
 
-/* Binary capture-bubble test (?bubble-debug=1 on the Skills section):
-   undeniable static bubble attached to the held fish. Flag-gated only. */
 .bubble-debug .fish.is-held .capture-bubble {
   width: 46px;
   height: 46px;
@@ -3183,8 +2744,6 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
 
 /* ---------- Projects: infinite card slider ---------- */
 
-/* Centered header (escapes the rail grid; keeps section__rail so the
-   shared title reveal still targets it). */
 .projects__head {
   position: static;
   top: auto;
@@ -3230,14 +2789,12 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   position: absolute;
   left: 50%;
   top: 0;
-  /* Phase 13B: 400px + 24px gap fits 3 full cards in 1440px viewport:
-     2*(400+24) + 400*0.88 = 1200 <= 1376 inner. */
   width: min(400px, 78vw);
   min-width: 0;
   display: flex;
   flex-direction: column;
   border: 1px solid var(--aqua-frame);
-  border-radius: 14px;
+  border-radius: 18px;
   background: var(--aqua-card-bg);
   box-shadow: 0 8px 20px rgba(30, 60, 90, 0.12),
     inset 0 1px 0 rgba(255, 251, 243, 0.45),
@@ -3263,12 +2820,9 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   position: relative;
   aspect-ratio: 16 / 9;
   overflow: hidden;
-  background:
-    linear-gradient(180deg, var(--aqua-pill-bg) 0%, rgba(6, 15, 28, 0.22) 60%, transparent 130%),
-    rgba(6, 15, 28, 0.22);
+  background: var(--aqua-pill-bg);
 }
 
-/* Lower fade: image blends into the card frame, no hard cutoff. */
 .slider-card__banner::after {
   content: '';
   position: absolute;
@@ -3276,7 +2830,7 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   right: 0;
   bottom: 0;
   height: 42%;
-  background: linear-gradient(180deg, transparent, var(--aqua-card-bg));
+  background: linear-gradient(180deg, transparent, rgba(166, 215, 222, 0.92));
   pointer-events: none;
 }
 
@@ -3374,7 +2928,7 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   box-sizing: border-box;
   margin: 28px auto 0;
   border: 1px solid var(--aqua-frame);
-  border-radius: 14px;
+  border-radius: 18px;
   background: var(--aqua-card-bg);
   box-shadow: var(--aqua-card-shadow), inset 0 0 0 1px rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(10px);
@@ -3405,27 +2959,9 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   overflow-wrap: anywhere;
 }
 
-.slider-detail__facts {
-  display: flex;
-  gap: 32px;
-  margin: 0;
-}
 
-.slider-detail__facts dt {
-  font-family: var(--font-mono);
-  font-size: 0.66rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--aqua-muted);
-}
 
-.slider-detail__facts dd {
-  margin: 4px 0 0;
-  font-weight: 600;
-  color: var(--aqua-ink);
-}
 
-.slider-detail__desc,
 .case-study__paragraph,
 .case-study__item p {
   color: var(--aqua-body);
@@ -3737,9 +3273,6 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   }
 }
 
-.slider-detail .project-card__embed {
-  margin-top: 0;
-}
 
 @media (max-width: 1100px) {
   .slider-card {
@@ -3767,26 +3300,7 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   }
 }
 
-.archive-specimen__tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 0 0 22px;
-  padding: 0;
-  list-style: none;
-}
 
-.archive-specimen__tag {
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--aqua-pill-text);
-  background: var(--aqua-pill-bg);
-  border: 1px solid var(--aqua-pill-border);
-  border-radius: 999px;
-  padding: 5px 12px;
-}
 
 .archive-specimen__actions {
   display: flex;
@@ -3812,9 +3326,54 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   border-color: var(--aqua-card-border-hover);
 }
 
+html:not([data-perf='lite']):not([data-theme='dark']) .slider-card,
+html:not([data-perf='lite']):not([data-theme='dark']) .slider-detail {
+  background: color-mix(in srgb, var(--aqua-bg-0) 84%, white);
+}
+
+html[data-perf='lite']:not([data-theme='dark']) .slider-card,
+html[data-perf='lite']:not([data-theme='dark']) .slider-detail {
+  background: color-mix(in srgb, var(--aqua-bg-0) 68%, transparent);
+}
+
+html[data-perf='lite']:not([data-theme='dark']) .slider-card__banner {
+  background: var(--aqua-pill-bg);
+}
+
+html[data-perf='lite']:not([data-theme='dark']) .slider-card__banner::after {
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--aqua-bg-0) 68%, transparent));
+}
+
+html[data-perf='lite']:not([data-theme='dark']) .slider-detail__title,
+html[data-perf='lite']:not([data-theme='dark']) .slider-card__title {
+  color: var(--text);
+}
+
+html[data-perf='lite']:not([data-theme='dark']) .slider-card__desc,
+html[data-perf='lite']:not([data-theme='dark']) .case-study__paragraph,
+html[data-perf='lite']:not([data-theme='dark']) .case-study__item p,
+html[data-perf='lite']:not([data-theme='dark']) .case-study__points li {
+  color: var(--aqua-ink);
+}
+
+html[data-perf='lite']:not([data-theme='dark']) .slider-card__meta,
+html[data-perf='lite']:not([data-theme='dark']) .slider-card__tech,
+html[data-perf='lite']:not([data-theme='dark']) .slider-card__banner-stub,
+html[data-perf='lite']:not([data-theme='dark']) .case-study__meta,
+html[data-perf='lite']:not([data-theme='dark']) .case-study__section-title,
+html[data-perf='lite']:not([data-theme='dark']) .case-study__item-number,
+html[data-perf='lite']:not([data-theme='dark']) .case-study__metric-label,
+html[data-perf='lite']:not([data-theme='dark']) .case-study__metric-detail,
+html[data-perf='lite']:not([data-theme='dark']) .case-study__points li::before {
+  color: var(--aqua-body);
+}
+
+html[data-perf='lite']:not([data-theme='dark']) .case-study__group li,
+html[data-perf='lite']:not([data-theme='dark']) .project-action {
+  color: var(--aqua-ink);
+}
+
 /* ---------- Phase 7: unique section title systems ---------- */
-/* Shared stagger primitive only (no generic title component):
-   one keyframe, delay order falls out of child position. No JS. */
 @keyframes rail-rise {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: none; }
@@ -3828,13 +3387,6 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
 .reveal.is-visible .section__rail > :nth-child(2) { animation-delay: 90ms; }
 .reveal.is-visible .section__rail > :nth-child(3) { animation-delay: 180ms; }
 .reveal.is-visible .section__rail > :nth-child(n+4) { animation-delay: 240ms; }
-
-/* ABOUT — naturalist specimen register: italic field-journal title,
-   plate reference line with rule. */
-#about .section__title {
-  font-style: italic;
-  font-weight: 600;
-}
 
 .about-rail__fig {
   margin: 18px 0 0;
@@ -3856,7 +3408,6 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   opacity: 0.7;
 }
 
-/* SKILLS — observation map: stacked display title, dashed survey rail. */
 .skills-rail__l1 {
   display: block;
 }
@@ -3876,14 +3427,6 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   border-right-style: dashed;
 }
 
-#projects .section__title {
-  text-transform: uppercase;
-  font-weight: 800;
-  letter-spacing: 0.01em;
-}
-
-/* CERTIFICATES — formal credential registry: compact small-caps title,
-   double-rule rail. Distinctly quieter than the Projects registry. */
 #certificates .section__title {
   font-size: clamp(1.5rem, 2.2vw, 1.9rem);
   text-transform: uppercase;
@@ -3894,9 +3437,6 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   border-right: 3px double var(--aqua-line);
 }
 
-/* CONTACT — asymmetric open channel: indented stacked title, hanging beacon.
-   Explicit 260px rail + 40px gap (desktop only); the stacked CHANNEL line is
-   sized to stay inside the rail so no glyph crosses the separator. */
 @media (min-width: 901px) {
   #contact .section__layout {
     grid-template-columns: 260px minmax(0, 1fr);
@@ -3926,8 +3466,6 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   text-transform: uppercase;
 }
 
-/* Station console headers: shared mono device coupling the availability
-   console and the transmission form. Decorative labels, not headings. */
 .contact__console-head,
 .contact__transmission {
   margin: 0 0 14px;
@@ -3940,8 +3478,6 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   color: var(--aqua-muted);
 }
 
-/* Channel entries as console rows: hairline separators instead of boxed
-   cards. Link row keeps its affordance via wash + link brightening. */
 .contact__details {
   gap: 0;
 }
@@ -3967,8 +3503,6 @@ a.contact__item:hover .contact__link {
   color: var(--aqua-ink);
 }
 
-/* FOOTER — aquarium floor: small inline closing block, first in flow so
-   footer fauna (z-25) still swim above it. No large centered heading. */
 .footer__close {
   flex: 1 1 100%;
   margin-bottom: 6px;
@@ -3992,12 +3526,6 @@ a.contact__item:hover .contact__link {
   color: var(--aqua-ink);
 }
 
-.footer__line {
-  margin: 2px 0 0;
-  font-size: 0.85rem;
-  color: var(--aqua-body);
-}
-
 @media (max-width: 900px) {
   .contact-rail__l2 {
     font-size: 1em;
@@ -4011,7 +3539,6 @@ a.contact__item:hover .contact__link {
 }
 
 /* ---------- Phase 11B: GSAP typography handoff ---------- */
-/* Word spans need boxes for y-transforms; the gap preserves the space. */
 .hero__title-word {
   display: inline-block;
 }
@@ -4024,9 +3551,6 @@ a.contact__item:hover .contact__link {
   display: inline-block;
 }
 
-/* When the type hook will play, the authored CSS keyframe entrances stay
-   off so tweens never fight them. Without the class (reduced motion, no
-   IO), the CSS remains the fallback and nothing goes missing. */
 .type-animated .reveal.is-visible .section__rail > * {
   animation: none;
 }
@@ -4041,13 +3565,7 @@ a.contact__item:hover .contact__link {
 }
 
 /* ---------- Phase 11C: micro-interactions (CSS-only) ---------- */
-/* Tactile feedback only: emphasis, icon travel, press states. GSAP owns
-   entrances; these rules own interaction. No transform transitions on
-   GSAP-animated elements themselves (.depth-zone__skill pills,
-   .cabinet-record, .contact__item) — border/background emphasis only,
-   so entrance tweens never smear. */
 
-/* Skill pills: hover emphasis without transform (pills are GSAP-animated). */
 .depth-zone__skill {
   transition: border-color 0.2s ease, background 0.2s ease;
 }
@@ -4057,8 +3575,6 @@ a.contact__item:hover .contact__link {
   background: var(--aqua-card-bg);
 }
 
-/* Archive links: the parent (.archive-specimen__actions) is GSAP-animated,
-   the link itself is not — lift + icon travel are safe here. */
 .archive-specimen__link:hover {
   border-color: var(--aqua-card-border-hover);
   transform: translateY(-1px);
@@ -4076,8 +3592,6 @@ a.contact__item:hover .contact__link {
   transform: translateY(0);
 }
 
-/* Console button press: scoped to the contact console (hero buttons keep
-   typography-owned transforms and are intentionally untouched). */
 .contact__actions .btn {
   transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease,
     box-shadow 0.25s ease, transform 0.15s ease;
@@ -4103,5 +3617,645 @@ a.contact__item:hover .contact__link {
   .contact__copy {
     transition: none !important;
     transform: none !important;
+  }
+}
+
+/* ---------- About: editorial bento ---------- */
+
+.section__layout--about-bento {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+  max-width: 1120px;
+}
+
+.about-bento__head {
+  max-width: 640px;
+}
+
+.about-bento__title {
+  font-size: clamp(1.6rem, 2.6vw, 2.1rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.about-bento {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 20px;
+  min-width: 0;
+}
+
+.about-card {
+  min-width: 0;
+  border: 1px solid var(--aqua-frame);
+  border-radius: 18px;
+  background: var(--aqua-card-bg);
+  box-shadow: var(--aqua-card-shadow);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 24px;
+  overflow: hidden;
+}
+
+.about-card__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--aqua-muted);
+  margin: 0 0 14px;
+}
+
+.about-card--identity {
+  grid-column: span 4;
+  grid-row: span 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.about-card--intro,
+.about-card--toolkit {
+  grid-column: span 8;
+  min-width: 0;
+}
+
+.about-card--education {
+  grid-column: 1 / -1;
+}
+
+.about-identity__portrait {
+  position: relative;
+  margin: 4px 0 18px;
+  padding: 18px;
+}
+
+.about-identity__photo {
+  display: block;
+  width: 224px;
+  max-width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border-radius: 50% / 44%;
+  border: 1px solid var(--aqua-line);
+  box-shadow: 0 18px 40px rgba(10, 40, 60, 0.25), 0 0 32px var(--aqua-glow);
+  position: relative;
+  z-index: 1;
+}
+
+.about-identity__portrait::before,
+.about-identity__portrait::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 1px solid var(--aqua-line);
+  border-radius: 50% / 44%;
+  pointer-events: none;
+}
+
+.about-identity__portrait::after {
+  inset: 0;
+  opacity: 0.6;
+}
+
+html:not([data-perf='lite']) .about-identity__portrait::before {
+  animation: about-ripple 3.2s var(--ease-water) infinite;
+}
+
+html:not([data-perf='lite']) .about-identity__portrait::after {
+  animation: about-ripple 3.2s var(--ease-water) 1.6s infinite;
+}
+
+@keyframes about-ripple {
+  0%, 100% { opacity: 0.9; }
+  50% { opacity: 0.35; }
+}
+
+.about-identity__name {
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--aqua-ink);
+  margin: 0 0 6px;
+  overflow-wrap: anywhere;
+}
+
+.about-identity__role {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--aqua-muted);
+  margin: 0;
+}
+
+@keyframes about-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(127, 199, 154, 0.55); }
+  50% { box-shadow: 0 0 0 7px rgba(127, 199, 154, 0); }
+}
+
+.about-intro__lead {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.15rem, 2vw, 1.4rem);
+  line-height: 1.55;
+  color: var(--aqua-ink);
+  max-width: 52ch;
+  margin: 0 0 20px;
+  text-wrap: balance;
+}
+
+.about-intro__accent {
+  color: var(--aqua-pill-text);
+}
+
+.about-intro__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.about-intro__toggle {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--aqua-pill-text);
+  background: var(--aqua-pill-bg);
+  border: 1px solid var(--aqua-pill-border);
+  border-radius: 999px;
+  padding: 9px 18px;
+}
+
+.about-intro__toggle:hover {
+  border-color: var(--aqua-card-border-hover);
+}
+
+.about-intro__notes {
+  margin-top: 16px;
+  border-left: 2px solid var(--aqua-pill-border);
+  padding: 4px 0 4px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 0.92rem;
+  line-height: 1.7;
+  color: var(--aqua-body);
+  max-width: 62ch;
+}
+
+.about-intro__notes[hidden] {
+  display: none;
+}
+
+.about-intro__langs {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  letter-spacing: 0.04em;
+  margin: 0;
+}
+
+.about-toolkit__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.about-toolkit__col {
+  min-width: 0;
+}
+
+.about-toolkit__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--aqua-muted);
+  margin: 0 0 12px;
+}
+
+.about-toolkit__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  flex: none;
+  border: 1px solid var(--aqua-pill-border);
+  background: var(--aqua-pill-bg);
+  border-radius: 50%;
+  color: var(--aqua-pill-text);
+}
+
+.about-toolkit__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.about-chip {
+  font-size: 0.84rem;
+  color: var(--aqua-ink);
+  border: 1px solid var(--aqua-pill-border);
+  background: var(--aqua-pill-bg);
+  border-radius: 999px;
+  padding: 7px 14px;
+  overflow-wrap: anywhere;
+}
+
+.about-edu__track {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.about-edu__track::before {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: 12px;
+  right: 12px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--aqua-line) 12%, var(--aqua-line) 88%, transparent);
+}
+
+.about-edu__stop {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 22px;
+  min-width: 0;
+}
+
+.about-edu__dot {
+  position: absolute;
+  top: 1px;
+  left: 8px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1px solid var(--aqua-muted);
+  background: var(--aqua-card-bg);
+}
+
+.about-edu__stop--live .about-edu__dot {
+  background: #7fc79a;
+  border-color: #7fc79a;
+}
+
+html:not([data-perf='lite']) .about-edu__stop--live .about-edu__dot {
+  animation: about-pulse 2.2s ease-in-out infinite;
+}
+
+.about-edu__node {
+  font-weight: 700;
+  font-size: 0.94rem;
+  color: var(--aqua-ink);
+  overflow-wrap: anywhere;
+}
+
+.about-edu__meta {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--aqua-muted);
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.about-edu__gpa {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.about-edu__gpa-text {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--aqua-muted);
+}
+
+.about-edu__bar {
+  display: block;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--aqua-pill-bg);
+  border: 1px solid var(--aqua-pill-border);
+  overflow: hidden;
+}
+
+.about-edu__fill {
+  display: block;
+  height: 100%;
+  background: var(--aqua-accent);
+  border-radius: 999px;
+}
+
+.about-edu__link {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: 8px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--aqua-ink);
+  border: 1px solid var(--aqua-pill-border);
+  background: var(--aqua-pill-bg);
+  padding: 10px 18px;
+  border-radius: 999px;
+}
+
+.about-edu__link:hover {
+  border-color: var(--aqua-card-border-hover);
+}
+
+@media (max-width: 1024px) {
+  .about-bento {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  }
+
+  .about-card--identity {
+    grid-column: 1;
+    grid-row: span 2;
+  }
+
+  .about-card--intro,
+  .about-card--toolkit {
+    grid-column: 2;
+  }
+
+  .about-toolkit__grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (max-width: 720px) {
+  .about-bento {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .about-card--identity,
+  .about-card--intro,
+  .about-card--toolkit,
+  .about-card--education {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .about-card {
+    padding: 20px;
+  }
+
+  .about-identity__portrait {
+    padding: 12px;
+  }
+
+  .about-identity__photo {
+    width: 150px;
+  }
+
+  .about-intro__toggle,
+  .about-edu__link {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .about-edu__track {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .about-edu__track::before {
+    top: 12px;
+    bottom: 12px;
+    left: 5px;
+    right: auto;
+    width: 1px;
+    height: auto;
+    background: linear-gradient(180deg, transparent, var(--aqua-line) 12%, var(--aqua-line) 88%, transparent);
+  }
+
+  .about-edu__stop {
+    padding-top: 0;
+    padding-left: 28px;
+    padding-bottom: 22px;
+  }
+
+  .about-edu__stop:last-child {
+    padding-bottom: 0;
+  }
+
+  .about-edu__stop .about-edu__dot {
+    top: 5px;
+    left: 1px;
+  }
+}
+
+html[data-perf='lite'] .about-card {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+html[data-perf='lite'] .about-identity__portrait::before,
+html[data-perf='lite'] .about-identity__portrait::after,
+html[data-perf='lite'] .about-edu__stop--live .about-edu__dot {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-identity__portrait::before,
+  .about-identity__portrait::after,
+  .about-edu__stop--live .about-edu__dot {
+    animation: none;
+  }
+}
+
+/* ---------- About scroll reveal (per-card IO via useScrollReveal) ----------
+   Hidden state exists ONLY under .about-rv, which JS adds when observing —
+   no-JS / no-IO / reduced-motion never get the class, so content stays
+   visible. Transform + opacity only, no layout effect. */
+.about-rv {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.about-rv.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+#about .section__layout.reveal {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+
+/* ---------- About reveal choreography (reading-order stagger) ----------
+   Desktop: title → photo → profile → toolkit → education (max delay 400ms).
+   Mobile: each card reveals on its own entry; delays are small enough to
+   stay responsive. Inner elements ride on the card's .is-visible. */
+.about-bento__head.about-rv { transition-delay: 0ms; }
+.about-card--identity.about-rv { transition-delay: 80ms; }
+.about-card--intro.about-rv { transition-delay: 170ms; }
+.about-card--toolkit.about-rv { transition-delay: 260ms; }
+.about-card--education.about-rv { transition-delay: 350ms; }
+
+.about-card--identity.about-rv { transform: translateY(20px) scale(0.98); }
+.about-card--identity.about-rv.is-visible { transform: none; }
+
+.about-card--identity.about-rv .about-identity__portrait {
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: 150ms;
+}
+
+.about-card--identity.about-rv.is-visible .about-identity__portrait {
+  opacity: 1;
+  transform: none;
+}
+
+.about-card--intro.about-rv .about-intro__lead {
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: 120ms;
+}
+
+.about-card--intro.about-rv.is-visible .about-intro__lead {
+  opacity: 1;
+  transform: none;
+}
+
+.about-card--toolkit.about-rv .about-chip {
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.about-card--toolkit.about-rv.is-visible .about-chip {
+  opacity: 1;
+  transform: none;
+}
+
+.about-card--toolkit.about-rv.is-visible .about-chip:nth-child(1) { transition-delay: 0ms; }
+.about-card--toolkit.about-rv.is-visible .about-chip:nth-child(2) { transition-delay: 50ms; }
+.about-card--toolkit.about-rv.is-visible .about-chip:nth-child(3) { transition-delay: 100ms; }
+
+.about-card--education.about-rv .about-edu__track::before {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: 100ms;
+}
+
+.about-card--education.about-rv.is-visible .about-edu__track::before {
+  transform: scaleX(1);
+}
+
+.about-card--education.about-rv .about-edu__stop {
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.about-card--education.about-rv.is-visible .about-edu__stop {
+  opacity: 1;
+  transform: none;
+}
+
+.about-card--education.about-rv.is-visible .about-edu__stop:nth-child(1) { transition-delay: 150ms; }
+.about-card--education.about-rv.is-visible .about-edu__stop:nth-child(2) { transition-delay: 240ms; }
+.about-card--education.about-rv.is-visible .about-edu__stop:nth-child(3) { transition-delay: 330ms; }
+
+.about-card--education.about-rv .about-edu__fill {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: 350ms;
+}
+
+.about-card--education.about-rv.is-visible .about-edu__fill {
+  transform: scaleX(1);
+}
+
+@media (max-width: 720px) {
+  .about-card--education.about-rv .about-edu__track::before {
+    transform: none;
+    transition-delay: 0ms;
+  }
+}
+
+html[data-perf='lite'] .about-rv,
+html[data-perf='lite'] .about-card--identity.about-rv {
+  transform: translateY(8px);
+  transition-duration: 350ms;
+}
+
+html[data-perf='lite'] .about-rv.is-visible {
+  transform: none;
+}
+
+html[data-perf='lite'] .about-card--identity.about-rv .about-identity__portrait,
+html[data-perf='lite'] .about-card--intro.about-rv .about-intro__lead,
+html[data-perf='lite'] .about-card--toolkit.about-rv .about-chip,
+html[data-perf='lite'] .about-card--education.about-rv .about-edu__stop,
+html[data-perf='lite'] .about-card--education.about-rv .about-edu__track::before,
+html[data-perf='lite'] .about-card--education.about-rv .about-edu__fill {
+  transition-delay: 0ms;
+  transition-duration: 350ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-rv,
+  .about-card--identity.about-rv .about-identity__portrait,
+  .about-card--intro.about-rv .about-intro__lead,
+  .about-card--toolkit.about-rv .about-chip,
+  .about-card--education.about-rv .about-edu__stop {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .about-card--education.about-rv .about-edu__track::before,
+  .about-card--education.about-rv .about-edu__fill {
+    transform: none;
+    transition: none;
   }
 }

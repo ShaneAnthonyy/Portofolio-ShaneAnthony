@@ -1,13 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { skillGroups } from '../data/content.js'
 import FishSkill from './FishSkill.jsx'
 import useFishDrift from '../hooks/useFishDrift.js'
 import { typeTimelines, useTypeReveal } from '../animation/typography.js'
 import { choreographyBuilders, useSectionChoreography } from '../animation/sectionChoreography.js'
 
-// Swim band per fish. Intermediate skills only — others render in later
-// sections and never render here. All 7 may be hovered and selected.
-// Every intermediate image file is used.
 const FISH_DEFS = [
   { img: '/skill/intermediate1.png', skill: 'HTML', tier: 'intermediate', depth: 'back', zone: 'surface', w: 66 },
   { img: '/skill/intermediate2.png', skill: 'CSS', tier: 'intermediate', depth: 'back', zone: 'surface', w: 60 },
@@ -18,9 +16,6 @@ const FISH_DEFS = [
   { img: '/skill/intermediate5.png', skill: 'C', tier: 'intermediate', depth: 'back', zone: 'lower', w: 68 },
 ]
 
-// Supporting index: every skill discoverable without interaction.
-// Visual swim bands (surface/mid/lower) are preserved for composition;
-// display groups below follow the professional category map.
 const ZONES = [
   {
     id: 'frontend',
@@ -48,7 +43,6 @@ const ZONES = [
   },
 ]
 
-// Concise neutral skill notes, one per swimming fish.
 const PRIMARY_DESC = {
   React: 'Component-driven interfaces',
   JavaScript: 'Interactive web behavior',
@@ -59,16 +53,12 @@ const PRIMARY_DESC = {
   C: 'Low-level foundations',
 }
 
-// Open-water swimming corridors (fractions of field height). Fish travel
-// these bands; zone information sits in the complementary space, so paths
-// avoid text by construction — no per-frame collision detection.
 function zoneBand(zone, H) {
   if (zone === 'surface') return [Math.max(H * 0.1, 30), Math.max(H * 0.3, 110)]
   if (zone === 'mid') return [Math.max(H * 0.4, 130), Math.max(H * 0.6, 220)]
   return [Math.max(H * 0.68, 240), Math.max(H * 0.86, 330)]
 }
 
-// Deterministic spread order across the field width (no clustering).
 const SPREAD_ORDER = [0, 3, 5, 1, 6, 2, 4]
 
 function TierLabel({ tier }) {
@@ -84,15 +74,18 @@ export default function Skills() {
   const hitEls = useRef({})
   const panelCloseRef = useRef(null)
   const guideCloseRef = useRef(null)
+  const guideButtonRef = useRef(null)
+  const guidePopRef = useRef(null)
 
   const [hoveredId, setHoveredId] = useState(null)
   const [heldId, setHeldId] = useState(null)
   const [selectedId, setSelectedId] = useState(null)
   const [hoverBelow, setHoverBelow] = useState(false)
   const [guideOpen, setGuideOpen] = useState(false)
+  const [compactGuide, setCompactGuide] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 720px)').matches
+  )
 
-  // Shared drift-field motion core (init / paint / rAF / visibility).
-  // Interaction (pause / hold / select) stays local below.
   const { ents, registerVisual, ready } = useFishDrift({
     layerRef: layerBackRef,
     sectionRef,
@@ -130,7 +123,6 @@ export default function Skills() {
   const selected = selectedId != null ? ents.current[selectedId] || FISH_DEFS[selectedId] : null
   const selectedMeta = selected ? skillMeta[selected.skill] : null
 
-  // Escape closes panel or guide; focus close on open
   useEffect(() => {
     if (selectedId == null && !guideOpen) return
     const onKey = (e) => {
@@ -144,6 +136,61 @@ export default function Skills() {
     else if (guideOpen) guideCloseRef.current?.focus({ preventScroll: true })
     return () => window.removeEventListener('keydown', onKey)
   }, [selectedId, guideOpen])
+
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 720px)')
+    const update = () => setCompactGuide(media.matches)
+    media.addEventListener('change', update)
+    return () => media.removeEventListener('change', update)
+  }, [])
+
+  useLayoutEffect(() => {
+    if (!guideOpen || !compactGuide) return
+
+    const trigger = guideButtonRef.current
+    const panel = guidePopRef.current
+    if (!trigger || !panel) return
+
+    const placePanel = () => {
+      const triggerRect = trigger.getBoundingClientRect()
+      const viewportWidth = document.documentElement.clientWidth
+      const viewportHeight = window.visualViewport?.height ?? window.innerHeight
+      const gap = 8
+      const edge = 16
+      const width = Math.min(340, viewportWidth - edge * 2)
+
+      panel.style.width = `${width}px`
+      panel.style.maxHeight = `${Math.max(80, viewportHeight - edge * 2)}px`
+
+      const panelHeight = panel.getBoundingClientRect().height
+      const belowSpace = Math.max(0, viewportHeight - edge - triggerRect.bottom - gap)
+      const aboveSpace = Math.max(0, triggerRect.top - edge - gap)
+      const placeAbove = belowSpace < panelHeight && aboveSpace > 0
+      const availableSpace = placeAbove ? aboveSpace : belowSpace
+      const fittedHeight = Math.min(panelHeight, availableSpace)
+      const top = placeAbove
+        ? triggerRect.top - gap - fittedHeight
+        : triggerRect.bottom + gap
+      const left = Math.max(edge, Math.min(triggerRect.right - width, viewportWidth - edge - width))
+
+      panel.style.maxHeight = `${Math.max(80, availableSpace)}px`
+      panel.style.top = `${Math.max(edge, Math.min(top, viewportHeight - edge - fittedHeight))}px`
+      panel.style.left = `${left}px`
+    }
+
+    placePanel()
+    window.addEventListener('resize', placePanel)
+    window.addEventListener('scroll', placePanel, true)
+    window.visualViewport?.addEventListener('resize', placePanel)
+    window.visualViewport?.addEventListener('scroll', placePanel)
+
+    return () => {
+      window.removeEventListener('resize', placePanel)
+      window.removeEventListener('scroll', placePanel, true)
+      window.visualViewport?.removeEventListener('resize', placePanel)
+      window.visualViewport?.removeEventListener('scroll', placePanel)
+    }
+  }, [guideOpen, compactGuide])
 
   const pause = (id) => {
     const e = ents.current[id]
@@ -162,7 +209,6 @@ export default function Skills() {
       e.vy = e.saved.vy
       e.saved = null
     } else if (e && (e.vx === 0 && e.vy === 0) && selectedId !== id) {
-      // gentle restart if it was paused without saved velocity (edge)
       e.vx = 0.25
       e.vy = 0.1
     }
@@ -170,7 +216,6 @@ export default function Skills() {
     setHoveredId((h) => (h === id ? null : h))
   }
 
-  // Press / touch-hold: pause the fish while interacting.
   const hold = (id) => {
     pause(id)
     setHeldId(id)
@@ -189,9 +234,32 @@ export default function Skills() {
 
   const releaseFish = () => setSelectedId(null)
 
-  // All fish visuals render in the back layer (behind content).
-  // The invisible hit-target layer above content owns all interaction,
-  // so moving visuals behind changes nothing about catchability.
+  const guidePanel = guideOpen && (
+    <div
+      ref={guidePopRef}
+      id="skills-guide"
+      className={`guide-pop${compactGuide ? ' guide-pop--mobile' : ''}`}
+      role="dialog"
+      aria-modal="false"
+      aria-label="How to explore skills"
+    >
+      <strong className="guide-pop__title">How to explore</strong>
+      <ul className="guide-pop__list">
+        <li><span>Hover</span> — preview a skill</li>
+        <li><span>Select</span> — open its details</li>
+        <li><span>Keyboard</span> — Enter / Space selects</li>
+      </ul>
+      <button
+        ref={guideCloseRef}
+        type="button"
+        className="guide-pop__close"
+        onClick={() => setGuideOpen(false)}
+      >
+        Close
+      </button>
+    </div>
+  )
+
   const renderVisualLayer = () => {
     if (!ready) return null
     return FISH_DEFS.map((d, i) => (
@@ -240,8 +308,6 @@ export default function Skills() {
     })
   }
 
-  // DEV-only (?bubble-debug=1): flags the section so the local
-  // capture-bubble binary test can reach Skills fish. Query-gated.
   const [debugBubbles] = useState(
     () =>
       typeof window !== 'undefined' &&
@@ -276,8 +342,10 @@ export default function Skills() {
               <button
                 type="button"
                 className="guide-btn"
+                ref={guideButtonRef}
                 aria-label="How to explore skills"
                 aria-expanded={guideOpen}
+                aria-controls="skills-guide"
                 aria-haspopup="dialog"
                 onClick={() => setGuideOpen((v) => !v)}
               >
@@ -309,7 +377,6 @@ export default function Skills() {
         </div>
       </div>
 
-      {/* Interaction layer above the content, all fish visuals behind it */}
       <div className="fish-hit-layer">
         {renderHitLayer()}
       </div>
@@ -341,32 +408,15 @@ export default function Skills() {
       )}
 
       {guideOpen && (
-        <>
-          <button
-            type="button"
-            className="guide-scrim"
-            aria-label="Close guide"
-            onClick={() => setGuideOpen(false)}
-            tabIndex={-1}
-          />
-          <div className="guide-pop" role="dialog" aria-modal="false" aria-label="How to explore skills">
-            <strong className="guide-pop__title">How to explore</strong>
-            <ul className="guide-pop__list">
-              <li><span>Hover</span> — preview a skill</li>
-              <li><span>Select</span> — open its details</li>
-              <li><span>Keyboard</span> — Enter / Space selects</li>
-            </ul>
-            <button
-              ref={guideCloseRef}
-              type="button"
-              className="guide-pop__close"
-              onClick={() => setGuideOpen(false)}
-            >
-              Close
-            </button>
-          </div>
-        </>
+        <button
+          type="button"
+          className="guide-scrim"
+          aria-label="Close guide"
+          onClick={() => setGuideOpen(false)}
+          tabIndex={-1}
+        />
       )}
+      {compactGuide ? guideOpen && createPortal(guidePanel, document.body) : guidePanel}
     </section>
   )
 }

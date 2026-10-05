@@ -1,18 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 
-// Shared drift-field motion core for aquarium fauna. One rAF loop per
-// mounted field, idle while its section is offscreen. No per-frame React
-// state — positions are written straight to the DOM.
-//
-// Config:
-//   defs       [{ img, skill, tier, w, ... }] (w = base width px)
-//   bandFor    (def, W, H) => [yMin, yMax] drift band in px
-//   xRangeFor  (def, W, H, w) => [xMin, xMax] horizontal bounds in px
-//   speedFor   (i, def) => { vx, vy } base velocity (reduced-motion => 0)
-//   scaleFor   (W) => scale factor for fish width
-//   spread     optional deterministic slot order across the width
-//   extraPaint (entity) => void — position auxiliary nodes (hit targets)
-//   onHidden   () => void — section left the viewport
 export default function useFishDrift({
   layerRef,
   sectionRef,
@@ -52,7 +39,6 @@ export default function useFishDrift({
     }
   }
 
-  // Deterministic init once the layer size is known (no RNG clustering).
   useEffect(() => {
     const cfg = cfgRef.current
     const layer = layerRef.current
@@ -89,9 +75,6 @@ export default function useFishDrift({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Single drift loop: slow calm swim + soft bounce inside the band.
-  // Phase 12: lite halves integration cadence (checked live per frame so
-  // the navbar toggle applies without remounting or prop drilling).
   useEffect(() => {
     const step = () => {
       frameRef.current += 1
@@ -132,7 +115,6 @@ export default function useFishDrift({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Only animate while the section is on screen.
   useEffect(() => {
     const sec =
       (sectionRef && sectionRef.current) ||

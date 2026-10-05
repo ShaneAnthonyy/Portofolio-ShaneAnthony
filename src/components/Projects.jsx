@@ -5,8 +5,6 @@ import AmbientFish from './AmbientFish.jsx'
 import { typeTimelines, useTypeReveal } from '../animation/typography.js'
 
 const N = projects.length
-// Gap between adjacent card centers. Cards are absolutely positioned, so
-// this constant is the single source of truth — no CSS value to mirror.
 const CARD_GAP = 24
 const DRAG_MIN = 60
 const CLICK_SLOP = 8
@@ -87,7 +85,8 @@ function ProjectBanner({ project, variant = 'card' }) {
       ? banner.src
       : null
   const hasImage = Boolean(imageSrc)
-  const hasPrototype = variant === 'card' && banner?.type === 'figma' && Boolean(banner.url)
+  const hasPrototype = banner?.type === 'figma' && Boolean(banner.url)
+  const isDetail = variant === 'detail'
   const preview = technologyPreview(project)
 
   return (
@@ -95,15 +94,25 @@ function ProjectBanner({ project, variant = 'card' }) {
       {hasImage ? (
         <img src={imageSrc} alt="" draggable="false" loading="lazy" />
       ) : hasPrototype ? (
-        <iframe
-          src={banner.url}
-          title={`${project.title} — live prototype preview`}
-          loading="lazy"
-          allowFullScreen
-          tabIndex={-1}
-          aria-hidden="true"
-          style={{ width: '100%', height: '100%', border: 0, pointerEvents: 'none' }}
-        />
+        isDetail ? (
+          <iframe
+            src={banner.url}
+            title={`${project.title} — live prototype`}
+            loading="lazy"
+            allowFullScreen
+            style={{ width: '100%', height: '100%', border: 0 }}
+          />
+        ) : (
+          <iframe
+            src={banner.url}
+            title={`${project.title} — live prototype preview`}
+            loading="lazy"
+            allowFullScreen
+            tabIndex={-1}
+            aria-hidden="true"
+            style={{ width: '100%', height: '100%', border: 0, pointerEvents: 'none' }}
+          />
+        )
       ) : (
         preview && <span className="slider-card__banner-stub">{preview}</span>
       )}
@@ -231,7 +240,6 @@ function ProjectCard({
   const hidden = absPosition > 2
   const preview = technologyPreview(project)
   const offset = position * step + (dragX ?? 0)
-  // Phase 13B: full cards, no mask cropping. Same markup all states.
   const sideOpacity =
     isActive ? 1 : absPosition === 1 ? 0.38 : 0
   const handleCardKeyDown = (e) => {
@@ -405,9 +413,6 @@ function ProjectDetail({ project, detailRef, onClose }) {
   )
 }
 
-// Modular distance in [-N/2, N/2): wrap is pure arithmetic, so moving
-// past either end lands on the other side with no reset jump and no
-// duplicated DOM. One source of truth: `active`.
 function distance(index, active) {
   let d = (index - active) % N
   if (d >= N / 2) d -= N
@@ -428,11 +433,6 @@ export default function Projects() {
   const detailRef = useRef(null)
   const sliderViewportRef = useRef(null)
 
-  // Card width drives the snap step; the active card's height drives the
-  // track height (cards are absolutely positioned). Measured pre-paint
-  // so the first frame is already correct; re-measured on resize.
-  // Banner boxes use a fixed aspect ratio and text rows are clamped, so
-  // heights stay stable after fonts settle.
   useLayoutEffect(() => {
     const measure = () => {
       const w = cardRefs.current[0]?.offsetWidth || 0
@@ -452,8 +452,6 @@ export default function Projects() {
   }
 
 
-  // Modal lifecycle: Escape closes it, focus moves into it, and page scroll
-  // is temporarily locked while the project overlay is open.
   useEffect(() => {
     if (!detailOpen) return
     const onKey = (e) => {
@@ -471,9 +469,6 @@ export default function Projects() {
 
   const handlePointerDown = (e) => {
     if (e.pointerType === 'mouse' && e.button !== 0) return
-    // A card owns both interactions: a stationary pointer release opens it;
-    // horizontal movement upgrades the same gesture into carousel dragging.
-    // Starting on empty viewport space does nothing.
     if (e.target.closest('button, a')) return
     const card = e.target.closest('.slider-card')
     if (!card || card.classList.contains('is-hidden')) return
@@ -490,7 +485,6 @@ export default function Projects() {
     try {
       e.currentTarget.setPointerCapture(e.pointerId)
     } catch {
-      /* capture unsupported — window-less drag still tracks while inside */
     }
   }
 
@@ -500,8 +494,6 @@ export default function Projects() {
     const dx = e.clientX - g.startX
     const dy = e.clientY - g.startY
     if (!g.locked) {
-      // Direction lock: vertical gestures belong to page scroll.
-      // touch-action: pan-y keeps them native; we simply abandon.
       if (Math.abs(dx) < CLICK_SLOP && Math.abs(dy) < CLICK_SLOP) return
       if (Math.abs(dx) < Math.abs(dy)) {
         gestureRef.current = null
@@ -526,8 +518,6 @@ export default function Projects() {
     const g = gestureRef.current
     if (!g) return
 
-    // Tap (no direction lock): side card centers, active body opens detail.
-    // Button/link presses never reach here (pointerdown ignores them).
     if (!g.locked) {
       const cardIndex = g.cardIndex
       gestureRef.current = null
@@ -554,7 +544,6 @@ export default function Projects() {
   }
 
   const handlePointerCancel = () => {
-    // Browser took the gesture (e.g. vertical scroll): snap back.
     gestureRef.current = null
     setDragX(null)
   }

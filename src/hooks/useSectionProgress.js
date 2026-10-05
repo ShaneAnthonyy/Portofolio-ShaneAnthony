@@ -13,7 +13,6 @@ function measure() {
   return centers
 }
 
-// Continuous piecewise interpolation across section centers (no snapping).
 function interpolate(centers) {
   const vh = window.innerHeight
   const mid = window.scrollY + vh * 0.5
@@ -38,7 +37,6 @@ function interpolate(centers) {
   return { t, mid }
 }
 
-// Commit section switches only past a hysteresis band — no boundary flicker.
 function activeWithHyst(centers, mid, prev) {
   let raw = 0
   centers.forEach((s, i) => {
@@ -62,8 +60,6 @@ function initialState() {
   }
 }
 
-// Module-singleton subscription: one scroll/resize/load listener set no
-// matter how many components consume the hook.
 let centers = []
 let prevIdx = null
 let lastY = typeof window !== 'undefined' ? window.scrollY : 0
@@ -155,7 +151,6 @@ export default function useSectionProgress() {
     const notify = (next) => setState(next)
     subscribers.add(notify)
     ensureListening()
-    // Sync late mounters with the latest computed value.
     setState((s) => (s === current ? s : current))
     return () => {
       subscribers.delete(notify)

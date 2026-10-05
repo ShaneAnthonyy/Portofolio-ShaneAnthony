@@ -1,8 +1,3 @@
-// DEV-only performance probe for Phase 14B. Rendered only when
-// `import.meta.env.DEV` and `?dive-probe=1` are both true (see
-// isProbeEnabled). Production bundles zero bytes of overlay UI; the Dive
-// writes into `target.current` only when a probe ref is passed, so cost
-// is zero when the probe is absent.
 
 import { useEffect, useRef } from 'react'
 

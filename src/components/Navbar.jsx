@@ -66,17 +66,11 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
   const entryPlayedRef = useRef(false)
   const prevActiveRef = useRef(null)
   const [travelOn, setTravelOn] = useState(false)
-  // Pending click target: visual truth while smooth-scroll is in flight.
-  // Ephemeral (null on load); cleared on observer confirm or interruption.
   const [pendingNavId, setPendingNavId] = useState(null)
-  // DEV-only nav sync trace (?nav-debug=1). Query-gated, zero prod impact.
   const isNavDebug =
     typeof window !== 'undefined' &&
     new URLSearchParams(window.location.search).has('nav-debug')
-  // Single source of section/scroll state shared with the portfolio.
   const { activeId, scrollY, reduced } = useSectionProgress()
-  // Single visual truth: clicked target while navigating, otherwise the
-  // shared section detector. No second tracking system.
   const displayedActiveId = pendingNavId ?? activeId
   const scrolled = scrollY > 12
   const introHidden = diveActive && !entered
@@ -87,8 +81,6 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
     window.localStorage.setItem('shane-theme', theme)
   }, [theme])
 
-  // Dive lock: keep the mobile menu closed while the navbar position is
-  // held for the cinematic. No scroll-phase state remains (no capsule).
   useEffect(() => {
     if (!holdNavbarPosition) return
     setOpen(false)
@@ -96,9 +88,6 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
 
   const handleLinkClick = (id) => {
     setOpen(false)
-    // Navigation-intent lock: the click claims the visual state and keeps
-    // it until physically interrupted or superseded by a newer click.
-    // Navigation behavior below is unchanged. Newest click always wins.
     setPendingNavId(id)
     if (isNavDebug) {
       const target = document.getElementById(id)
@@ -118,11 +107,6 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
     scrollToSection(id)
   }
 
-  // Navigation-intent lock: while a claim is pending it stays authoritative.
-  // Intermediate activeIds during smooth scroll are expected journey states
-  // (including transient matches of the target itself) — never clearance.
-  // The lock releases only on physical interruption below or a newer click.
-  // No timers, no heuristics, no observer confirmation.
   useEffect(() => {
     if (!pendingNavId) return
     if (isNavDebug) {
@@ -131,9 +115,6 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
     }
   }, [activeId, pendingNavId, isNavDebug])
 
-  // Genuine manual interruption: physical input while a claim is pending.
-  // Programmatic smooth scroll emits none of these, so the journey can
-  // never cancel itself. Mounted only during pending — never global.
   useEffect(() => {
     if (!pendingNavId) return
     const cancel = () => {
@@ -160,16 +141,11 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
     }
   }, [pendingNavId, isNavDebug])
 
-  // GSAP settling entrance: once per unlock, after the dive releases the
-  // portfolio. Visual tween only — dive/unlock/docking state logic is
-  // untouched. Played-flag sets on completion so a killed/unmounted run
-  // (StrictMode dev, replay) correctly replays instead of going missing.
   useGSAP(
     () => {
       if (reduced || entryPlayedRef.current || !entered) return
       const header = headerRef.current
       if (!header) return
-      // Suppress the CSS intro transitions while GSAP owns these properties.
       header.classList.add('gsap-entry')
       const tl = playNavEntry({
         header,
@@ -189,9 +165,6 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
     { scope: headerRef, dependencies: [entered, reduced] }
   )
 
-  // Traveling active indicator: discrete sync on section change.
-  // No scroll listeners, no per-frame state; reduced motion keeps the
-  // instant per-link underline instead.
   useGSAP(
     () => {
       if (reduced) return
@@ -213,7 +186,6 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
   )
 
   const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))
-  // Phase 12: adaptive performance toggle. OFF = NORMAL, ON = LITE.
   const lite = performanceMode === 'lite'
 
   return (

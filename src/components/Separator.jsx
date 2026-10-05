@@ -1,8 +1,5 @@
 import { choreographyBuilders, useSectionChoreography } from '../animation/sectionChoreography.js'
 
-// Simple section separator. Arrival (opacity/transform only, once) rides
-// the shared choreography hook — no layout change, no new observer
-// pattern, authored static state stays the reduced-motion fallback.
 export default function Separator() {
   const choreoRef = useSectionChoreography(
     choreographyBuilders.separator,

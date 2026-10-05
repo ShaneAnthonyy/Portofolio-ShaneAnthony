@@ -1,8 +1,3 @@
-// Central adaptive performance config (Phase 12).
-// INIT-TIME (renderer construction only, never toggled live):
-//   antialias, powerPreference
-// RUNTIME (applied live, no renderer/scene rebuild):
-//   pixel ratio, shadows, transition RTs, extras, animation intensity.
 
 import { useCallback, useEffect, useState } from 'react'
 
@@ -49,14 +44,8 @@ export function getInitialPerformanceMode() {
   const stored = typeof window !== 'undefined' ? readStoredMode() : null
   const constrained =
     typeof window !== 'undefined' ? detectConstrainedDevice() : false
-  // Safe init: a stored NORMAL never forces the heavy pipeline on a
-  // constrained device. The toggle still shows the safe (lite) state;
-  // the user can explicitly try Normal mid-session (runtime only).
   if (stored === 'lite') return { mode: 'lite', constrained, overridden: false }
-  if (stored === 'normal') {
-    if (constrained) return { mode: 'lite', constrained, overridden: true }
-    return { mode: 'normal', constrained, overridden: false }
-  }
+  if (stored === 'normal') return { mode: 'normal', constrained, overridden: false }
   return { mode: constrained ? 'lite' : 'normal', constrained, overridden: false }
 }
 
@@ -74,10 +63,7 @@ const QUALITY = {
       animationFull: true,
       fishTickEvery: 1,
       debugThrottleMs: 250,
-      // Max texture dimension applied BEFORE GPU upload (GLB textures,
-      // sky PNGs). Hill maps keep their own per-channel caps in normal.
       texCap: 2048,
-      // Full water/terrain shader injects (caustics, fresnel, horizon).
       waterHigh: true,
     },
   },
@@ -110,15 +96,11 @@ export function effectivePixelRatio(runtime) {
 }
 
 export function usePerformanceMode() {
-  // Initializer runs during App render (before children), so sync the
-  // dataset here — effects run bottom-up and would be too late for
-  // mount-time lite readers (e.g. AmbientFish).
   const [mode, setModeState] = useState(() => {
     const initial = getInitialPerformanceMode().mode
     try {
       document.documentElement.dataset.perf = initial
     } catch {
-      /* no-op */
     }
     return initial
   })
@@ -127,7 +109,6 @@ export function usePerformanceMode() {
     try {
       document.documentElement.dataset.perf = mode
     } catch {
-      /* no-op */
     }
   }, [mode])
 
@@ -137,12 +118,10 @@ export function usePerformanceMode() {
     try {
       window.localStorage.setItem(PERFORMANCE_KEY, value)
     } catch {
-      /* private mode etc. */
     }
     try {
       document.documentElement.dataset.perf = value
     } catch {
-      /* no-op */
     }
   }, [])
 
