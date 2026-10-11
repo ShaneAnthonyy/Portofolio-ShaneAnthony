@@ -1,0 +1,120 @@
+import assert from 'node:assert/strict'
+import { fresh, approach, activate, until, active, unlocked, snap, send, evaluate, wheel, key, delay, close } from './dive-browser.mjs'
+
+async function landing(options) {
+  await fresh(options)
+  await approach()
+  await activate()
+}
+async function resume() {
+  await approach()
+  await activate()
+  await until(unlocked)
+  await delay(300)
+  const s = await snap()
+  assert.ok(s.y === 0 && !s.landing && s.dockTransform === 'none', 're-entry lands and clears animation: ' + JSON.stringify(s))
+}
+async function cancelled(label) {
+  await until(`!(${active})`)
+  const a = await snap()
+  await delay(400)
+  const b = await snap()
+  assert.ok(!b.unlocked && b.spacer > 0 && Math.abs(a.y - b.y) < 2 && b.scrollTweens === 0, label + ': cancellation restores Dive and releases scroll')
+  await resume()
+  console.log('PASS', label, 'and forward re-entry')
+}
+async function touch(type, y = 400) {
+  await send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x: 195, y, id: 1 }] })
+}
+
+try {
+  await landing({ width: 390, height: 844 })
+  const before = await snap()
+  await touch('touchStart')
+  await delay(150)
+  const held = await snap()
+  assert.ok(held.landing && held.progress > before.progress, 'touchstart alone preserves magnetic progress')
+  await until(`Number(document.querySelector('.aqua-root').style.getPropertyValue('--arrival-progress')) === 1`)
+  assert.ok((await snap()).landing, 'completed gesture waits for release without allowing inertia')
+  await touch('touchEnd')
+  await until(unlocked)
+  await touch('touchStart', 650)
+  await touch('touchMove', 500)
+  await delay(100)
+  await touch('touchMove', 350)
+  await touch('touchEnd')
+  await delay(400)
+  assert.ok((await snap()).y > 100, 'a new swipe scrolls normally immediately after landing')
+  console.log('PASS touchstart, held gesture, and immediate normal scrolling')
+
+  await landing({ width: 390, height: 844 })
+  await touch('touchStart', 400)
+  await touch('touchMove', 470)
+  await touch('touchEnd')
+  await cancelled('reverse touch')
+
+  await landing({ width: 390, height: 844 })
+  await touch('touchStart', 650)
+  await touch('touchMove', 500)
+  assert.ok((await snap()).landing, 'forward touch preserves magnetic controller')
+  await touch('touchEnd')
+  await until(unlocked)
+  assert.equal((await snap()).y, 0, 'forward touch lands without momentum overshoot')
+  console.log('PASS forward touch')
+
+  await landing()
+  await key('ArrowUp')
+  await cancelled('reverse keyboard')
+
+  await landing()
+  await key('PageDown')
+  await until(unlocked)
+  assert.equal((await snap()).y, 0, 'forward keyboard settles before releasing control')
+  await key('PageDown')
+  await delay(500)
+  assert.ok((await snap()).y > 100, 'normal keyboard scroll after landing')
+  console.log('PASS forward keyboard and release')
+
+  await landing()
+  await evaluate(`document.querySelector('.navbar__link').click()`)
+  assert.ok((await snap()).landing, 'locked Navbar cannot start a competing navigation tween')
+  await until(unlocked)
+  await evaluate(`document.querySelector('.navbar__link').click()`)
+  await delay(1200)
+  assert.ok((await snap()).y > 700, 'Navbar navigation works after docking')
+  console.log('PASS Navbar navigation ownership')
+
+  await landing()
+  await send('Emulation.setDeviceMetricsOverride', { width: 1024, height: 768, deviceScaleFactor: 1, mobile: false })
+  await cancelled('resize')
+
+  await landing()
+  await send('Emulation.setFocusEmulationEnabled', { enabled: false })
+  await send('Page.setWebLifecycleState', { state: 'frozen' })
+  await delay(200)
+  await send('Page.setWebLifecycleState', { state: 'active' })
+  await send('Emulation.setFocusEmulationEnabled', { enabled: true })
+  await until(`!document.hidden`)
+  await cancelled('page visibility/lifecycle')
+
+  await landing({ width: 390, height: 844 })
+  await touch('touchStart')
+  await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] })
+  await until(unlocked)
+  await delay(100)
+  const reduced = await snap()
+  assert.ok(reduced.y === 0 && !reduced.landing && !reduced.heroCanvas && reduced.scrollTweens === 0 && reduced.dive === 'absent', 'live reduced-motion change completes and disposes renderers')
+  await touch('touchEnd')
+  await wheel(500)
+  await delay(300)
+  assert.ok((await snap()).y > 100, 'live reduced-motion change releases scroll')
+  console.log('PASS live reduced-motion change')
+  await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'no-preference' }] })
+  await until(`!!document.querySelector('#portfolio-dive')`)
+  await evaluate(`window.scrollTo({top: 0, behavior: 'instant'}); document.querySelector('.hero__replay').click()`)
+  await until(`document.querySelector('#portfolio-dive').offsetHeight > 0`)
+  await resume()
+  console.log('PASS replay after a held touch and reduced-motion change')
+} finally {
+  await close()
+}

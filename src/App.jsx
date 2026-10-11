@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { Suspense, lazy, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import Navbar from './components/Navbar.jsx'
 import Hero from './components/Hero.jsx'
 import About from './components/About.jsx'
@@ -11,7 +11,10 @@ import Separator from './components/Separator.jsx'
 import LoadingScreen from './components/LoadingScreen.jsx'
 import DiveProbe, { isProbeEnabled } from './components/DiveProbe.jsx'
 import useSectionProgress, { refreshSectionProgress } from './hooks/useSectionProgress.js'
+import useBackgroundMusic from './hooks/useBackgroundMusic.js'
 import { usePerformanceMode } from './animation/quality.js'
+import { gsap } from './animation/gsap.js'
+import { arrivalProgress, magneticMotion } from './animation/diveArrival.js'
 
 const AquariumDivePrototype = lazy(() => import('./components/AquariumDivePrototype.jsx'))
 
@@ -44,30 +47,70 @@ const BUBBLES = [
 
 export default function App() {
   const progress = useSectionProgress()
+  const music = useBackgroundMusic()
   const [performanceMode, setPerformanceMode] = usePerformanceMode()
   const lite = performanceMode === 'lite'
   const activeBubbles = lite ? BUBBLES.filter((_, i) => i % 3 === 0) : BUBBLES
   const [webglFailed, setWebglFailed] = useState(false)
   const [webglHealthy, setWebglHealthy] = useState(false)
   const [introComplete, setIntroComplete] = useState(false)
-  const [reducedDiveActive, setReducedDiveActive] = useState(false)
+  const [magneticLanding, setMagneticLanding] = useState(false)
   const [returningToP0, setReturningToP0] = useState(false)
   const [returnParked, setReturnParked] = useState(false)
   const [gateEntered, setGateEntered] = useState(false)
   const [loadProgress, setLoadProgress] = useState(0)
+  const [heroInView, setHeroInView] = useState(false)
+  const [heroActive, setHeroActive] = useState(false)
+  const [heroLive, setHeroLive] = useState(false)
+  const arrivalRef = useRef({ progress: 0, update: null })
+  const landingRef = useRef({ active: false, dive: null, start: null, finish: null, cancel: null, blocked: false, touchDown: false })
+  const magneticTween = useRef(null)
+  const rootRef = useRef(null)
+  const updateArrival = useCallback((value) => {
+    const root = rootRef.current
+    if (!root || value === arrivalRef.current.progress && root.dataset.arrivalState) return
+    arrivalRef.current.progress = value
+    root.style.setProperty('--arrival-progress', value)
+    const state = value === 1 ? 'settled' : value === 0 ? 'dive' : 'transition'
+    if (root.dataset.arrivalState !== state) root.dataset.arrivalState = state
+    arrivalRef.current.update?.(value)
+    if (value > 0) landingRef.current.start?.()
+  }, [])
+  // Surface-to-depth handoff: the Dive backdrop stays parked while the Hero
+  // is meaningfully visible, and resumes once it is mostly scrolled out —
+  // while the Hero still renders its fade-out (brief controlled overlap).
+  // Hysteresis (off ≤0.1, on ≥0.2) stops mount/unmount thrashing at the edge.
+  const handleAquariumVisibility = useCallback((visible, ratio = visible ? 1 : 0) => {
+    setHeroInView(visible)
+    setHeroActive((prev) => (ratio >= 0.2 ? true : ratio <= 0.1 ? false : prev))
+  }, [])
+  const [backdropPaused, setBackdropPaused] = useState(false)
+  // Scene-ready latch: the Hero mounts once the Dive backdrop parks for
+  // handoff, then stays alive through the exit overlap even as the backdrop
+  // resumes beneath it. Resets once the Hero fully leaves view so the next
+  // entry re-waits for a parked backdrop (poster covers the remount).
+  useEffect(() => {
+    if (backdropPaused) setHeroLive(true)
+    else if (!heroInView) setHeroLive(false)
+  }, [backdropPaused, heroInView])
   const showProbe = isProbeEnabled()
   const diveProbeRef = useRef(null)
   const canReplay = !isDivePoc && !webglFailed
-  const shouldDive = canReplay && (!progress.reduced || reducedDiveActive)
+  const shouldDive = canReplay && !progress.reduced
   const entered = !shouldDive || introComplete || progress.dive >= 0.995
-  const portfolioEntered = entered
   const portfolioUnlocked = !shouldDive || (introComplete && !returningToP0)
   const bubbleDepth = Math.min(Math.max(progress.t, 0), 1)
-  const visualEntered = entered || shouldDive && progress.dive >= 0.94
-  const diveProgress = (introComplete && !returningToP0) ? 1 : reducedDiveActive ? progress.dive : undefined
+  const visualEntered = entered || magneticLanding || shouldDive && progress.dive >= 0.94
+  const diveProgress = (introComplete && !returningToP0) ? 1 : undefined
+  const diveNearEnd = shouldDive && !introComplete && !returningToP0 && (progress.dive ?? 0) >= 0.9
+  const heroPrewarm = (diveNearEnd || magneticLanding) && performanceMode !== 'lite' && !progress.reduced
   const reveal = Math.min(Math.max((progress.dive - 0.94) / 0.06, 0), 1)
   const backgroundBlur = introComplete || progress.dive < 0.94 ? 0 : (1 - reveal) * 1.5
   const atmosphereBlur = shouldDive && progress.dive >= 0.94 ? 2 + (1 - reveal) * 2 : 2
+
+  useLayoutEffect(() => {
+    if (!shouldDive) updateArrival(1)
+  }, [shouldDive, updateArrival])
 
   useEffect(() => {
     refreshSectionProgress()
@@ -124,21 +167,20 @@ export default function App() {
   }, [isBubbleDebug])
 
   useLayoutEffect(() => {
-    if (shouldDive && !introComplete && !returningToP0 && progress.dive >= 0.995) setIntroComplete(true)
-  }, [shouldDive, introComplete, returningToP0, progress.dive])
-
-  useLayoutEffect(() => {
-    if (!shouldDive || !introComplete || returningToP0) return
+    if (!progress.reduced || introComplete) return
+    landingRef.current.finish?.()
+    setIntroComplete(true)
+    setReturningToP0(false)
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
-    const frame = requestAnimationFrame(refreshSectionProgress)
-    return () => cancelAnimationFrame(frame)
-  }, [shouldDive, introComplete, returningToP0])
+    updateArrival(1)
+    refreshSectionProgress()
+  }, [progress.reduced, introComplete, updateArrival])
 
   const diveAgain = () => {
     if (progress.reduced) {
-      setIntroComplete(false)
-      setReducedDiveActive(true)
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
     } else if (introComplete && !returningToP0) {
+      landingRef.current.dive = null
       setReturnParked(false)
       setReturningToP0(true)
     }
@@ -151,7 +193,7 @@ export default function App() {
   }
 
   useLayoutEffect(() => {
-    if (!returningToP0 || !introComplete || !returnParked || progress.dive >= 0.05) return
+    if (!returningToP0 || !introComplete || !returnParked) return
     setReturnParked(false)
     setReturningToP0(false)
     setIntroComplete(false)
@@ -161,6 +203,161 @@ export default function App() {
     if (returningToP0 || introComplete) return
     refreshSectionProgress()
   }, [returningToP0, introComplete])
+
+  useEffect(() => {
+    const landing = landingRef.current
+    landing.start = null
+    if (landing.active || introComplete || !shouldDive || returningToP0 || !gateEntered) return
+    if (progress.dive < 0.93) landing.blocked = false
+    if (progress.dive < 0.93 || progress.dir !== 'down' || landing.blocked) return
+    const intro = document.getElementById('portfolio-dive')
+    if (!intro || intro.offsetHeight < 1) return
+    landing.start = () => {
+      landing.start = null
+      landing.active = true
+      landing.dive = 0.93 + arrivalRef.current.progress * 0.0695
+      landing.height = intro.offsetHeight
+      landing.distance = Math.max(0, landing.height - window.scrollY)
+      landing.velocity = progress.velocity
+      setMagneticLanding(true)
+    }
+    if (arrivalRef.current.progress > 0) landing.start()
+    return () => { landing.start = null }
+  }, [shouldDive, introComplete, returningToP0, gateEntered, progress.dive, progress.dir])
+
+  useLayoutEffect(() => {
+    const landing = landingRef.current
+    const intro = document.getElementById('portfolio-dive')
+    if (!magneticLanding) {
+      if (landing.restore != null) {
+        window.scrollTo({ top: landing.restore * intro.offsetHeight, left: 0, behavior: 'instant' })
+        landing.restore = null
+        landing.dive = null
+      }
+      refreshSectionProgress()
+      return
+    }
+    const coarse = window.matchMedia('(pointer: coarse)').matches
+    const { duration, ease } = magneticMotion((1 - landing.dive) * landing.height, landing.velocity, coarse)
+    const root = document.documentElement
+    const prev = root.style.scrollBehavior
+    const anchor = root.style.overflowAnchor
+    const overflow = root.style.overflow
+    root.style.scrollBehavior = 'auto'
+    root.style.overflowAnchor = 'none'
+    root.style.overflow = 'hidden'
+    intro.dataset.diveProgress = landing.dive
+    window.scrollTo({ top: landing.distance, left: 0, behavior: 'instant' })
+    const restore = () => {
+      root.style.scrollBehavior = prev
+      root.style.overflowAnchor = anchor
+      root.style.overflow = overflow
+      delete intro.dataset.diveProgress
+      window.removeEventListener('resize', cancel)
+      document.removeEventListener('visibilitychange', onVisibility)
+    }
+    const cancel = () => {
+      if (!landing.active) return
+      magneticTween.current?.kill()
+      magneticTween.current = null
+      landing.active = false
+      landing.blocked = true
+      landing.touchDown = false
+      landing.restore = landing.dive
+      setMagneticLanding(false)
+    }
+    const finish = () => {
+      magneticTween.current?.kill()
+      magneticTween.current = null
+      landing.dive = 1
+      landing.active = false
+      landing.start = null
+      if (window.scrollY !== 0) window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+      updateArrival(1)
+      setHeroLive(true)
+      setIntroComplete(true)
+      setMagneticLanding(false)
+    }
+    landing.cancel = cancel
+    landing.finish = finish
+    const onVisibility = () => { if (document.hidden) cancel() }
+    window.addEventListener('resize', cancel)
+    document.addEventListener('visibilitychange', onVisibility)
+    magneticTween.current = gsap.timeline({
+      defaults: { duration: lite ? Math.min(duration, 0.55) : duration, ease },
+      onUpdate: () => {
+        intro.dataset.diveProgress = landing.dive
+        updateArrival(arrivalProgress(landing.dive))
+      },
+      onComplete: () => {
+        delete rootRef.current.dataset.magneticTween
+        magneticTween.current = null
+        if (!landing.touchDown) finish()
+      },
+    }).to(landing, { dive: 1 }, 0).to(window, { scrollTo: { y: 0, autoKill: false } }, 0)
+    rootRef.current.dataset.magneticTween = 'true'
+    return () => {
+      delete rootRef.current.dataset.magneticTween
+      magneticTween.current?.kill()
+      magneticTween.current = null
+      landing.cancel = null
+      landing.finish = null
+      restore()
+    }
+  }, [magneticLanding])
+
+  useEffect(() => {
+    if (!shouldDive || introComplete) return
+    const landing = landingRef.current
+    let touchY = null
+    const onWheel = event => {
+      if (event.deltaY > 0) landing.blocked = false
+      if (!landing.active) return
+      if (event.deltaY < 0) landing.cancel?.()
+      event.preventDefault()
+    }
+    const onTouchStart = event => {
+      landing.touchDown = true
+      touchY = event.touches[0]?.clientY ?? null
+    }
+    const onTouchMove = event => {
+      const y = event.touches[0]?.clientY
+      const delta = touchY != null && y != null ? y - touchY : 0
+      if (delta < -8) landing.blocked = false
+      if (!landing.active) return
+      if (delta > 24) landing.cancel?.()
+      event.preventDefault()
+    }
+    const onTouchEnd = () => {
+      landing.touchDown = false
+      touchY = null
+      if (landing.active && landing.dive === 1) landing.finish?.()
+    }
+    const onKey = event => {
+      if (event.target.closest?.('button, a, input, textarea, select')) return
+      if (!['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' ', 'Escape'].includes(event.key)) return
+      landing.blocked = false
+      if (!landing.active) return
+      event.preventDefault()
+      if (['ArrowUp', 'PageUp', 'Home', 'Escape'].includes(event.key)) landing.cancel?.()
+      else landing.finish?.()
+    }
+    window.addEventListener('wheel', onWheel, { passive: false })
+    window.addEventListener('touchstart', onTouchStart, { passive: true })
+    window.addEventListener('touchmove', onTouchMove, { passive: false })
+    window.addEventListener('touchend', onTouchEnd)
+    window.addEventListener('touchcancel', onTouchEnd)
+    window.addEventListener('keydown', onKey)
+    return () => {
+      landing.touchDown = false
+      window.removeEventListener('wheel', onWheel)
+      window.removeEventListener('touchstart', onTouchStart)
+      window.removeEventListener('touchmove', onTouchMove)
+      window.removeEventListener('touchend', onTouchEnd)
+      window.removeEventListener('touchcancel', onTouchEnd)
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [shouldDive, introComplete])
 
   useEffect(() => {
     if (!returningToP0 || progress.reduced) return
@@ -182,9 +379,13 @@ export default function App() {
 
   useEffect(() => {
     if (isDivePoc || !portfolioUnlocked) return
+    if (gateEntered && shouldDive) document.documentElement.classList.add('dive-arrived')
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const els = Array.from(document.querySelectorAll('.section__layout, .hero__content'))
-    els.forEach((el) => el.classList.add('reveal'))
+    els.forEach((el) => {
+      el.classList.add('reveal')
+      if (el.classList.contains('hero__content') && gateEntered && shouldDive) el.classList.add('is-visible')
+    })
     if (reduced) {
       els.forEach((el) => el.classList.add('is-visible'))
       return
@@ -219,6 +420,9 @@ export default function App() {
 
   return (
     <div
+      ref={rootRef}
+      data-dive-arrival={shouldDive || undefined}
+      data-landing-active={magneticLanding || undefined}
       className={`aqua-root${visualEntered ? ' is-entered' : ''}${portfolioUnlocked ? ' is-portfolio-unlocked' : ''}${webglHealthy ? ' has-webgl' : ''}`}
       style={{
         '--intro-background-blur': `${backgroundBlur}px`,
@@ -232,7 +436,7 @@ export default function App() {
         '--aqua-deep-a': 0.58 + bubbleDepth * 0.12,
       }}
     >
-      <Navbar diveActive={shouldDive} entered={portfolioEntered} diveProgress={diveProgress ?? progress.dive} performanceMode={performanceMode} onPerformanceModeChange={setPerformanceMode} />
+      <Navbar diveActive={shouldDive} entered={portfolioUnlocked} diveProgress={diveProgress ?? progress.dive} performanceMode={performanceMode} onPerformanceModeChange={setPerformanceMode} musicOn={music.on} musicLoading={music.loading} musicFailed={music.failed} onMusicToggle={music.toggle} arrivalRef={arrivalRef} />
       <div className={`aqua-bubble-layer${isBubbleDebug ? ' bubble-debug' : ''}`} aria-hidden="true">
         {activeBubbles.map((bubble) => (
           <span
@@ -267,8 +471,13 @@ export default function App() {
               integrated
               diveProgress={diveProgress}
               introComplete={introComplete}
+              magneticLanding={magneticLanding}
+              landingRef={landingRef}
               returningToP0={returningToP0}
               qualityMode={performanceMode}
+              pauseBackdrop={portfolioUnlocked && heroActive}
+              onBackdropPaused={setBackdropPaused}
+              onArrivalProgress={updateArrival}
               onReturnComplete={handleReturnComplete}
               onProgress={handleDiveProgress}
               probeRef={showProbe ? diveProbeRef : null}
@@ -282,11 +491,25 @@ export default function App() {
                 setLoadProgress(1)
               }}
             >
-              <Hero onDiveAgain={canReplay ? diveAgain : undefined} />
+              <Hero
+                onDiveAgain={canReplay ? diveAgain : undefined}
+                aquariumEnabled={gateEntered && (portfolioUnlocked || heroPrewarm)}
+                aquariumPreview={gateEntered}
+                aquariumReady={heroLive || heroPrewarm}
+                aquariumPrewarm={heroPrewarm && !portfolioUnlocked}
+                performanceMode={performanceMode}
+                onAquariumVisibilityChange={handleAquariumVisibility}
+              />
             </AquariumDivePrototype>
           </Suspense>
         ) : (
-          <Hero onDiveAgain={canReplay ? diveAgain : undefined} />
+          <Hero
+            onDiveAgain={canReplay ? diveAgain : undefined}
+            aquariumEnabled={gateEntered && portfolioUnlocked}
+            aquariumReady
+            performanceMode={performanceMode}
+            onAquariumVisibilityChange={setHeroInView}
+          />
         )}
         <div
           className="portfolio-sections"

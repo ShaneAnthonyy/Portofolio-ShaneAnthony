@@ -1,0 +1,3131 @@
+diff --git a/src/App.jsx b/src/App.jsx
+index 2c61db6..a68dcae 100644
+--- a/src/App.jsx
++++ b/src/App.jsx
+@@ -1,4 +1,4 @@
+-import { Suspense, lazy, useEffect, useLayoutEffect, useRef, useState } from 'react'
++import { Suspense, lazy, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+ import Navbar from './components/Navbar.jsx'
+ import Hero from './components/Hero.jsx'
+ import About from './components/About.jsx'
+@@ -11,7 +11,10 @@ import Separator from './components/Separator.jsx'
+ import LoadingScreen from './components/LoadingScreen.jsx'
+ import DiveProbe, { isProbeEnabled } from './components/DiveProbe.jsx'
+ import useSectionProgress, { refreshSectionProgress } from './hooks/useSectionProgress.js'
++import useBackgroundMusic from './hooks/useBackgroundMusic.js'
+ import { usePerformanceMode } from './animation/quality.js'
++import { gsap } from './animation/gsap.js'
++import { magneticMotion } from './animation/diveArrival.js'
+ 
+ const AquariumDivePrototype = lazy(() => import('./components/AquariumDivePrototype.jsx'))
+ 
+@@ -44,6 +47,7 @@ const BUBBLES = [
+ 
+ export default function App() {
+   const progress = useSectionProgress()
++  const music = useBackgroundMusic()
+   const [performanceMode, setPerformanceMode] = usePerformanceMode()
+   const lite = performanceMode === 'lite'
+   const activeBubbles = lite ? BUBBLES.filter((_, i) => i % 3 === 0) : BUBBLES
+@@ -55,20 +59,56 @@ export default function App() {
+   const [returnParked, setReturnParked] = useState(false)
+   const [gateEntered, setGateEntered] = useState(false)
+   const [loadProgress, setLoadProgress] = useState(0)
++  const [heroInView, setHeroInView] = useState(false)
++  const [heroActive, setHeroActive] = useState(false)
++  const [heroLive, setHeroLive] = useState(false)
++  const arrivalRef = useRef({ progress: 0, update: null })
++  const rootRef = useRef(null)
++  const updateArrival = useCallback((value, hero) => {
++    const root = rootRef.current
++    if (!root || value === arrivalRef.current.progress && root.dataset.arrivalState) return
++    arrivalRef.current.progress = value
++    hero?.style.setProperty('--arrival-progress', value)
++    const state = value === 1 ? 'settled' : value === 0 ? 'dive' : 'transition'
++    if (root.dataset.arrivalState !== state) root.dataset.arrivalState = state
++    arrivalRef.current.update?.(value)
++  }, [])
++  // Surface-to-depth handoff: the Dive backdrop stays parked while the Hero
++  // is meaningfully visible, and resumes once it is mostly scrolled out —
++  // while the Hero still renders its fade-out (brief controlled overlap).
++  // Hysteresis (off ≤0.1, on ≥0.2) stops mount/unmount thrashing at the edge.
++  const handleAquariumVisibility = useCallback((visible, ratio = visible ? 1 : 0) => {
++    setHeroInView(visible)
++    setHeroActive((prev) => (ratio >= 0.2 ? true : ratio <= 0.1 ? false : prev))
++  }, [])
++  const [backdropPaused, setBackdropPaused] = useState(false)
++  // Scene-ready latch: the Hero mounts once the Dive backdrop parks for
++  // handoff, then stays alive through the exit overlap even as the backdrop
++  // resumes beneath it. Resets once the Hero fully leaves view so the next
++  // entry re-waits for a parked backdrop (poster covers the remount).
++  useEffect(() => {
++    if (backdropPaused) setHeroLive(true)
++    else if (!heroInView) setHeroLive(false)
++  }, [backdropPaused, heroInView])
+   const showProbe = isProbeEnabled()
+   const diveProbeRef = useRef(null)
+   const canReplay = !isDivePoc && !webglFailed
+   const shouldDive = canReplay && (!progress.reduced || reducedDiveActive)
+   const entered = !shouldDive || introComplete || progress.dive >= 0.995
+-  const portfolioEntered = entered
+   const portfolioUnlocked = !shouldDive || (introComplete && !returningToP0)
+   const bubbleDepth = Math.min(Math.max(progress.t, 0), 1)
+   const visualEntered = entered || shouldDive && progress.dive >= 0.94
+   const diveProgress = (introComplete && !returningToP0) ? 1 : reducedDiveActive ? progress.dive : undefined
++  const diveNearEnd = shouldDive && !introComplete && !returningToP0 && (progress.dive ?? 0) >= 0.9
++  const heroPrewarm = diveNearEnd && performanceMode !== 'lite' && !progress.reduced
+   const reveal = Math.min(Math.max((progress.dive - 0.94) / 0.06, 0), 1)
+   const backgroundBlur = introComplete || progress.dive < 0.94 ? 0 : (1 - reveal) * 1.5
+   const atmosphereBlur = shouldDive && progress.dive >= 0.94 ? 2 + (1 - reveal) * 2 : 2
+ 
++  useLayoutEffect(() => {
++    if (!shouldDive) updateArrival(1)
++  }, [shouldDive, updateArrival])
++
+   useEffect(() => {
+     refreshSectionProgress()
+   }, [shouldDive])
+@@ -129,6 +169,8 @@ export default function App() {
+ 
+   useLayoutEffect(() => {
+     if (!shouldDive || !introComplete || returningToP0) return
++    magneticTween.current?.kill()
++    magneticTween.current = null
+     window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+     const frame = requestAnimationFrame(refreshSectionProgress)
+     return () => cancelAnimationFrame(frame)
+@@ -162,6 +204,90 @@ export default function App() {
+     refreshSectionProgress()
+   }, [returningToP0, introComplete])
+ 
++  const magneticTween = useRef(null)
++  const magneticDone = useRef(false)
++
++  useEffect(() => {
++    if (returningToP0) {
++      magneticTween.current?.kill()
++      magneticTween.current = null
++      magneticDone.current = false
++      return
++    }
++    if (introComplete || !shouldDive || progress.reduced) {
++      magneticTween.current?.kill()
++      magneticTween.current = null
++      magneticDone.current = true
++      return
++    }
++    if (magneticTween.current?.isActive()) return
++    if (!shouldDive || progress.reduced || magneticDone.current) return
++    const d = progress.dive
++    if (d < 0.93 || d >= 0.995 || progress.dir !== 'down') return
++    const intro = document.getElementById('portfolio-dive')
++    if (!intro || intro.offsetHeight < 1) return
++    const target = intro.getBoundingClientRect().top + window.scrollY + 0.997 * intro.offsetHeight
++    const remaining = target - window.scrollY
++    if (remaining <= 0) return
++    const coarse = window.matchMedia('(pointer: coarse)').matches
++    const { duration, ease } = magneticMotion(remaining, progress.velocity, coarse)
++    magneticDone.current = true
++    const root = document.documentElement
++    const prev = root.style.scrollBehavior
++    root.style.scrollBehavior = 'auto'
++    const restore = () => {
++      root.style.scrollBehavior = prev
++      window.removeEventListener('wheel', onWheel)
++      window.removeEventListener('touchstart', onTouchStart)
++      window.removeEventListener('touchmove', onTouchMove)
++      window.removeEventListener('keydown', onKey)
++      window.removeEventListener('resize', cancel)
++      document.removeEventListener('visibilitychange', onVisibility)
++    }
++    const cancel = () => {
++      const tween = magneticTween.current
++      if (tween?.isActive()) {
++        magneticDone.current = false
++        tween.kill()
++      }
++    }
++    const onWheel = event => { if (event.deltaY < 0) cancel() }
++    let touchY = null
++    const onTouchStart = event => { touchY = event.touches[0]?.clientY ?? null }
++    const onTouchMove = event => {
++      const y = event.touches[0]?.clientY
++      if (touchY !== null && y !== undefined && y - touchY > 24) cancel()
++    }
++    const onKey = event => {
++      if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' ', 'Escape'].includes(event.key)) cancel()
++    }
++    const onVisibility = () => { if (document.hidden) cancel() }
++    window.addEventListener('wheel', onWheel, { passive: true })
++    window.addEventListener('touchstart', onTouchStart, { passive: true })
++    window.addEventListener('touchmove', onTouchMove, { passive: true })
++    window.addEventListener('keydown', onKey)
++    window.addEventListener('resize', cancel)
++    document.addEventListener('visibilitychange', onVisibility)
++    magneticTween.current = gsap.to(window, {
++      duration,
++      ease,
++      overwrite: 'auto',
++      scrollTo: { y: target, autoKill: true },
++      onComplete: () => {
++        magneticTween.current = null
++        magneticDone.current = true
++        restore()
++        refreshSectionProgress()
++      },
++      onInterrupt: () => {
++        magneticTween.current = null
++        restore()
++      },
++    })
++  }, [shouldDive, introComplete, returningToP0, progress.dive, progress.dir, progress.reduced])
++
++  useEffect(() => () => magneticTween.current?.kill(), [])
++
+   useEffect(() => {
+     if (!returningToP0 || progress.reduced) return
+     const preventScroll = (event) => event.preventDefault()
+@@ -182,9 +308,13 @@ export default function App() {
+ 
+   useEffect(() => {
+     if (isDivePoc || !portfolioUnlocked) return
++    if (gateEntered && shouldDive) document.documentElement.classList.add('dive-arrived')
+     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+     const els = Array.from(document.querySelectorAll('.section__layout, .hero__content'))
+-    els.forEach((el) => el.classList.add('reveal'))
++    els.forEach((el) => {
++      el.classList.add('reveal')
++      if (el.classList.contains('hero__content') && gateEntered && shouldDive) el.classList.add('is-visible')
++    })
+     if (reduced) {
+       els.forEach((el) => el.classList.add('is-visible'))
+       return
+@@ -219,6 +349,8 @@ export default function App() {
+ 
+   return (
+     <div
++      ref={rootRef}
++      data-dive-arrival={shouldDive || undefined}
+       className={`aqua-root${visualEntered ? ' is-entered' : ''}${portfolioUnlocked ? ' is-portfolio-unlocked' : ''}${webglHealthy ? ' has-webgl' : ''}`}
+       style={{
+         '--intro-background-blur': `${backgroundBlur}px`,
+@@ -232,7 +364,7 @@ export default function App() {
+         '--aqua-deep-a': 0.58 + bubbleDepth * 0.12,
+       }}
+     >
+-      <Navbar diveActive={shouldDive} entered={portfolioEntered} diveProgress={diveProgress ?? progress.dive} performanceMode={performanceMode} onPerformanceModeChange={setPerformanceMode} />
++      <Navbar diveActive={shouldDive} entered={portfolioUnlocked} diveProgress={diveProgress ?? progress.dive} performanceMode={performanceMode} onPerformanceModeChange={setPerformanceMode} musicOn={music.on} musicLoading={music.loading} musicFailed={music.failed} onMusicToggle={music.toggle} arrivalRef={arrivalRef} />
+       <div className={`aqua-bubble-layer${isBubbleDebug ? ' bubble-debug' : ''}`} aria-hidden="true">
+         {activeBubbles.map((bubble) => (
+           <span
+@@ -269,6 +401,9 @@ export default function App() {
+               introComplete={introComplete}
+               returningToP0={returningToP0}
+               qualityMode={performanceMode}
++              pauseBackdrop={portfolioUnlocked && heroActive}
++              onBackdropPaused={setBackdropPaused}
++              onArrivalProgress={updateArrival}
+               onReturnComplete={handleReturnComplete}
+               onProgress={handleDiveProgress}
+               probeRef={showProbe ? diveProbeRef : null}
+@@ -282,11 +417,24 @@ export default function App() {
+                 setLoadProgress(1)
+               }}
+             >
+-              <Hero onDiveAgain={canReplay ? diveAgain : undefined} />
++              <Hero
++                onDiveAgain={canReplay ? diveAgain : undefined}
++                aquariumEnabled={gateEntered && (portfolioUnlocked || heroPrewarm)}
++                aquariumPreview={gateEntered}
++                aquariumReady={heroLive || heroPrewarm}
++                performanceMode={performanceMode}
++                onAquariumVisibilityChange={handleAquariumVisibility}
++              />
+             </AquariumDivePrototype>
+           </Suspense>
+         ) : (
+-          <Hero onDiveAgain={canReplay ? diveAgain : undefined} />
++          <Hero
++            onDiveAgain={canReplay ? diveAgain : undefined}
++            aquariumEnabled={gateEntered && portfolioUnlocked}
++            aquariumReady
++            performanceMode={performanceMode}
++            onAquariumVisibilityChange={setHeroInView}
++          />
+         )}
+         <div
+           className="portfolio-sections"
+diff --git a/src/animation/typography.js b/src/animation/typography.js
+index 9f2625f..bd4b1d1 100644
+--- a/src/animation/typography.js
++++ b/src/animation/typography.js
+@@ -32,12 +32,8 @@ function timeline() {
+ 
+ export const typeTimelines = {
+   hero(q, tl, s) {
+-    rise(tl, q('.hero__eyebrow'), { y: 8, d: 0.4, at: 0, s })
+-    rise(tl, q('.hero__title-word'), { y: 18, d: 0.6, at: 0.08, stagger: 0.08, s })
++    rise(tl, q('.hero__title'), { y: 18, d: 0.6, at: 0.08, s })
+     rise(tl, q('.hero__role'), { y: 10, d: 0.5, at: 0.3, s })
+-    rise(tl, q('.hero__actions .btn'), { y: 10, d: 0.45, at: 0.42, stagger: 0.06, s })
+-    rise(tl, q('.hero__stat'), { y: 8, d: 0.45, at: 0.58, stagger: 0.06, s })
+-    rise(tl, q('.hero__meta'), { y: 8, d: 0.4, at: 0.68, s })
+     return tl
+   },
+   about(q, tl, s) {
+@@ -57,11 +53,8 @@ export const typeTimelines = {
+     return tl
+   },
+   projects(q, tl, s) {
+-    rise(tl, q('.section__rail .section__eyebrow'), { y: 8, d: 0.4, at: 0, s })
+-    rise(tl, q('.projects__registry'), { y: 8, d: 0.4, at: 0.08, s })
+-    rise(tl, q('.section__rail .section__title'), { y: 18, d: 0.6, at: 0.14, s })
+-    rise(tl, q('.section__rail .section__sub'), { y: 10, d: 0.5, at: 0.26, s })
+-    rise(tl, q('.projects__count'), { y: 8, d: 0.4, at: 0.34, s })
++    rise(tl, q('.section__rail .section__title'), { y: 18, d: 0.6, at: 0.08, s })
++    rise(tl, q('.section__rail .section__sub'), { y: 10, d: 0.5, at: 0.2, s })
+     return tl
+   },
+   certificates(q, tl, s) {
+diff --git a/src/components/About.jsx b/src/components/About.jsx
+index 8e68be7..fe64f28 100644
+--- a/src/components/About.jsx
++++ b/src/components/About.jsx
+@@ -1,5 +1,5 @@
+ import { useState } from 'react'
+-import { about, contact, profile } from '../data/content.js'
++import { about, contact, profile, stats } from '../data/content.js'
+ import { ABOUT_FISH } from '../data/fauna.js'
+ import AmbientFish from './AmbientFish.jsx'
+ import { scrollToSection } from '../animation/scrollTo.js'
+@@ -78,6 +78,7 @@ export default function About({ unlocked = true }) {
+             </figure>
+             <h3 className="about-identity__name">{profile.name}</h3>
+             <p className="about-identity__role">{profile.role}</p>
++            <p className="about-identity__location">{profile.location}</p>
+           </article>
+ 
+           <article className="about-card about-card--intro" aria-label="Introduction" ref={introRef}>
+@@ -97,6 +98,14 @@ export default function About({ unlocked = true }) {
+               >
+                 {notesOpen ? 'Show less' : 'Read more'}
+               </button>
++              <a
++                href={profile.cvUrl}
++                target="_blank"
++                rel="noopener noreferrer"
++                className="about-intro__toggle"
++              >
++                View CV
++              </a>
+             </div>
+             <div
+               id="about-more"
+@@ -114,6 +123,15 @@ export default function About({ unlocked = true }) {
+                 {about.languages.map((lang) => `${lang.name} (${lang.level})`).join(' · ')}
+               </p>
+             </div>
++            {/* GPA stays with its existing education note and progress indicator. */}
++            <dl className="about-intro__stats">
++              {stats.filter((stat) => !stat.label.startsWith('GPA')).map((stat) => (
++                <div key={stat.label} className="about-intro__stat">
++                  <dt>{stat.label}</dt>
++                  <dd>{stat.value}</dd>
++                </div>
++              ))}
++            </dl>
+           </article>
+ 
+           <article className="about-card about-card--toolkit" aria-label="Toolkit" ref={toolkitRef}>
+diff --git a/src/components/AquariumDivePrototype.jsx b/src/components/AquariumDivePrototype.jsx
+index d69a165..5b98102 100644
+--- a/src/components/AquariumDivePrototype.jsx
++++ b/src/components/AquariumDivePrototype.jsx
+@@ -8,6 +8,7 @@ import Hero from './Hero.jsx'
+ import { createScrollSign } from './MinecraftScrollSign.js'
+ import useSectionProgress from '../hooks/useSectionProgress.js'
+ import { resolveQuality, effectivePixelRatio } from '../animation/quality.js'
++import { arrivalProgress } from '../animation/diveArrival.js'
+ 
+ 
+ const KEYS = [
+@@ -612,7 +613,7 @@ function buildScene({ hideFarRocks, liteWater = false } = {}) {
+   return { scene, water, waterMat, waterVolMat, disposables, temp, rockDefs, kelpDefs, trackLoaded, retireTemp, lightsBase }
+ }
+ 
+-export default function AquariumDivePrototype({ backdrop = false, integrated = false, onHealthy, onFail, onReturnComplete, onProgress, probeRef = null, children, diveProgress, introComplete = false, returningToP0 = false, qualityMode = 'normal' } = {}) {
++export default function AquariumDivePrototype({ backdrop = false, integrated = false, onHealthy, onFail, onReturnComplete, onProgress, onBackdropPaused, onArrivalProgress, pauseBackdrop = false, probeRef = null, children, diveProgress, introComplete = false, returningToP0 = false, qualityMode = 'normal' } = {}) {
+   const mountRef = useRef(null)
+   const heroRevealRef = useRef(null)
+   const [debug, setDebug] = useState({ p: 0, phase: 'FRONT' })
+@@ -631,8 +632,15 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
+   const qualityModeRef = useRef(qualityMode)
+   qualityModeRef.current = qualityMode
+   const runtimeApplyRef = useRef(null)
+-  const cbRef = useRef({ onHealthy, onFail, onReturnComplete, onProgress })
+-  cbRef.current = { onHealthy, onFail, onReturnComplete, onProgress }
++  const pauseRef = useRef(pauseBackdrop)
++  pauseRef.current = pauseBackdrop
++  const loopControlRef = useRef(null)
++  const cbRef = useRef({ onHealthy, onFail, onReturnComplete, onProgress, onBackdropPaused, onArrivalProgress })
++  cbRef.current = { onHealthy, onFail, onReturnComplete, onProgress, onBackdropPaused, onArrivalProgress }
++
++  useLayoutEffect(() => {
++    loopControlRef.current?.()
++  }, [pauseBackdrop])
+ 
+   useLayoutEffect(() => {
+     if (!integratedRef.current || !prog.reduced || !sceneCommandRef.current) return
+@@ -3154,6 +3162,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
+     }
+     const syncReducedScene = (p) => {
+       const value = Math.min(Math.max(p, 0), 1)
++      cbRef.current.onArrivalProgress?.(Number(value >= 0.995), heroRevealRef.current)
+       applyProgress(value)
+       applyRevealVisuals(revealK(value))
+       updateOutdoor(0, value, performance.now() / 1000, true)
+@@ -3168,6 +3177,19 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
+ 
+     let raf = 0
+     let displayed = reduced ? 1 : 0
++    let renderLoop = null
++    // Finish the existing entry before handing GPU time to the Hero. The last
++    // underwater frame stays available beneath the boundary with About.
++    const parked = () => pauseRef.current && displayed >= 0.9995 && !returningRef.current
++    const syncLoop = () => {
++      cancelAnimationFrame(raf)
++      raf = 0
++      const paused = parked()
++      cbRef.current.onBackdropPaused?.(paused)
++      mount.dataset.renderState = paused ? 'paused' : document.hidden ? 'hidden' : reduced ? 'static' : 'running'
++      if (!cancelled && !paused && !document.hidden && renderLoop) raf = requestAnimationFrame(renderLoop)
++    }
++    loopControlRef.current = syncLoop
+     const markHealthy = () => {
+       if (cancelled) return
+       readiness.frames += 1
+@@ -3234,7 +3256,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
+           markHealthy()
+           raf = requestAnimationFrame(tickBackdrop)
+         }
+-        raf = requestAnimationFrame(tickBackdrop)
++        renderLoop = tickBackdrop
+       }
+     } else if (reduced) {
+       syncReducedScene(integratedRef.current ? (diveProgressRef.current ?? progRef.current.dive) : 1)
+@@ -3284,6 +3306,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
+           if (Math.abs(goal - displayed) < 0.0005) displayed = goal
+         }
+         applyProgress(displayed)
++        cbRef.current.onArrivalProgress?.(arrivalProgress(displayed), heroRevealRef.current)
+         applyRevealVisuals(revealK(displayed))
+         updateOutdoor(dt, displayed, now / 1000, false)
+         updateSign(now / 1000, displayed)
+@@ -3329,11 +3352,15 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
+             setDebug({ p: displayed, phase })
+           }
+         }
+-        raf = requestAnimationFrame(tick)
++        if (parked()) syncLoop()
++        else raf = requestAnimationFrame(tick)
+       }
+-      raf = requestAnimationFrame(tick)
++      renderLoop = tick
+     }
+ 
++    document.addEventListener('visibilitychange', syncLoop)
++    syncLoop()
++
+     const ro = new ResizeObserver(() => {
+       onFrame(mount.clientWidth, mount.clientHeight)
+       if (reduced) renderer.render(scene, camera)
+@@ -3345,6 +3372,9 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
+       cancelAnimationFrame(raf)
+       sceneCommandRef.current = null
+       runtimeApplyRef.current = null
++      loopControlRef.current = null
++      document.removeEventListener('visibilitychange', syncLoop)
++      cbRef.current.onBackdropPaused?.(false)
+       ro.disconnect()
+       if (themeObs) themeObs.disconnect()
+       disposables.forEach((d) => d.dispose && d.dispose())
+@@ -3363,7 +3393,6 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
+   const revealProgress = integratedRef.current
+     ? returningToP0 ? debug.p : diveProgress ?? prog.dive
+     : debug.p
+-  const rp = smooth(Math.min(Math.max((revealProgress - 0.94) / 0.06, 0), 1))
+   const revealed = revealProgress >= 0.94
+ 
+   useLayoutEffect(() => {
+@@ -3392,11 +3421,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
+             position: introComplete ? 'relative' : 'fixed',
+             inset: introComplete ? undefined : 0,
+             zIndex: 10,
+-            opacity: rp,
+-            visibility: revealed || rp > 0 ? 'visible' : 'hidden',
+             pointerEvents: revealed ? 'auto' : 'none',
+-            transform: `translate3d(0, ${8 * (1 - rp)}px, 0) scale(${0.985 + 0.015 * rp})`,
+-            transition: 'opacity 0.75s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.75s cubic-bezier(0.2, 0.8, 0.2, 1)',
+           }}
+         >
+           {children}
+diff --git a/src/components/Hero.jsx b/src/components/Hero.jsx
+index ce83e5a..59b7364 100644
+--- a/src/components/Hero.jsx
++++ b/src/components/Hero.jsx
+@@ -1,57 +1,23 @@
+-import ActionButton from './ActionButton.jsx'
+-import { profile, stats, contact } from '../data/content.js'
++import { profile } from '../data/content.js'
+ import { typeTimelines, useTypeReveal } from '../animation/typography.js'
+-import { scrollToSection } from '../animation/scrollTo.js'
++import HeroAquarium from './HeroAquarium.jsx'
+ 
+-export default function Hero({ onDiveAgain }) {
++export default function Hero({ onDiveAgain, aquariumEnabled = false, aquariumPreview = false, aquariumReady = false, performanceMode = 'normal', onAquariumVisibilityChange }) {
+   const typeRef = useTypeReveal(typeTimelines.hero, 'hero')
+   return (
+-    <section id="home" className="section hero" ref={typeRef}>
++    <section id="home" className={`section hero${aquariumEnabled || aquariumPreview ? ' hero--aquarium' : ''}`} ref={typeRef}>
++      <div className="hero-arrival-water" aria-hidden="true">
++        <HeroAquarium
++          enabled={aquariumEnabled}
++          preview={aquariumPreview}
++          sceneReady={aquariumReady}
++          performanceMode={performanceMode}
++          onVisibilityChange={onAquariumVisibilityChange}
++        />
++      </div>
+       <div className="hero__content">
+-        <p className="hero__eyebrow">
+-          <span className="hero__status-dot" aria-hidden="true" />
+-          {contact.availability}
+-        </p>
+-
+-        <h1 className="hero__title">{profile.name.split(' ').map((word) => (
+-          <span key={word} className="hero__title-word">{word}</span>
+-        ))}{'.'}</h1>
++        <h1 className="hero__title">{profile.name}.</h1>
+         <p className="hero__role">{profile.role}</p>
+-
+-        <div className="hero__actions">
+-          <ActionButton
+-            className="btn btn--primary"
+-            onClick={() => scrollToSection('projects')}
+-          >
+-            View my projects
+-          </ActionButton>
+-          <ActionButton
+-            className="btn btn--ghost"
+-            onClick={() => scrollToSection('contact')}
+-          >
+-            Contact me
+-          </ActionButton>
+-          <ActionButton
+-            as="a"
+-            href={profile.cvUrl}
+-            target="_blank"
+-            rel="noreferrer"
+-            className="btn btn--ghost"
+-          >
+-            My CV
+-          </ActionButton>
+-        </div>
+-
+-        <dl className="hero__stats">
+-          {stats.map((stat) => (
+-            <div key={stat.label} className="hero__stat">
+-              <dt className="hero__stat-label">{stat.label}</dt>
+-              <dd className="hero__stat-value">{stat.value}</dd>
+-            </div>
+-          ))}
+-        </dl>
+-
+-        <p className="hero__meta">{profile.location} · {contact.responseTime}</p>
+       </div>
+ 
+       {onDiveAgain && (
+diff --git a/src/components/Navbar.jsx b/src/components/Navbar.jsx
+index 825c81b..2c645e8 100644
+--- a/src/components/Navbar.jsx
++++ b/src/components/Navbar.jsx
+@@ -1,8 +1,9 @@
+-import { useEffect, useRef, useState } from 'react'
++import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+ import useSectionProgress from '../hooks/useSectionProgress.js'
+ import { scrollToSection } from '../animation/scrollTo.js'
+-import { useGSAP } from '../animation/gsap.js'
++import { gsap, useGSAP } from '../animation/gsap.js'
+ import { nudgeActiveLabel, playNavEntry, syncIndicator } from '../animation/navbar.js'
++import { dockProgress } from '../animation/diveArrival.js'
+ 
+ const LINKS = [
+   { id: 'about', label: 'About' },
+@@ -55,10 +56,50 @@ function MoonIcon() {
+   )
+ }
+ 
+-export default function Navbar({ diveActive = false, entered = true, diveProgress = 1, performanceMode = 'normal', onPerformanceModeChange = null }) {
++function SpeakerOnIcon() {
++  return (
++    <svg
++      width="18"
++      height="18"
++      viewBox="0 0 24 24"
++      fill="none"
++      stroke="currentColor"
++      strokeWidth="2"
++      strokeLinecap="round"
++      strokeLinejoin="round"
++      aria-hidden="true"
++    >
++      <path d="M11 5 6 9H2v6h4l5 4V5Z" />
++      <path d="M15.5 8.5a5 5 0 0 1 0 7M18.6 5.4a9 9 0 0 1 0 13.2" />
++    </svg>
++  )
++}
++
++function SpeakerOffIcon() {
++  return (
++    <svg
++      width="18"
++      height="18"
++      viewBox="0 0 24 24"
++      fill="none"
++      stroke="currentColor"
++      strokeWidth="2"
++      strokeLinecap="round"
++      strokeLinejoin="round"
++      aria-hidden="true"
++    >
++      <path d="M11 5 6 9H2v6h4l5 4V5Z" />
++      <path d="m22 9-6 6M16 9l6 6" />
++    </svg>
++  )
++}
++
++export default function Navbar({ diveActive = false, entered = true, diveProgress = 1, arrivalRef, performanceMode = 'normal', onPerformanceModeChange = null, musicOn = false, musicLoading = false, musicFailed = false, onMusicToggle = null }) {
+   const [open, setOpen] = useState(false)
+   const [theme, setTheme] = useState(getInitialTheme)
+   const themeToggleRef = useRef(null)
++  const dockRef = useRef(null)
++  const dockSourceRef = useRef(null)
+   const headerRef = useRef(null)
+   const linksRef = useRef(null)
+   const logoRef = useRef(null)
+@@ -72,7 +113,7 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
+     new URLSearchParams(window.location.search).has('nav-debug')
+   const { activeId, scrollY, reduced } = useSectionProgress()
+   const displayedActiveId = pendingNavId ?? activeId
+-  const scrolled = scrollY > 12
++  const scrolled = entered && scrollY > 12
+   const introHidden = diveActive && !entered
+   const holdNavbarPosition = diveActive && diveProgress < 1
+   
+@@ -86,6 +127,56 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
+     setOpen(false)
+   }, [holdNavbarPosition])
+ 
++  useLayoutEffect(() => {
++    const dock = dockRef.current
++    if (!dock || !arrivalRef) return
++    let timeline
++    let settleTween
++    let settled = false
++    const update = value => {
++      headerRef.current.style.setProperty('--arrival-progress', value)
++      const p = reduced ? Number(value === 1) : dockProgress(value)
++      if (!diveActive || p === 1) {
++        if (!diveActive || reduced || settled) {
++          settled = true
++          settleTween?.kill()
++          gsap.set(dock, { clearProps: 'transform' })
++        } else {
++          settled = true
++          settleTween = gsap.to(dock, { x: 0, y: 0, duration: 0.35, ease: 'power2.out', overwrite: 'auto', onComplete: () => gsap.set(dock, { clearProps: 'transform' }) })
++        }
++      } else {
++        settled = false
++        settleTween?.kill()
++        timeline?.progress(p)
++      }
++    }
++    const measure = () => {
++      timeline?.kill()
++      gsap.set(dock, { clearProps: 'transform' })
++      headerRef.current.style.removeProperty('--arrival-progress')
++      if (!diveActive) return
++      const to = dock.getBoundingClientRect()
++      const from = dockSourceRef.current.getBoundingClientRect()
++      timeline = gsap.fromTo(dock, { x: from.x - to.x, y: from.y - to.y }, { x: 0, y: 0, duration: 1, ease: 'none', paused: true })
++      update(arrivalRef.current.progress)
++    }
++    arrivalRef.current.update = update
++    measure()
++    const observer = new ResizeObserver(measure)
++    observer.observe(headerRef.current)
++    observer.observe(dock.parentElement)
++    window.addEventListener('resize', measure)
++    return () => {
++      observer.disconnect()
++      window.removeEventListener('resize', measure)
++      arrivalRef.current.update = null
++      timeline?.kill()
++      settleTween?.kill()
++      gsap.set(dock, { clearProps: 'transform' })
++    }
++  }, [arrivalRef, diveActive, reduced, entered])
++
+   const handleLinkClick = (id) => {
+     setOpen(false)
+     setPendingNavId(id)
+@@ -143,7 +234,7 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
+ 
+   useGSAP(
+     () => {
+-      if (reduced || entryPlayedRef.current || !entered) return
++      if (diveActive || reduced || entryPlayedRef.current || !entered) return
+       const header = headerRef.current
+       if (!header) return
+       header.classList.add('gsap-entry')
+@@ -162,7 +253,7 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
+         header.classList.remove('gsap-entry')
+       }
+     },
+-    { scope: headerRef, dependencies: [entered, reduced] }
++    { scope: headerRef, dependencies: [entered, reduced, diveActive] }
+   )
+ 
+   useGSAP(
+@@ -193,7 +284,6 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
+       ref={headerRef}
+       className={`navbar ${scrolled ? 'is-scrolled' : ''}`}
+       data-intro-hidden={introHidden || undefined}
+-      data-dive-locked={(diveActive && !entered) || undefined}
+     >
+       <div className="navbar__inner">
+         <a
+@@ -234,6 +324,36 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
+         </nav>
+ 
+         <div className="navbar__actions">
++          <span className="navbar__dock-source" ref={dockSourceRef} aria-hidden="true" />
++          <div className="navbar__dock" ref={dockRef}>
++          <button
++            type="button"
++            className="audio-toggle"
++            onClick={() => onMusicToggle && onMusicToggle()}
++            disabled={musicFailed || undefined}
++            aria-pressed={musicOn}
++            aria-busy={musicLoading || undefined}
++            aria-label={
++              musicFailed
++                ? 'Background music unavailable'
++                : musicLoading
++                  ? 'Loading background music…'
++                  : musicOn
++                    ? 'Turn background music off'
++                    : 'Turn background music on'
++            }
++            title={
++              musicFailed
++                ? 'Background music unavailable'
++                : musicLoading
++                  ? 'Loading background music…'
++                  : musicOn
++                    ? 'Turn background music off'
++                    : 'Turn background music on'
++            }
++          >
++            {musicOn ? <SpeakerOnIcon /> : <SpeakerOffIcon />}
++          </button>
+           <button
+             type="button"
+             className="theme-toggle"
+@@ -245,6 +365,7 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
+           >
+             {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+           </button>
++          </div>
+           <button
+             type="button"
+             className={`lite-toggle${lite ? ' is-on' : ''}`}
+diff --git a/src/components/Projects.jsx b/src/components/Projects.jsx
+index 4836a19..913a6ea 100644
+--- a/src/components/Projects.jsx
++++ b/src/components/Projects.jsx
+@@ -2,16 +2,12 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+ import { projects } from '../data/content.js'
+ import { PROJECTS_FISH } from '../data/fauna.js'
+ import AmbientFish from './AmbientFish.jsx'
+-import { typeTimelines, useTypeReveal } from '../animation/typography.js'
++import { gsap, prefersReducedMotion } from '../animation/gsap.js'
++import './projects-motion.css'
+ 
+ const N = projects.length
+-const CARD_GAP = 24
+-const DRAG_MIN = 60
+-const CLICK_SLOP = 8
+-const FLICK_VELOCITY = 0.5 // px/ms
+-const FLICK_MIN_DIST = 24
+-const WHEEL_THRESHOLD = 24
+-const WHEEL_COOLDOWN = 400 // ms
++const previewNames = ['Sinefolis', 'Crypto Assets NER', 'Emotion Classification', 'FootFit', 'DevPath', 'TixConzer']
++const previewImages = [null, 'heuristic', 'emotion', 'footfit', 'devpath', 'tixconzer']
+ 
+ function GitHubIcon() {
+   return (
+@@ -77,7 +73,7 @@ function technologyPreview(project) {
+     .join(' · ')
+ }
+ 
+-function ProjectBanner({ project, variant = 'card' }) {
++function ProjectBanner({ project, variant = 'card', deferPrototype = false, eager = false }) {
+   const banner = project.banner
+   const imageSrc = typeof banner === 'string'
+     ? banner
+@@ -85,14 +81,14 @@ function ProjectBanner({ project, variant = 'card' }) {
+       ? banner.src
+       : null
+   const hasImage = Boolean(imageSrc)
+-  const hasPrototype = banner?.type === 'figma' && Boolean(banner.url)
++  const hasPrototype = banner?.type === 'figma' && Boolean(banner.url) && !deferPrototype
+   const isDetail = variant === 'detail'
+   const preview = technologyPreview(project)
+ 
+   return (
+     <div className="slider-card__banner" aria-hidden={hasImage || hasPrototype ? undefined : 'true'}>
+       {hasImage ? (
+-        <img src={imageSrc} alt="" draggable="false" loading="lazy" />
++        <img src={imageSrc} alt="" draggable="false" loading={eager ? 'eager' : 'lazy'} />
+       ) : hasPrototype ? (
+         isDetail ? (
+           <iframe
+@@ -224,60 +220,86 @@ function ProjectActions({ links }) {
+   )
+ }
+ 
+-function ProjectCard({
+-  project,
+-  index,
+-  position,
+-  step,
+-  dragX,
+-  dragging,
+-  isActive,
+-  onSelect,
+-  onOpen,
+-  cardRef,
+-}) {
+-  const absPosition = Math.abs(position)
+-  const hidden = absPosition > 2
+-  const preview = technologyPreview(project)
+-  const offset = position * step + (dragX ?? 0)
+-  const sideOpacity =
+-    isActive ? 1 : absPosition === 1 ? 0.38 : 0
+-  const handleCardKeyDown = (e) => {
+-    if (e.key === 'Enter' || e.key === ' ') {
+-      e.preventDefault()
+-      if (isActive) onOpen(index)
+-      else onSelect(index)
++function sinefolisEmbedUrl(project) {
++  const source = (project.banner?.type === 'figma' && project.banner.url) || project.links?.prototype
++  if (!source || typeof source !== 'string') return null
++  try {
++    const url = new URL(source)
++    if (url.protocol !== 'https:') return null
++    if (url.hostname === 'embed.figma.com' || url.pathname.startsWith('/embed')) return source
++    if (url.hostname === 'figma.com' || url.hostname.endsWith('.figma.com')) {
++      return `https://www.figma.com/embed?embed_host=share&url=${encodeURIComponent(source)}`
+     }
++    return source
++  } catch {
++    return null
+   }
++}
++
++function ProjectCard({ project, index, position, featured, visible, cardRef, onActivate }) {
++  const image = previewImages[index]
++  const prototypeUrl = index === 0 ? sinefolisEmbedUrl(project) : null
++  const loadPrototype = Math.abs(position) <= 2
++
+   return (
+     <article
+       ref={cardRef}
+-      className={`slider-card${isActive ? ' is-active' : ''}${hidden ? ' is-hidden' : ''}`}
+-      style={{
+-        transform: `translateX(-50%) translateX(${offset}px) scale(${isActive ? 1 : 0.88})`,
+-        opacity: hidden ? 0 : sideOpacity,
+-        zIndex: 10 - absPosition,
+-        transition: dragging ? 'none' : undefined,
+-        pointerEvents: hidden ? 'none' : undefined,
+-        cursor: hidden ? 'default' : 'pointer',
+-      }}
+-      role="button"
+-      tabIndex={hidden ? -1 : 0}
+-      aria-label={isActive ? `Open details for ${project.title}` : `Show ${project.title}`}
+-      aria-hidden={hidden || undefined}
++      className="tidal-card"
+       data-project-index={index}
+-      onKeyDown={handleCardKeyDown}
++      data-position={position}
++      role="button"
++      tabIndex={visible ? 0 : -1}
++      aria-hidden={!visible}
++      aria-label={featured ? `Open case study: ${project.title}` : `Show ${project.title}`}
++      aria-haspopup={featured ? 'dialog' : undefined}
++      aria-controls={featured ? 'project-detail-dialog' : undefined}
++      onClick={onActivate}
++      onKeyDown={(event) => {
++        if (event.key === 'Enter' || event.key === ' ') {
++          event.preventDefault()
++          onActivate(event)
++        }
++      }}
+     >
+-      <ProjectBanner project={project} />
+-      <div className="slider-card__body">
+-        <h3 className="slider-card__title">{project.title}</h3>
+-        {(project.role || project.year) && (
+-          <p className="slider-card__meta">
+-            {[project.role, project.year].filter(Boolean).join(' · ')}
+-          </p>
++      <div className={`tidal-card__media${image ? '' : ' tidal-card__media--prototype'}`}>
++        {image ? (
++          <img
++            src={`/projects/${image}-960.webp`}
++            alt=""
++            width="960"
++            height="540"
++            loading="lazy"
++            decoding="async"
++            draggable="false"
++          />
++        ) : prototypeUrl ? (
++          <iframe
++            className="tidal-card__prototype-frame"
++            src={loadPrototype ? prototypeUrl : undefined}
++            title={`${project.title} live prototype preview`}
++            loading="lazy"
++            referrerPolicy="strict-origin-when-cross-origin"
++            allowFullScreen
++            aria-hidden="true"
++            tabIndex={-1}
++          />
++        ) : (
++          <div className="tidal-card__prototype-fallback" aria-hidden="true" />
+         )}
+-        <p className="slider-card__desc">{project.description}</p>
+-        {preview && <p className="slider-card__tech">{preview}</p>}
++      </div>
++      <div className="tidal-card__body">
++        <div className="tidal-card__content">
++          <p className="tidal-card__index">{String(index + 1).padStart(2, '0')} — Featured / {String(N).padStart(2, '0')}</p>
++          <p className="tidal-card__meta">{[project.role, project.year].filter(Boolean).join(' · ')}</p>
++          <h3 className="tidal-card__title">{project.title}</h3>
++          <p className="tidal-card__description">{project.description}</p>
++          <p className="tidal-card__tech">{technologyPreview(project)}</p>
++          <span className="tidal-card__action">Explore case study <span aria-hidden="true">↗</span></span>
++        </div>
++      </div>
++      <div className="tidal-card__preview" aria-hidden="true">
++        <span className="tidal-card__preview-kicker">Project {String(index + 1).padStart(2, '0')}</span>
++        <span className="tidal-card__name">{previewNames[index]}</span>
+       </div>
+     </article>
+   )
+@@ -346,16 +368,30 @@ function ProjectDetail({ project, detailRef, onClose }) {
+         aria-labelledby="project-detail-title"
+         className="slider-detail"
+         onClick={(e) => e.stopPropagation()}
++        onKeyDown={(e) => {
++          if (e.key !== 'Tab') return
++          const root = detailRef.current
++          if (!root) return
++          const items = root.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])')
++          if (!items.length) return
++          const first = items[0]
++          const last = items[items.length - 1]
++          if (e.shiftKey && document.activeElement === first) {
++            e.preventDefault()
++            last.focus()
++          } else if (!e.shiftKey && document.activeElement === last) {
++            e.preventDefault()
++            first.focus()
++          }
++        }}
+         style={{
+           position: 'relative',
+           width: 'min(920px, 100%)',
+           maxHeight: 'calc(100dvh - var(--project-detail-nav-height) - var(--project-detail-gap) - var(--project-detail-gap))',
+-          overflowY: 'auto',
+           margin: 0,
+-          paddingTop: 'clamp(24px, 3vw, 34px)',
+-          scrollbarGutter: 'stable',
+         }}
+       >
++        <div className="slider-detail__scroll">
+         <button
+           type="button"
+           className="slider-detail__close"
+@@ -385,7 +421,7 @@ function ProjectDetail({ project, detailRef, onClose }) {
+           <span aria-hidden="true">×</span>
+         </button>
+ 
+-        <ProjectBanner project={project} variant="detail" />
++        <ProjectBanner project={project} variant="detail" eager />
+         <header className="case-study__header">
+           <h3 id="project-detail-title" className="slider-detail__title">{project.title}</h3>
+           {(project.role || project.year) && (
+@@ -408,283 +444,501 @@ function ProjectDetail({ project, detailRef, onClose }) {
+           />
+         )}
+         <ProjectActions links={project.links || {}} />
++        </div>
+       </div>
+     </div>
+   )
+ }
+ 
+ function distance(index, active) {
+-  let d = (index - active) % N
+-  if (d >= N / 2) d -= N
+-  if (d < -N / 2) d += N
+-  return d
++  let value = (index - active) % N
++  if (value >= N / 2) value -= N
++  if (value < -N / 2) value += N
++  return value
++}
++
++const clamp = (value, min, max) => Math.max(min, Math.min(value, max))
++const interpolate = (start, end, amount) => start + (end - start) * amount
++const smoothstep = (start, end, value) => {
++  const position = clamp((value - start) / (end - start), 0, 1)
++  return position * position * (3 - 2 * position)
++}
++
++function getLayout(width) {
++  const mobile = width <= 760
++  const tablet = width > 760 && width <= 900
++  const compact = width > 900 && width <= 1100
++  const gap = mobile ? 12 : 20
++  const featuredWidth = mobile || tablet ? width : width * (compact ? 0.69 : 0.70)
++  const featuredHeight = mobile ? Math.round(width * 9 / 16) + 390 : tablet ? 470 : compact ? 500 : 460
++  const featuredMediaWidth = mobile ? featuredWidth : featuredWidth * (compact ? 0.48 : tablet ? 0.52 : 0.58)
++  const featuredMediaHeight = mobile ? Math.round(width * 9 / 16) : featuredHeight
++  const previewWidth = mobile || tablet ? (width - gap) / 2 : width * (compact ? 0.14 : 0.132)
++  const previewMediaWidth = mobile ? 62 : tablet ? 88 : previewWidth
++  const previewMediaHeight = mobile ? 70 : tablet ? 74 : Math.min(235, featuredHeight * 0.55)
++  const previewHeight = mobile ? 88 : tablet ? 90 : previewMediaHeight + 55
++  const below = mobile || tablet
++  const centerX = (width - featuredWidth) / 2
++  const previewY = below ? featuredHeight + 18 : (featuredHeight - previewHeight) / 2
++  const previewRightX = width - previewWidth
++  return {
++    mobile,
++    below,
++    width,
++    featuredWidth,
++    featuredHeight,
++    featuredMediaWidth,
++    featuredMediaHeight,
++    previewWidth,
++    previewMediaWidth,
++    previewMediaHeight,
++    previewHeight,
++    previewY,
++    centerX,
++    previewRightX,
++    bodyWidth: mobile ? featuredWidth : featuredWidth - featuredMediaWidth,
++    bodyHeight: mobile ? featuredHeight - featuredMediaHeight : featuredHeight,
++    stageHeight: below ? featuredHeight + previewHeight + 32 : featuredHeight + 4,
++  }
++}
++
++function geometry(position, layout) {
++  const side = position < 0 ? -1 : 1
++  const far = Math.abs(position) >= 2
++  if (position === 0) {
++    return {
++      x: layout.centerX, y: 0,
++      width: layout.featuredWidth, height: layout.featuredHeight,
++      mediaWidth: layout.featuredMediaWidth,
++      mediaHeight: layout.featuredMediaHeight,
++      reveal: 1, alpha: 1,
++    }
++  }
++  return {
++    x: far ? (side < 0 ? -layout.previewWidth - 36 : layout.width + 36)
++      : side < 0 ? 0 : layout.previewRightX,
++    y: layout.previewY,
++    width: layout.previewWidth,
++    height: layout.previewHeight,
++    mediaWidth: layout.previewMediaWidth,
++    mediaHeight: layout.previewMediaHeight,
++    reveal: 0,
++    alpha: far ? 0 : 1,
++  }
++}
++
++function paintCard(card, frame, layout) {
++  if (!card) return
++  const { x, y, width, height, mediaWidth, mediaHeight, reveal, alpha } = frame
++  const visible = alpha > 0.003
++  card.style.visibility = visible ? 'visible' : 'hidden'
++  card.style.pointerEvents = visible ? 'auto' : 'none'
++  if (!visible) return
++  card.style.opacity = String(alpha)
++  card.style.transform = `translate3d(${x}px, ${y}px, 0)`
++  card.style.width = `${width}px`
++  card.style.height = `${height}px`
++  card.style.setProperty('--tidal-feature', String(reveal))
++  const media = card.querySelector('.tidal-card__media')
++  const body = card.querySelector('.tidal-card__body')
++  const content = card.querySelector('.tidal-card__content')
++  const preview = card.querySelector('.tidal-card__preview')
++  if (media) {
++    media.style.width = `${mediaWidth}px`
++    media.style.height = `${mediaHeight}px`
++    media.style.borderRadius = `${interpolate(11, 0, reveal)}px`
++    media.style.opacity = '1'
++  }
++  if (body && content) {
++    body.style.width = `${layout.bodyWidth}px`
++    body.style.height = `${layout.bodyHeight}px`
++    body.style.left = layout.mobile ? '0px' : `${mediaWidth - (1 - reveal) * layout.bodyWidth}px`
++    body.style.top = layout.mobile ? `${mediaHeight - (1 - reveal) * layout.bodyHeight}px` : '0px'
++    content.style.width = `${layout.bodyWidth}px`
++    content.style.height = `${layout.bodyHeight}px`
++    body.style.visibility = reveal < 0.005 ? 'hidden' : 'visible'
++  }
++  if (preview) {
++    preview.style.opacity = String(frame.labelOpacity ?? (1 - reveal))
++    preview.style.left = layout.below ? `${mediaWidth + 9}px` : '0px'
++    preview.style.top = layout.below ? '7px' : `${mediaHeight + 10}px`
++    preview.style.width = layout.below ? `${Math.max(0, width - mediaWidth - 10)}px` : `${width}px`
++  }
+ }
+ 
+ export default function Projects() {
+-  const typeRef = useTypeReveal(typeTimelines.projects, 'projects-rail')
+   const [active, setActive] = useState(0)
+   const [detailOpen, setDetailOpen] = useState(false)
+-  const [dragX, setDragX] = useState(null)
+-  const [step, setStep] = useState(0)
+-  const [trackH, setTrackH] = useState(0)
++  const activeRef = useRef(0)
++  const detailOpenRef = useRef(false)
+   const cardRefs = useRef({})
+-  const gestureRef = useRef(null)
+-  const wheelRef = useRef(0)
++  const stageRef = useRef(null)
++  const trackRef = useRef(null)
++  const controlsRef = useRef(null)
+   const detailRef = useRef(null)
+-  const sliderViewportRef = useRef(null)
++  const layoutRef = useRef(null)
++  const animationRef = useRef(null)
++  const gestureRef = useRef(null)
++  const suppressClickRef = useRef(false)
++  const pendingDirectionRef = useRef(0)
++  const wheelRef = useRef({ acc: 0, last: 0, fired: false })
++  const navigateRef = useRef(null)
++  const preloadRef = useRef(false)
++  const entranceRef = useRef(null)
++  const gestureCleanupRef = useRef(null)
++
++  detailOpenRef.current = detailOpen
++
++  const paint = (from, direction = 0, progress = 0) => {
++    const layout = layoutRef.current
++    if (!layout) return
++    projects.forEach((_, index) => {
++      const original = distance(index, from)
++      const starting = geometry(original, layout)
++      const destination = geometry(original - direction, layout)
++      const frame = {}
++      Object.keys(starting).forEach((key) => {
++        frame[key] = interpolate(starting[key], destination[key], progress)
++      })
++      if (direction !== 0 && original === 0) {
++        frame.reveal = 1 - smoothstep(0, 0.65, progress)
++        frame.labelOpacity = smoothstep(0.78, 1, progress)
++      }
++      if (direction !== 0 && original === direction) {
++        frame.reveal = smoothstep(0.35, 1, progress)
++        frame.labelOpacity = 1 - smoothstep(0, 0.22, progress)
++      }
++      if (!layout.below && Math.abs(original) <= 1 && Math.abs(original - direction) <= 1) {
++        frame.mediaWidth = frame.width - frame.reveal * layout.bodyWidth
++      }
++      const card = cardRefs.current[index]
++      if (card) {
++        const incoming = original === direction
++        const outgoing = original === 0
++        card.style.zIndex = incoming ? '4' : outgoing ? '3' : '2'
++        paintCard(card, frame, layout)
++      }
++    })
++  }
+ 
+-  useLayoutEffect(() => {
+-    const measure = () => {
+-      const w = cardRefs.current[0]?.offsetWidth || 0
+-      setStep(w + CARD_GAP)
+-      const h = cardRefs.current[active]?.offsetHeight || 0
+-      if (h > 0) setTrackH(h)
++  const cancelEntrance = () => {
++    if (entranceRef.current) entranceRef.current.progress(1).kill()
++    entranceRef.current = null
++    const heading = stageRef.current?.closest('section')?.querySelector('.projects__head')
++    if (heading) gsap.set(heading.querySelectorAll('.section__title, .section__sub'), { clearProps: 'opacity,transform' })
++    if (trackRef.current) gsap.set(trackRef.current, { clearProps: 'opacity,transform' })
++    if (controlsRef.current) gsap.set(controlsRef.current, { clearProps: 'opacity,transform' })
++  }
++
++  const animate = (direction, start = 0, complete = true) => {
++    if (prefersReducedMotion()) {
++      if (complete) {
++        activeRef.current = (activeRef.current + direction + N) % N
++        setActive(activeRef.current)
++      }
++      paint(activeRef.current)
++      return
+     }
+-    measure()
+-    window.addEventListener('resize', measure)
+-    return () => window.removeEventListener('resize', measure)
+-  }, [active])
+-
+-  const go = (dir) => {
+-    setActive((a) => (a + dir + N) % N)
+-    setDetailOpen(false)
+-    setDragX(null)
++    cancelEntrance()
++    animationRef.current?.kill()
++    const from = activeRef.current
++    const tween = { progress: start }
++    const end = complete ? 1 : 0
++    const duration = Math.max(0.16, Math.abs(end - start) * (layoutRef.current?.mobile ? 0.88 : 1.12))
++    animationRef.current = gsap.to(tween, {
++      progress: end,
++      duration,
++      ease: complete ? 'power2.inOut' : 'power3.out',
++      onUpdate: () => paint(from, direction, tween.progress),
++      onComplete: () => {
++        animationRef.current = null
++        if (complete) {
++          activeRef.current = (from + direction + N) % N
++          setActive(activeRef.current)
++        }
++        paint(activeRef.current)
++        const pending = pendingDirectionRef.current
++        pendingDirectionRef.current = 0
++        if (pending) navigateRef.current?.(pending)
++      },
++    })
+   }
+ 
++  const navigate = (direction) => {
++    if (detailOpenRef.current) return
++    if (gestureRef.current?.dragging) return
++    if (animationRef.current) {
++      pendingDirectionRef.current = direction
++      return
++    }
++    animate(direction)
++  }
++
++  navigateRef.current = navigate
++
++  useLayoutEffect(() => {
++    const update = () => {
++      gestureCleanupRef.current?.()
++      const stage = stageRef.current
++      const track = trackRef.current
++      if (!stage || !track) return
++      animationRef.current?.progress(1)
++      const layout = getLayout(stage.clientWidth)
++      layoutRef.current = layout
++      track.style.height = `${layout.stageHeight}px`
++      paint(activeRef.current)
++    }
++    update()
++    window.addEventListener('resize', update)
++    return () => {
++      window.removeEventListener('resize', update)
++      gestureCleanupRef.current?.()
++      animationRef.current?.kill()
++    }
++  }, [])
++
++  useEffect(() => {
++    const stage = stageRef.current
++    const section = stage?.closest('section')
++    if (!stage || !section || prefersReducedMotion() || !('IntersectionObserver' in window)) return
++    const heading = section.querySelector('.projects__head .section__title')
++    const subtitle = section.querySelector('.projects__head .section__sub')
++    const targets = [heading, subtitle, trackRef.current, controlsRef.current].filter(Boolean)
++    gsap.set(targets, { opacity: 0 })
++    let played = false
++    let intersecting = false
++    const activate = () => {
++      if (played || !intersecting || document.body.style.overflow === 'hidden') return
++      played = true
++      intersection.disconnect()
++      readiness.disconnect()
++      const tl = gsap.timeline({ defaults: { ease: 'power2.out' } })
++      if (heading) tl.fromTo(heading, { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5 }, 0)
++      if (subtitle) tl.fromTo(subtitle, { y: 10, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45 }, 0.1)
++      if (trackRef.current) tl.fromTo(trackRef.current, { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7 }, 0.16)
++      if (controlsRef.current) tl.fromTo(controlsRef.current, { y: 10, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4 }, 0.38)
++      tl.set(targets, { clearProps: 'opacity,transform' })
++      entranceRef.current = tl
++    }
++    const intersection = new IntersectionObserver(([entry]) => {
++      intersecting = entry.isIntersecting && entry.intersectionRatio >= 0.18
++      activate()
++    }, { threshold: [0, 0.18, 0.4] })
++    const readiness = new MutationObserver(activate)
++    readiness.observe(document.body, { attributes: true, attributeFilter: ['style', 'class'] })
++    intersection.observe(stage)
++    return () => {
++      intersection.disconnect()
++      readiness.disconnect()
++      entranceRef.current?.kill()
++      gsap.set(targets, { clearProps: 'opacity,transform' })
++    }
++  }, [])
++
++  useEffect(() => {
++    if (preloadRef.current) return
++    const observer = new IntersectionObserver(([entry]) => {
++      if (!entry.isIntersecting || preloadRef.current) return
++      preloadRef.current = true
++      observer.disconnect()
++      previewImages.filter(Boolean).forEach((key) => {
++        const image = new Image()
++        image.src = `/projects/${key}-960.webp`
++        image.decode?.().catch(() => {})
++      })
++    }, { rootMargin: '600px' })
++    if (stageRef.current) observer.observe(stageRef.current)
++    return () => observer.disconnect()
++  }, [])
+ 
+   useEffect(() => {
+     if (!detailOpen) return
+-    const onKey = (e) => {
+-      if (e.key === 'Escape') setDetailOpen(false)
++    const onKey = (event) => {
++      if (event.key === 'Escape') setDetailOpen(false)
+     }
+     const previousOverflow = document.body.style.overflow
++    const previousPadding = document.body.style.paddingRight
++    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
+     document.body.style.overflow = 'hidden'
++    if (scrollbarWidth > 0) document.body.style.paddingRight = `${scrollbarWidth}px`
+     window.addEventListener('keydown', onKey)
+     detailRef.current?.focus({ preventScroll: true })
+     return () => {
+       window.removeEventListener('keydown', onKey)
+       document.body.style.overflow = previousOverflow
++      document.body.style.paddingRight = previousPadding
++      queueMicrotask(() => cardRefs.current[activeRef.current]?.focus({ preventScroll: true }))
+     }
+-  }, [detailOpen, active])
+-
+-  const handlePointerDown = (e) => {
+-    if (e.pointerType === 'mouse' && e.button !== 0) return
+-    if (e.target.closest('button, a')) return
+-    const card = e.target.closest('.slider-card')
+-    if (!card || card.classList.contains('is-hidden')) return
+-    const cardIndex = Number(card.dataset.projectIndex)
+-    if (!Number.isInteger(cardIndex)) return
+-
+-    gestureRef.current = {
+-      startX: e.clientX,
+-      startY: e.clientY,
+-      locked: false,
+-      moves: [],
+-      cardIndex,
++  }, [detailOpen])
++
++  const onPointerDown = (event) => {
++    if (event.button !== 0 || detailOpenRef.current || animationRef.current) return
++    const target = event.target.closest('.tidal-card')
++    if (!target || !stageRef.current?.contains(target)) return
++    const gesture = {
++      id: event.pointerId,
++      startX: event.clientX,
++      startY: event.clientY,
++      lastX: event.clientX,
++      lastTime: performance.now(),
++      velocity: 0,
++      dragging: false,
++      cancelled: false,
++      direction: 0,
++      progress: 0,
+     }
+-    try {
+-      e.currentTarget.setPointerCapture(e.pointerId)
+-    } catch {
++    gestureRef.current = gesture
++    const cleanup = () => {
++      window.removeEventListener('pointermove', move)
++      window.removeEventListener('pointerup', end)
++      window.removeEventListener('pointercancel', cancel)
++      if (stageRef.current) delete stageRef.current.dataset.dragging
++      gestureRef.current = null
++      gestureCleanupRef.current = null
+     }
+-  }
+-
+-  const handlePointerMove = (e) => {
+-    const g = gestureRef.current
+-    if (!g) return
+-    const dx = e.clientX - g.startX
+-    const dy = e.clientY - g.startY
+-    if (!g.locked) {
+-      if (Math.abs(dx) < CLICK_SLOP && Math.abs(dy) < CLICK_SLOP) return
+-      if (Math.abs(dx) < Math.abs(dy)) {
+-        gestureRef.current = null
+-        return
++    gestureCleanupRef.current = cleanup
++    const move = (pointerEvent) => {
++      if (pointerEvent.pointerId !== gesture.id || gesture.cancelled) return
++      const dx = pointerEvent.clientX - gesture.startX
++      const dy = pointerEvent.clientY - gesture.startY
++      if (!gesture.dragging) {
++        if (Math.abs(dy) > Math.abs(dx) * 1.15 && Math.abs(dy) > 10) {
++          gesture.cancelled = true
++          cleanup()
++          return
++        }
++        if (Math.abs(dx) < 9 || Math.abs(dx) < Math.abs(dy) * 1.15) return
++        gesture.dragging = true
++        cancelEntrance()
++        if (stageRef.current) stageRef.current.dataset.dragging = 'true'
+       }
+-      g.locked = true
++      pointerEvent.preventDefault()
++      const now = performance.now()
++      gesture.velocity = (pointerEvent.clientX - gesture.lastX) / Math.max(1, now - gesture.lastTime)
++      gesture.lastX = pointerEvent.clientX
++      gesture.lastTime = now
++      gesture.direction = dx < 0 ? 1 : -1
++      const width = layoutRef.current?.featuredWidth || 500
++      const travel = Math.min(460, Math.max(180, width * 0.5))
++      gesture.progress = clamp(Math.abs(dx) / travel, 0, 1)
++      paint(activeRef.current, gesture.direction, gesture.progress)
+     }
+-    g.moves.push({ x: e.clientX, t: performance.now() })
+-    if (g.moves.length > 6) g.moves.shift()
+-    setDragX(dx)
+-  }
+-
+-  const endGesture = (commit) => {
+-    const g = gestureRef.current
+-    gestureRef.current = null
+-    if (!g) return
+-    if (commit !== 0) go(commit)
+-    else setDragX(null)
+-  }
+-
+-  const handlePointerUp = (e) => {
+-    const g = gestureRef.current
+-    if (!g) return
+-
+-    if (!g.locked) {
+-      const cardIndex = g.cardIndex
+-      gestureRef.current = null
+-      setDragX(null)
+-      if (cardIndex !== active) selectProject(cardIndex)
+-      else openProject(cardIndex)
+-      return
++    const end = (pointerEvent) => {
++      if (pointerEvent.pointerId !== gesture.id) return
++      const dragging = gesture.dragging
++      const direction = gesture.direction
++      const progress = gesture.progress
++      const velocity = gesture.velocity
++      cleanup()
++      if (!dragging) return
++      suppressClickRef.current = true
++      window.setTimeout(() => { suppressClickRef.current = false }, 0)
++      const commit = progress > 0.23 || Math.abs(velocity) > 0.55
++      animate(direction, progress, commit)
+     }
+-
+-    const dx = e.clientX - g.startX
+-    const threshold = Math.max(DRAG_MIN, step * 0.25)
+-    let commit = 0
+-    if (dx <= -threshold) commit = 1
+-    else if (dx >= threshold) commit = -1
+-    else if (g.moves.length >= 2) {
+-      const first = g.moves[0]
+-      const last = g.moves[g.moves.length - 1]
+-      const dt = Math.max(last.t - first.t, 1)
+-      const v = (last.x - first.x) / dt
+-      if (v <= -FLICK_VELOCITY && dx <= -FLICK_MIN_DIST) commit = 1
+-      else if (v >= FLICK_VELOCITY && dx >= FLICK_MIN_DIST) commit = -1
++    const cancel = (pointerEvent) => {
++      if (pointerEvent.pointerId !== gesture.id) return
++      const dragging = gesture.dragging
++      const direction = gesture.direction
++      const progress = gesture.progress
++      cleanup()
++      if (dragging) animate(direction, progress, false)
+     }
+-    endGesture(commit)
+-  }
+-
+-  const handlePointerCancel = () => {
+-    gestureRef.current = null
+-    setDragX(null)
++    window.addEventListener('pointermove', move, { passive: false })
++    window.addEventListener('pointerup', end)
++    window.addEventListener('pointercancel', cancel)
+   }
+ 
+   useEffect(() => {
+-    const el = sliderViewportRef.current
+-    if (!el) return
+-
+-    const onWheel = (e) => {
+-      if (detailOpen || N < 2) return
+-      const delta =
+-        Math.abs(e.deltaX) > Math.abs(e.deltaY)
+-          ? e.deltaX
+-          : e.deltaY
+-
+-      const threshold = e.deltaMode === 0 ? WHEEL_THRESHOLD : 1
+-
+-      if (Math.abs(delta) < threshold) return
+-
+-      e.preventDefault()
+-      e.stopPropagation()
+-
++    const element = stageRef.current
++    if (!element) return
++    const onWheel = (event) => {
++      if (detailOpenRef.current || event.ctrlKey) return
++      const horizontal = Math.abs(event.deltaX) > Math.abs(event.deltaY)
++      const intentional = horizontal || event.shiftKey
++      if (!intentional) return
++      event.preventDefault()
++      const state = wheelRef.current
+       const now = performance.now()
+-      if (now - wheelRef.current < WHEEL_COOLDOWN) return
+-
+-      wheelRef.current = now
+-      go(delta > 0 ? 1 : -1)
++      if (now - state.last > 220) { state.acc = 0; state.fired = false }
++      state.last = now
++      if (state.fired) return
++      const delta = (horizontal ? event.deltaX : event.deltaY) * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? element.clientWidth : 1)
++      if (Math.sign(delta) !== Math.sign(state.acc)) state.acc = 0
++      state.acc += delta
++      if (Math.abs(state.acc) >= 56) {
++        state.fired = true
++        navigateRef.current?.(state.acc > 0 ? 1 : -1)
++      }
+     }
++    element.addEventListener('wheel', onWheel, { passive: false })
++    return () => element.removeEventListener('wheel', onWheel)
++  }, [])
+ 
+-    el.addEventListener('wheel', onWheel, { passive: false })
+-
+-    return () => {
+-      el.removeEventListener('wheel', onWheel)
++  const onRegionKeyDown = (event) => {
++    if (detailOpen || event.altKey || event.ctrlKey || event.metaKey) return
++    if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
++      event.preventDefault()
++      if (!event.repeat) navigate(event.key === 'ArrowRight' ? 1 : -1)
+     }
+-  }, [detailOpen])
++  }
+ 
+-  const handleRegionKeyDown = (e) => {
+-    if (e.key === 'ArrowRight') {
+-      e.preventDefault()
+-      go(1)
+-    } else if (e.key === 'ArrowLeft') {
+-      e.preventDefault()
+-      go(-1)
++  const activateProject = (index, event) => {
++    if (suppressClickRef.current || animationRef.current || event.detail > 1) return
++    if (index === activeRef.current) {
++      setDetailOpen(true)
++      return
+     }
++    navigate(distance(index, activeRef.current) < 0 ? -1 : 1)
+   }
+ 
+-  const dragging = dragX !== null
+   const activeProject = projects[active]
+ 
+-  const selectProject = (index) => {
+-    setActive(index)
+-    setDragX(null)
+-    setDetailOpen(false)
+-  }
+-
+-  const openProject = (index) => {
+-    setActive(index)
+-    setDragX(null)
+-    setDetailOpen(true)
+-  }
+-
+   return (
+-    <section id="projects" className="section projects" ref={typeRef}>
++    <section id="projects" className="section projects tidal-v3">
+       <AmbientFish sectionId="projects" defs={PROJECTS_FISH} mode="ambient" speed={0.15} trimTo={2} />
+       <div className="section__rail projects__head">
+         <h2 className="section__title">Projects</h2>
+-        <p className="section__sub">
+-          Selected systems, experiments, and things I&apos;ve built.
+-        </p>
++        <p className="section__sub">Selected systems, experiments, and things I&apos;ve built.</p>
+       </div>
+-
+       <div
+-        className="slider-region"
++        className="slider-region tidal-showcase"
+         role="region"
+         tabIndex={0}
+         aria-roledescription="carousel"
+-        aria-label="Projects carousel. Scroll, drag, swipe, or use arrow keys to browse. Click a side card to show it, click the active card for details."
+-        onKeyDown={handleRegionKeyDown}
++        aria-label="Projects carousel. Use arrow keys or swipe horizontally to browse. Select the featured project to explore its case study."
++        onKeyDown={onRegionKeyDown}
+       >
+-        <p className="sr-only" aria-live="polite">
+-          Showing {active + 1} of {N}: {activeProject.title}
+-        </p>
+-        <div
+-          ref={sliderViewportRef}
+-          className={`slider-viewport${dragging ? ' is-dragging' : ''}`}
+-          title="Scroll or drag to browse. Click a side card to show it, click the active card for details."
+-          style={{ overscrollBehavior: 'contain' }}
+-          onPointerDown={handlePointerDown}
+-          onPointerMove={handlePointerMove}
+-          onPointerUp={handlePointerUp}
+-          onPointerCancel={handlePointerCancel}
+-        >
+-          <div className="slider-track" style={trackH > 0 ? { height: trackH } : undefined}>
+-            {projects.map((project, index) => (
+-              <ProjectCard
+-                key={project.title}
+-                project={project}
+-                index={index}
+-                position={distance(index, active)}
+-                step={step}
+-                dragX={dragX}
+-                dragging={dragging}
+-                isActive={index === active}
+-                onSelect={selectProject}
+-                onOpen={openProject}
+-                cardRef={(el) => {
+-                  if (el) cardRefs.current[index] = el
+-                }}
+-              />
+-            ))}
++        <p className="sr-only" aria-live="polite">Showing {active + 1} of {N}: {activeProject.title}</p>
++        <div className="tidal-stage" ref={stageRef} onPointerDown={onPointerDown}>
++          <div className="tidal-track" ref={trackRef}>
++            {projects.map((project, index) => {
++              const position = distance(index, active)
++              return (
++                <ProjectCard
++                  key={project.title}
++                  project={project}
++                  index={index}
++                  position={position}
++                  featured={position === 0}
++                  visible={Math.abs(position) <= 1}
++                  cardRef={(element) => { cardRefs.current[index] = element }}
++                  onActivate={(event) => activateProject(index, event)}
++                />
++              )
++            })}
+           </div>
+         </div>
+-
+-        <div className="slider-controls">
+-          <button
+-            type="button"
+-            className="archive-specimen__link slider-control"
+-            onClick={() => go(-1)}
+-            aria-label="Show previous project"
+-          >
+-            <span aria-hidden="true">←</span>
+-            <span>Previous</span>
++        <div className="slider-controls" ref={controlsRef}>
++          <button type="button" className="archive-specimen__link slider-control" onClick={() => navigate(-1)} aria-label="Show previous project">
++            <span aria-hidden="true">←</span><span>Previous</span>
+           </button>
+-          <button
+-            type="button"
+-            className="archive-specimen__link slider-control"
+-            onClick={() => go(1)}
+-            aria-label="Show next project"
+-          >
+-            <span>Next</span>
+-            <span aria-hidden="true">→</span>
++          <p className="slider-counter" aria-hidden="true"><span className="slider-counter__current">{String(active + 1).padStart(2, '0')}</span><span className="slider-counter__sep"> / </span><span>{String(N).padStart(2, '0')}</span></p>
++          <button type="button" className="archive-specimen__link slider-control" onClick={() => navigate(1)} aria-label="Show next project">
++            <span>Next</span><span aria-hidden="true">→</span>
+           </button>
+         </div>
+-
+-        {detailOpen && (
+-          <ProjectDetail
+-            project={activeProject}
+-            detailRef={detailRef}
+-            onClose={() => setDetailOpen(false)}
+-          />
+-        )}
++        {detailOpen && <ProjectDetail project={activeProject} detailRef={detailRef} onClose={() => setDetailOpen(false)} />}
+       </div>
+     </section>
+   )
+diff --git a/src/hooks/useSectionProgress.js b/src/hooks/useSectionProgress.js
+index 691b3d0..873256d 100644
+--- a/src/hooks/useSectionProgress.js
++++ b/src/hooks/useSectionProgress.js
+@@ -54,6 +54,7 @@ function initialState() {
+     activeId: IDS[0],
+     scrollY: typeof window !== 'undefined' ? window.scrollY : 0,
+     dir: 'idle',
++    velocity: 0,
+     reduced:
+       typeof window !== 'undefined' &&
+       window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+@@ -63,10 +64,25 @@ function initialState() {
+ let centers = []
+ let prevIdx = null
+ let lastY = typeof window !== 'undefined' ? window.scrollY : 0
++let lastTime = 0
+ let raf = 0
+ let queued = false
+ let current = initialState()
+ const subscribers = new Set()
++// Frame-level subscribers: called on every rAF-throttled scroll update with
++// raw geometry (no React state involved), so cinematic scrubbing can write
++// DOM vars directly without re-rendering. Shares the existing scroll
++// listener and rAF loop — no additional global listeners are created.
++const frameSubscribers = new Set()
++export function subscribeProgressFrame(fn) {
++  frameSubscribers.add(fn)
++  ensureListening()
++  fn({ scrollY: window.scrollY, viewportH: window.innerHeight })
++  return () => {
++    frameSubscribers.delete(fn)
++    releaseListening()
++  }
++}
+ let listening = false
+ 
+ function snapshot() {
+@@ -87,6 +103,9 @@ function compute() {
+   prevIdx = idx
+   const y = window.scrollY
+   const dir = y > lastY + 1 ? 'down' : y < lastY - 1 ? 'up' : 'idle'
++  const now = performance.now()
++  const velocity = lastTime ? Math.max(0, (y - lastY) * 1000 / Math.max(now - lastTime, 16)) : 0
++  lastTime = now
+   lastY = y
+   const next = {
+     t,
+@@ -94,6 +113,7 @@ function compute() {
+     activeId: centers[idx] ? centers[idx].id : IDS[0],
+     scrollY: y,
+     dir,
++    velocity,
+     reduced: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+   }
+   if (
+@@ -107,6 +127,7 @@ function compute() {
+     current = next
+     subscribers.forEach((notify) => notify(next))
+   }
++  frameSubscribers.forEach((fn) => fn({ scrollY: y, viewportH: window.innerHeight }))
+ }
+ 
+ function schedule() {
+@@ -135,7 +156,7 @@ function ensureListening() {
+ }
+ 
+ function releaseListening() {
+-  if (!listening || subscribers.size > 0 || typeof window === 'undefined') return
++  if (!listening || subscribers.size + frameSubscribers.size > 0 || typeof window === 'undefined') return
+   listening = false
+   queued = false
+   window.removeEventListener('scroll', schedule)
+diff --git a/src/index.css b/src/index.css
+index c2bcc11..cb7ab18 100644
+--- a/src/index.css
++++ b/src/index.css
+@@ -306,7 +306,16 @@ main {
+   gap: 12px;
+ }
+ 
+-.theme-toggle {
++/* Shared Speaker + Theme dock: one coordinated unit for the dive
++   floating group and the Navbar slot (FLIP transform target). */
++.navbar__dock {
++  display: flex;
++  align-items: center;
++  gap: 12px;
++}
++
++.theme-toggle,
++.audio-toggle {
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+@@ -316,14 +325,24 @@ main {
+   border: 1px solid var(--line);
+   background: var(--bg-alt);
+   color: var(--text);
+-  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
++  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease, opacity 0.2s ease;
+ }
+ 
+-.theme-toggle:hover {
++.theme-toggle:hover,
++.audio-toggle:hover {
+   border-color: var(--accent);
+   color: var(--accent-ink);
+ }
+ 
++.audio-toggle[aria-busy='true'] {
++  opacity: 0.55;
++}
++
++.audio-toggle:disabled {
++  opacity: 0.4;
++  cursor: not-allowed;
++}
++
+ .lite-toggle {
+   box-sizing: border-box;
+   display: inline-flex;
+@@ -531,95 +550,30 @@ html[data-perf='lite'] .aqua-root.is-portfolio-unlocked .webgl-backdrop canvas {
+ }
+ 
+ .hero__content {
++  width: 100%;
+   max-width: 840px;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+ }
+ 
+-.hero__eyebrow {
+-  display: inline-flex;
+-  align-items: center;
+-  gap: 8px;
+-  font-family: var(--font-mono);
+-  font-size: 0.78rem;
+-  letter-spacing: 0.08em;
+-  text-transform: uppercase;
+-  color: var(--accent-ink);
+-  border: 1px solid rgba(29, 78, 216, 0.25);
+-  background: var(--accent-soft);
+-  padding: 8px 14px;
+-  border-radius: 999px;
+-  margin: 0 0 28px;
+-}
+-
+-.hero__status-dot {
+-  width: 8px;
+-  height: 8px;
+-  border-radius: 50%;
+-  background: var(--success);
+-}
+-
+ .hero__title {
+-  font-size: clamp(3.5rem, 9vw, 6rem);
+-  font-weight: 800;
+-  line-height: 1.02;
+-  letter-spacing: -0.03em;
++  max-width: 100%;
++  font-size: clamp(2.5rem, 7vw, 5.5rem);
++  font-weight: 700;
++  line-height: 1.1;
++  letter-spacing: -0.04em;
++  text-wrap: balance;
+ }
+ 
+ .hero__role {
+-  margin-top: 20px;
++  margin-top: clamp(12px, 2vw, 20px);
+   font-size: clamp(1.05rem, 2vw, 1.3rem);
+   color: var(--muted);
+   font-weight: 500;
+   max-width: 56ch;
+ }
+ 
+-.hero__actions {
+-  display: flex;
+-  justify-content: center;
+-  gap: 16px;
+-  margin-top: 40px;
+-  flex-wrap: wrap;
+-}
+-
+-.hero__stats {
+-  display: flex;
+-  justify-content: center;
+-  gap: 48px;
+-  max-width: 620px;
+-  margin: 56px auto 0;
+-  padding: 28px 0 0;
+-  border-top: 1px solid var(--line);
+-  flex-wrap: wrap;
+-}
+-
+-.hero__stat {
+-  display: flex;
+-  flex-direction: column-reverse;
+-  gap: 4px;
+-  margin: 0;
+-}
+-
+-.hero__stat-value {
+-  font-family: var(--font-display);
+-  font-size: 1.9rem;
+-  font-weight: 800;
+-  letter-spacing: -0.02em;
+-  margin: 0;
+-}
+-
+-.hero__stat-label {
+-  font-size: 0.85rem;
+-  color: var(--muted);
+-}
+-
+-.hero__meta {
+-  margin-top: 24px;
+-  font-size: 0.88rem;
+-  color: var(--muted);
+-}
+-
+ /* ---------- Hero water-ripple entrance (one-time, gated on .is-entered) ---------- */
+ .hero::before,
+ .hero::after {
+@@ -650,12 +604,10 @@ html[data-perf='lite'] .aqua-root.is-portfolio-unlocked .webgl-backdrop canvas {
+   100% { opacity: 0; transform: translate(-50%, -50%) scale(1.5); }
+ }
+ 
+-.is-entered .hero__eyebrow { animation: hero-rise 0.5s var(--ease-water) 450ms both; }
+ .is-entered .hero__title { animation: hero-rise 0.55s var(--ease-water) 550ms both; }
+-.is-entered .hero__role,
+-.is-entered .hero__actions { animation: hero-rise 0.5s var(--ease-water) 700ms both; }
+-.is-entered .hero__stats,
+-.is-entered .hero__meta { animation: hero-rise 0.5s var(--ease-water) 850ms both; }
++.is-entered .hero__role { animation: hero-rise 0.5s var(--ease-water) 700ms both; }
++.dive-arrived .is-entered .hero__title,
++.dive-arrived .is-entered .hero__role { animation: none; }
+ 
+ @keyframes hero-rise {
+   from { opacity: 0; transform: translateY(14px); }
+@@ -1216,10 +1168,6 @@ html:not([data-theme='dark']) .contact__hint {
+     padding-top: 140px;
+   }
+ 
+-  .hero__stats {
+-    gap: 28px;
+-  }
+-
+   .contact__grid {
+     grid-template-columns: 1fr;
+   }
+@@ -1253,6 +1201,8 @@ html:not([data-theme='dark']) .contact__hint {
+   }
+ 
+   .theme-toggle,
++  .audio-toggle,
++  .navbar__dock,
+   .lite-toggle,
+   .navbar__toggle {
+     box-sizing: border-box;
+@@ -1580,11 +1530,241 @@ html:not([data-theme='dark']) .contact__hint {
+ }
+ 
+ .aqua-root #home.hero {
++  max-width: none;
+   min-height: 100svh;
+   display: grid;
+   grid-template-columns: minmax(0, 1fr);
+   align-items: center;
+-  padding: 108px 32px 72px;
++  padding: 108px 32px;
++}
++
++/* Hero-only surface observatory. Posters are captures of the same scene. */
++.hero-aquarium {
++  position: absolute;
++  inset: 0;
++  z-index: 0;
++  overflow: hidden;
++  pointer-events: none;
++  visibility: hidden;
++  background-color: #90babd;
++  background-position: center;
++  background-size: cover;
++  --hero-poster: url('/aquarium/hero/surface-light.webp');
++}
++
++.hero-aquarium[data-enabled='true'] {
++  visibility: visible;
++  background-image: var(--hero-poster);
++}
++
++.hero-aquarium[data-preview='true'] {
++  visibility: visible;
++  background-image: var(--hero-poster);
++}
++
++.hero-arrival-water {
++  position: absolute;
++  inset: 0;
++  pointer-events: none;
++}
++
++.aqua-root[data-dive-arrival] {
++  --arrival-progress: 0;
++}
++
++.aqua-root[data-arrival-state='transition'] .hero-reveal {
++  will-change: opacity;
++}
++
++.aqua-root[data-arrival-state='transition'] :is(.hero-arrival-water, .navbar__dock) {
++  will-change: transform;
++}
++
++.aqua-root[data-dive-arrival] .hero-reveal {
++  opacity: var(--arrival-progress);
++}
++
++.aqua-root[data-dive-arrival] :is(.hero__title, .hero__role) {
++  animation: none !important;
++}
++
++.aqua-root[data-arrival-state='dive'] .hero-reveal {
++  visibility: hidden;
++}
++
++.aqua-root[data-dive-arrival]:not([data-arrival-state='settled']) .hero-arrival-water {
++  transform: scale(calc(1 + (1 - var(--arrival-progress)) * 0.055));
++}
++
++.aqua-root[data-dive-arrival] .hero-arrival-water::after {
++  content: '';
++  position: absolute;
++  inset: 0;
++  opacity: calc(var(--arrival-progress) * (1 - var(--arrival-progress)) * 0.65);
++  background: linear-gradient(160deg, rgba(205, 236, 241, 0.45), rgba(28, 92, 104, 0.3) 70%, transparent);
++}
++
++[data-theme='dark'] .aqua-root[data-dive-arrival] .hero-arrival-water::after {
++  background: linear-gradient(160deg, rgba(75, 145, 166, 0.35), rgba(2, 18, 30, 0.45) 70%, transparent);
++}
++
++.aqua-root[data-arrival-state='settled'] .hero-arrival-water::after {
++  content: none;
++}
++
++@media (max-width: 720px) {
++  .aqua-root[data-dive-arrival]:not([data-arrival-state='settled']) .hero-arrival-water {
++    transform: scale(calc(1 + (1 - var(--arrival-progress)) * 0.025));
++  }
++}
++
++@media (prefers-reduced-motion: reduce) {
++  .aqua-root[data-dive-arrival] .hero-arrival-water {
++    transform: none !important;
++  }
++
++  .aqua-root[data-dive-arrival] .hero-arrival-water::after {
++    content: none;
++  }
++}
++
++[data-theme='dark'] .hero-aquarium {
++  background-color: #0b2937;
++  --hero-poster: url('/aquarium/hero/surface-dark.webp');
++}
++
++.hero-aquarium canvas {
++  display: block;
++  width: 100%;
++  height: 100%;
++  opacity: 0;
++}
++
++.hero-aquarium[data-ready='true'] canvas {
++  opacity: 1;
++}
++
++/* SUBMERGE reveal (Phase 03C). The hero layer uncovers the fixed underwater
++   backdrop through an organic wave edge that recedes overhead as the
++   visitor descends — one continuous aquatic world, no rectangular seam.
++   --surface-depth stages the atmosphere; --dive-edge (0 = edge below the
++   hero, 1 = edge above it) positions the mask AND the highlight riding it,
++   so reveal and edge share geometry and progress. Both vars are scrubbed
++   per-frame by HeroAquarium (no transitions on scrubbed properties);
++   text, nav and controls are never touched. Neutral at both ends. */
++.hero-aquarium[data-enabled='true'] {
++  --surface-depth: 0;
++  --dive-edge: 0;
++  --dive-a: clamp(0, var(--surface-depth) / 0.25, 1);
++  --dive-band: max(0, min(var(--dive-edge) / 0.06, (0.93 - var(--dive-edge)) / 0.1, 1));
++  --dive-shaft: max(0, min((var(--surface-depth) - 0.58) / 0.08, (0.86 - var(--surface-depth)) / 0.08, 1));
++  --dive-shaft-bg:
++    linear-gradient(105deg, transparent 62%, rgba(205, 236, 241, calc(var(--dive-shaft) * 0.16)) 78%, transparent 92%),
++    linear-gradient(105deg, transparent 30%, rgba(205, 236, 241, calc(var(--dive-shaft) * 0.12)) 52%, transparent 68%);
++  --dive-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 220' preserveAspectRatio='none'%3E%3Cpath d='M0,0 L200,0 L200,114 C170,109 152,117 128,112 C102,107 86,118 62,113 C38,108 22,117 0,111 Z' fill='%23ffffff' fill-opacity='0.55'/%3E%3Cpath d='M0,0 L200,0 L200,107 C170,102 152,110 128,105 C102,100 86,111 62,106 C38,101 22,110 0,104 Z' fill='%23ffffff'/%3E%3C/svg%3E");
++  -webkit-mask-image: var(--dive-mask);
++  mask-image: var(--dive-mask);
++  -webkit-mask-size: 100% 220%;
++  mask-size: 100% 220%;
++  -webkit-mask-position: 50% calc(var(--dive-edge) * 100%);
++  mask-position: 50% calc(var(--dive-edge) * 100%);
++  -webkit-mask-repeat: no-repeat;
++  mask-repeat: no-repeat;
++  opacity: calc(1 - clamp((var(--surface-depth) - 0.9) / 0.1, 0, 1));
++  transform: scale(calc(1 + var(--dive-a) * 0.05));
++  transform-origin: 50% 42%;
++}
++
++/* The water-entry highlight. Anchored to the same --dive-edge as the mask
++   (band center = edge position), so it rides the reveal boundary instead
++   of floating over an independent crossfade. Scroll carries it upward
++   through the viewport — the surface receding overhead. */
++.hero-aquarium[data-enabled='true']::before {
++  content: '';
++  position: absolute;
++  left: -12%;
++  width: 124%;
++  top: 97.5%;
++  height: 17%;
++  transform: translateY(calc(var(--dive-edge) * -705.9%)) rotate(-2deg);
++  opacity: var(--dive-band);
++  background:
++    radial-gradient(38% 70% at 24% 48%, rgba(235, 248, 240, 0.5), transparent 70%),
++    radial-gradient(30% 60% at 68% 56%, rgba(225, 242, 223, 0.4), transparent 70%),
++    linear-gradient(180deg, transparent 10%, rgba(38, 84, 92, 0.30) 34%, rgba(242, 252, 246, 0.9) 50%, rgba(170, 220, 214, 0.4) 60%, transparent 86%);
++}
++
++[data-theme='dark'] .hero-aquarium[data-enabled='true']::before {
++  background:
++    radial-gradient(38% 70% at 24% 48%, rgba(150, 220, 226, 0.45), transparent 70%),
++    radial-gradient(30% 60% at 68% 56%, rgba(118, 196, 204, 0.38), transparent 70%),
++    linear-gradient(180deg, transparent 10%, rgba(1, 8, 16, 0.38) 34%, rgba(155, 225, 231, 0.8) 50%, rgba(60, 120, 138, 0.42) 58%, transparent 86%);
++}
++
++.hero-aquarium[data-enabled='true']::after {
++  content: '';
++  position: absolute;
++  inset: 0;
++  pointer-events: none;
++  opacity: var(--surface-depth);
++  background:
++    var(--dive-shaft-bg),
++    linear-gradient(180deg, rgba(144, 204, 214, 0) 20%, rgba(110, 185, 200, 0.35) 65%, rgba(28, 92, 104, 0.55) 100%);
++}
++
++[data-theme='dark'] .hero-aquarium[data-enabled='true'] {
++  --dive-shaft-bg:
++    linear-gradient(105deg, transparent 62%, rgba(118, 196, 204, calc(var(--dive-shaft) * 0.2)) 78%, transparent 92%),
++    linear-gradient(105deg, transparent 30%, rgba(118, 196, 204, calc(var(--dive-shaft) * 0.15)) 52%, transparent 68%);
++}
++
++[data-theme='dark'] .hero-aquarium[data-enabled='true']::after {
++  background:
++    var(--dive-shaft-bg),
++    linear-gradient(180deg, rgba(8, 39, 60, 0) 20%, rgba(10, 80, 96, 0.38) 65%, rgba(2, 18, 30, 0.6) 100%);
++}
++
++/* Lite Mode: same narrative, inexpensive only — poster approach + entry
++   accent, no underwater shafts, no WebGL. */
++html[data-perf='lite'] .hero-aquarium[data-enabled='true'] {
++  --dive-shaft-bg: none;
++}
++
++@media (prefers-reduced-motion: reduce) {
++  .hero-aquarium[data-enabled='true'],
++  .hero-aquarium[data-enabled='true']::before,
++  .hero-aquarium[data-enabled='true']::after {
++    transition: none;
++  }
++}
++
++.hero--aquarium::before,
++.hero--aquarium::after {
++  content: none;
++}
++
++.aqua-root .hero--aquarium .hero__title,
++.aqua-root .hero--aquarium .hero__role {
++  text-shadow: none;
++}
++
++@media (max-width: 720px) {
++  .hero-aquarium {
++    --hero-poster: url('/aquarium/hero/surface-light-mobile.webp');
++  }
++
++  /* Mobile approach: shorter travel, same narrative. */
++  .hero-aquarium[data-enabled='true'] {
++    transform: scale(calc(1 + var(--dive-a) * 0.03));
++  }
++
++  [data-theme='dark'] .hero-aquarium {
++    --hero-poster: url('/aquarium/hero/surface-dark-mobile.webp');
++  }
++
++  .hero--aquarium .hero__replay {
++    bottom: max(20px, env(safe-area-inset-bottom));
++  }
+ }
+ 
+ .aqua-root #home .hero__content {
+@@ -1592,7 +1772,6 @@ html:not([data-theme='dark']) .contact__hint {
+   grid-row: 1;
+   justify-self: center;
+   align-self: center;
+-  transform: translateY(-2svh);
+ }
+ 
+ .hero__replay {
+@@ -1604,6 +1783,7 @@ html:not([data-theme='dark']) .contact__hint {
+   flex-direction: column;
+   align-items: center;
+   gap: 3px;
++  min-height: 44px;
+   padding: 8px;
+   color: var(--aqua-muted);
+   background: transparent;
+@@ -1635,28 +1815,7 @@ html:not([data-theme='dark']) .contact__hint {
+ 
+ @media (max-width: 720px) {
+   .aqua-root #home.hero {
+-    padding: calc(var(--mobile-navbar-clearance) + 12px) 22px 32px;
+-    grid-template-rows: auto auto;
+-    align-content: safe center;
+-    align-items: start;
+-  }
+-
+-  .aqua-root #home .hero__replay {
+-    position: static;
+-    justify-self: center;
+-    margin: 24px 0 0;
+-    transform: none;
+-  }
+-
+-  .aqua-root #home .hero__content {
+-    width: 100%;
+-    transform: none;
+-  }
+-}
+-
+-@media (max-width: 720px) and (max-height: 830px) {
+-  .aqua-root #home .hero__stats {
+-    margin-top: 44px;
++    padding: calc(var(--mobile-navbar-clearance) + 12px) 22px 80px;
+   }
+ }
+ 
+@@ -1742,9 +1901,6 @@ html[data-perf='lite'] .aqua-root .footer {
+ 
+ .aqua-root .hero__title,
+ .aqua-root .hero__role,
+-.aqua-root .hero__meta,
+-.aqua-root .hero__stat-value,
+-.aqua-root .hero__stat-label,
+ .aqua-root .section__title,
+ .aqua-root .section__sub,
+ .aqua-root .footer__inner {
+@@ -1753,8 +1909,6 @@ html[data-perf='lite'] .aqua-root .footer {
+ }
+ 
+ .aqua-root .hero__role,
+-.aqua-root .hero__meta,
+-.aqua-root .hero__stat-label,
+ .aqua-root .section__sub {
+   color: var(--aqua-body);
+ }
+@@ -1765,13 +1919,6 @@ html[data-perf='lite'] .aqua-root .footer {
+   letter-spacing: 0.14em;
+ }
+ 
+-.aqua-root .hero__eyebrow {
+-  background: rgba(143, 180, 232, 0.10);
+-  border-color: rgba(180, 200, 230, 0.22);
+-  color: var(--aqua-ink);
+-}
+-
+-.aqua-root .hero__status-dot,
+ .aqua-root .contact__dot {
+   background: #7fc79a;
+   box-shadow: 0 0 8px rgba(127, 199, 154, 0.6);
+@@ -1885,7 +2032,8 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
+   translate: 0 -8px;
+ }
+ 
+-.navbar[data-intro-hidden='true'] .theme-toggle {
++.navbar[data-intro-hidden='true'] .theme-toggle,
++.navbar[data-intro-hidden='true'] .audio-toggle {
+   visibility: visible;
+   opacity: 1;
+   pointer-events: auto;
+@@ -1900,17 +2048,30 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
+   }
+ }
+ 
+-.navbar[data-dive-locked='true'] .theme-toggle {
++.navbar__dock-source {
+   position: fixed;
+-  top: 24px;
+-  right: 28px;
+-  z-index: 101;
+-  margin: 0;
+-  transition:
+-    transform 0.85s cubic-bezier(0.16, 1, 0.3, 1),
+-    border-color 0.2s ease,
+-    color 0.2s ease,
+-    background 0.2s ease;
++  top: max(20px, env(safe-area-inset-top));
++  right: max(24px, env(safe-area-inset-right));
++  width: 88px;
++  height: 38px;
++  visibility: hidden;
++  pointer-events: none;
++}
++
++.aqua-root[data-dive-arrival]:not([data-arrival-state='settled']) .navbar {
++  padding-block: 20px;
++  transition: none;
++}
++
++.aqua-root[data-dive-arrival] .navbar :is(.navbar__logo, .navbar__links, .navbar__toggle, .lite-toggle) {
++  visibility: visible;
++  opacity: clamp(0, (var(--arrival-progress) - 0.45) / 0.55, 1);
++  translate: none;
++  transition: none;
++}
++
++.aqua-root[data-dive-arrival] .navbar .lite-toggle {
++  opacity: clamp(0, (var(--arrival-progress) - 0.97) / 0.03, 1);
+ }
+ 
+ .aqua-root .navbar {
+@@ -2347,12 +2508,8 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
+   .reveal { opacity: 1; }
+   .hero::before,
+   .hero::after,
+-  .is-entered .hero__eyebrow,
+   .is-entered .hero__title,
+-  .is-entered .hero__role,
+-  .is-entered .hero__actions,
+-  .is-entered .hero__stats,
+-  .is-entered .hero__meta { animation: none !important; }
++  .is-entered .hero__role { animation: none !important; }
+   .fish.is-selected .fish__visual { opacity: 0; }
+   .footer-floor { transition: none; }
+ }
+@@ -2742,8 +2899,6 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
+   }
+ }
+ 
+-/* ---------- Projects: infinite card slider ---------- */
+-
+ .projects__head {
+   position: static;
+   top: auto;
+@@ -2763,163 +2918,395 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
+ }
+ 
+ .slider-region {
+-  max-width: 1440px;
++  max-width: 1680px;
+   margin: 0 auto;
+-  padding: 32px 32px 120px;
++  padding: 30px 40px 100px;
+ }
+ 
+-.slider-viewport {
+-  position: relative;
+-  overflow: hidden;
+-  touch-action: pan-y;
+-  cursor: grab;
++.projects__head {
++  max-width: 1680px;
++  padding: 96px 40px 0;
++  text-align: left;
+ }
+ 
+-.slider-viewport.is-dragging {
+-  cursor: grabbing;
+-  user-select: none;
+-  -webkit-user-select: none;
++.projects__head .section__sub {
++  margin-left: 0;
+ }
+ 
+-.slider-track {
+-  position: relative;
++.tidal-stage {
++  padding: 12px 0;
++  overflow: hidden;
++  touch-action: pan-y pinch-zoom;
+ }
+ 
+-.slider-card {
+-  position: absolute;
+-  left: 50%;
+-  top: 0;
+-  width: min(400px, 78vw);
+-  min-width: 0;
+-  display: flex;
+-  flex-direction: column;
+-  border: 1px solid var(--aqua-frame);
+-  border-radius: 18px;
+-  background: var(--aqua-card-bg);
+-  box-shadow: 0 8px 20px rgba(30, 60, 90, 0.12),
+-    inset 0 1px 0 rgba(255, 251, 243, 0.45),
+-    inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+-  backdrop-filter: blur(10px);
+-  -webkit-backdrop-filter: blur(10px);
+-  overflow: hidden;
+-  transition: transform 0.45s var(--ease-water), opacity 0.45s var(--ease-water);
+-  will-change: transform;
++.tidal-stage[data-dragging],
++.tidal-stage[data-dragging] .tidal-card {
++  cursor: grabbing;
+ }
+ 
+-[data-theme='dark'] .slider-card {
+-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14),
+-    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+-    inset 0 0 0 1px rgba(255, 255, 255, 0.04);
++.tidal-track {
++  display: grid;
++  grid-template-columns: minmax(120px, 1fr) minmax(0, 6fr) minmax(120px, 1fr);
++  gap: 24px;
++  align-items: center;
++  isolation: isolate;
+ }
+ 
+-.slider-card.is-hidden {
+-  visibility: hidden;
++.tidal-card {
++  min-width: 0;
++  grid-row: 1;
++  cursor: pointer;
++  color: var(--aqua-ink);
++  -webkit-user-select: none;
++  user-select: none;
+ }
+ 
+-.slider-card__banner {
++.tidal-card[hidden] { display: none; }
++.tidal-card[data-position='-1'] { grid-column: 1; }
++.tidal-card[data-position='1'] { grid-column: 3; }
++
++.tidal-card[data-position='0'] {
+   position: relative;
+-  aspect-ratio: 16 / 9;
++  grid-column: 2;
++  display: grid;
++  grid-template-columns: 58% 42%;
++  height: 460px;
++  border: 1px solid var(--aqua-frame);
++  background: color-mix(in srgb, var(--aqua-bg-0) 90%, var(--aqua-ink) 10%);
++  border-radius: 18px;
+   overflow: hidden;
+-  background: var(--aqua-pill-bg);
++  z-index: 2;
++  box-shadow: var(--aqua-card-shadow);
+ }
+ 
+-.slider-card__banner::after {
++.tidal-card[data-position='0']::before {
+   content: '';
+   position: absolute;
+-  left: 0;
+-  right: 0;
+-  bottom: 0;
+-  height: 42%;
+-  background: linear-gradient(180deg, transparent, rgba(166, 215, 222, 0.92));
++  top: 0;
++  left: 8%;
++  right: 8%;
++  height: 1px;
++  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
+   pointer-events: none;
+ }
+ 
+-.slider-card__banner img {
++.tidal-card:focus-visible {
++  outline: 2px solid var(--aqua-ink);
++  outline-offset: -3px;
++}
++
++.tidal-card__media {
++  min-width: 0;
++  aspect-ratio: 4 / 5;
++  overflow: hidden;
++  border-radius: 12px;
++  border: 1px solid var(--aqua-frame);
++  background: var(--aqua-pill-bg);
++}
++
++.tidal-card:not([data-position='0']) .tidal-card__media {
++  opacity: 0.72;
++}
++
++.tidal-card__media img {
++  display: block;
+   width: 100%;
+   height: 100%;
+   object-fit: cover;
+-  display: block;
+ }
+ 
+-.slider-card__banner-stub {
+-  position: absolute;
+-  inset: 0;
++.tidal-stage[data-moving='true'] .tidal-card {
++  will-change: transform, opacity;
++}
++
++.tidal-card[data-position='0'] .tidal-card__media {
++  height: 100%;
++  aspect-ratio: auto;
++  border: 0;
++  border-radius: 0;
++  opacity: 1;
++}
++
++.tidal-card[data-position='0'] .tidal-card__media img {
++  object-fit: cover;
++  transition: transform 0.5s var(--ease-water);
++}
++
++.tidal-card[data-position='0']:hover .tidal-card__media img,
++.tidal-card[data-position='0']:focus-visible .tidal-card__media img {
++  transform: scale(1.03);
++}
++
++.tidal-card[data-project-index='4'] img { object-position: 65% 50%; }
++
++.tidal-card__body {
++  display: none;
++}
++
++.tidal-card[data-position='0'] .tidal-card__body {
+   display: flex;
+-  align-items: center;
+-  justify-content: center;
+-  text-align: center;
+-  padding: 0 28px;
+-  font-family: var(--font-mono);
+-  font-size: 0.72rem;
+-  letter-spacing: 0.06em;
+-  color: var(--aqua-muted);
+-  line-height: 1.6;
++  overflow: hidden;
++  min-width: 0;
+ }
+ 
+-.slider-card__body {
++.tidal-card__content {
+   display: flex;
+   flex-direction: column;
+-  width: 100%;
++  flex: 1 0 auto;
+   min-width: 0;
+-  max-width: 100%;
+-  gap: 8px;
+-  padding: 20px 22px 22px;
++  padding: clamp(22px, 2.5vw, 40px);
++  border-left: 1px solid var(--aqua-frame);
+ }
+ 
+-.slider-card__title {
+-  font-size: clamp(1.15rem, 2vw, 1.45rem);
+-  font-weight: 700;
+-  letter-spacing: -0.01em;
+-  line-height: 1.3;
+-  color: var(--aqua-ink);
+-  text-wrap: balance;
+-  display: -webkit-box;
+-  -webkit-line-clamp: 2;
+-  -webkit-box-orient: vertical;
++.tidal-stage[data-morphing='true'] .tidal-card {
++  overflow: hidden;
++}
++
++.tidal-stage[data-morphing='true'] .tidal-card__body,
++.tidal-stage[data-dragging='true'] .tidal-card__body {
++  display: flex;
+   overflow: hidden;
+ }
+ 
+-.slider-card__meta {
++.tidal-stage[data-morphing='true'] .tidal-card[data-position='0'] .tidal-card__preview,
++.tidal-stage[data-dragging='true'] .tidal-card[data-position='0'] .tidal-card__preview {
++  display: flex;
++}
++
++.tidal-card__index {
++  display: none;
++  margin: 0 0 14px;
+   font-family: var(--font-mono);
+-  font-size: 0.7rem;
+-  letter-spacing: 0.1em;
++  font-size: 10px;
++  letter-spacing: 0.14em;
+   text-transform: uppercase;
+   color: var(--aqua-muted);
+-  white-space: nowrap;
+-  overflow: hidden;
+-  text-overflow: ellipsis;
++  font-variant-numeric: tabular-nums;
+ }
+ 
+-.slider-card__desc {
+-  width: 100%;
+-  min-width: 0;
+-  max-width: 100%;
+-  margin: 0;
+-  color: var(--aqua-body);
+-  font-size: 0.9rem;
++.tidal-card[data-position='0'] .tidal-card__index {
++  display: flex;
++  align-items: center;
++  gap: 10px;
++}
++
++.tidal-card__index::after {
++  content: '';
++  flex: 1;
++  height: 1px;
++  background: var(--aqua-frame);
++}
++
++.tidal-card__meta,
++.tidal-card__tech,
++.tidal-card__direction {
++  font-family: var(--font-mono);
++  color: var(--aqua-muted);
++  font-size: 10px;
+   line-height: 1.65;
++  letter-spacing: 0.045em;
++}
++
++.tidal-card__meta {
++  margin: 0 0 14px;
++  text-transform: uppercase;
++}
++
++.tidal-card__title {
++  font-family: var(--font-display);
++  color: var(--aqua-ink);
++  font-size: clamp(21px, 1.75vw, 30px);
++  letter-spacing: -0.025em;
++  line-height: 1.14;
++  margin: 0 0 18px;
+   overflow-wrap: anywhere;
+-  display: -webkit-box;
+-  -webkit-line-clamp: 4;
+-  -webkit-box-orient: vertical;
+-  overflow: hidden;
++  text-wrap: balance;
+ }
+ 
+-.slider-card__tech {
++.tidal-card__description {
++  margin: 0 0 18px;
++  color: var(--aqua-body);
++  font-size: 14px;
++  line-height: 1.65;
++}
++
++.tidal-card__tech {
++  margin: 0 0 18px;
++}
++
++.tidal-card__action {
++  display: flex;
++  justify-content: space-between;
++  align-items: center;
++  gap: 12px;
++  min-height: 44px;
++  margin-top: auto;
++  padding-top: 14px;
++  border-top: 1px solid var(--aqua-frame);
++  color: var(--aqua-ink);
++  font-size: 12px;
++  font-weight: 600;
++}
++
++.tidal-card__action > span { font-size: 22px; transition: transform 0.3s var(--ease-water); }
++.tidal-card[data-position='0']:hover .tidal-card__action > span { transform: translate(2px, -2px); }
++.tidal-card[data-position='0'] .tidal-card__preview { display: none; }
++
++.tidal-card__preview {
++  display: flex;
++  flex-direction: column;
++  gap: 8px;
++  padding: 14px 4px 16px;
++  border-top: 1px solid var(--aqua-frame);
++}
++
++.tidal-card__direction { text-transform: uppercase; }
++.tidal-card__name { font-size: 13px; line-height: 1.45; font-weight: 600; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
++
++.tidal-prototype {
++  height: 100%;
++  display: flex;
++  flex-direction: column;
++  justify-content: space-between;
++  padding: clamp(16px, 3vw, 44px);
++  color: var(--aqua-ink);
++  background: linear-gradient(145deg, var(--aqua-pill-bg), var(--aqua-bg-0));
++}
++
++.tidal-prototype > span {
+   font-family: var(--font-mono);
+-  font-size: 0.7rem;
+-  letter-spacing: 0.06em;
+-  color: var(--aqua-muted);
+-  white-space: nowrap;
+-  overflow: hidden;
+-  text-overflow: ellipsis;
++  font-size: 10px;
++  letter-spacing: 0.12em;
++  line-height: 1.6;
++}
++
++.tidal-prototype > strong {
++  font-family: var(--font-display);
++  font-size: clamp(26px, 4.4vw, 72px);
++  font-weight: 700;
++  letter-spacing: -0.03em;
++}
++
++.tidal-prototype > strong > span {
++  display: block;
++  font-family: var(--font-mono);
++  font-size: 11px;
++  letter-spacing: 0;
++  margin-top: 12px;
++}
++
++.tidal-prototype__ticket {
++  display: flex;
++  justify-content: space-between;
++  border-top: 1px solid var(--aqua-frame);
++  padding-top: 16px;
+ }
+ 
++.tidal-card:not([data-position='0']) .tidal-prototype { padding: 14px; }
++.tidal-card:not([data-position='0']) .tidal-prototype > strong { font-size: 22px; }
++.tidal-card:not([data-position='0']) .tidal-prototype > span,
++.tidal-card:not([data-position='0']) .tidal-prototype > strong > span { display: none; }
++
+ .slider-controls {
+   display: flex;
+-  gap: 10px;
++  gap: 24px;
+   justify-content: center;
+-  margin-top: 28px;
++  align-items: center;
++  margin-top: 22px;
++  padding-top: 18px;
++  border-top: 1px solid var(--aqua-frame);
++}
++
++.slider-control { min-height: 44px; min-width: 44px; }
++
++.slider-control span[aria-hidden='true'] {
++  display: inline-block;
++  transition: transform 0.3s var(--ease-water);
++}
++
++.slider-control:first-of-type:hover span[aria-hidden='true'] { transform: translateX(-3px); }
++.slider-control:last-of-type:hover span[aria-hidden='true'] { transform: translateX(3px); }
++
++.slider-counter {
++  margin: 0;
++  min-width: 64px;
++  text-align: center;
++  font-family: var(--font-mono);
++  font-size: 11px;
++  letter-spacing: 0.1em;
++  color: var(--aqua-muted);
++  font-variant-numeric: tabular-nums;
++  white-space: nowrap;
++}
++
++.slider-counter__current { color: var(--aqua-ink); display: inline-block; }
++
++.slider-card__banner {
++  position: relative;
++  aspect-ratio: 16 / 9;
++  overflow: hidden;
++  background: var(--aqua-pill-bg);
++}
++
++.slider-card__banner img { width: 100%; height: 100%; object-fit: cover; display: block; }
++.slider-card__banner-stub { color: var(--aqua-muted); }
++
++@media (max-width: 1100px) {
++  .slider-region { padding-inline: 24px; }
++  .projects__head { padding-inline: 24px; }
++  .tidal-track { grid-template-columns: minmax(140px, 1fr) minmax(0, 5fr) minmax(140px, 1fr); gap: 18px; }
++  .tidal-card[data-position='0'] { grid-template-columns: 48% 52%; height: 500px; }
++  .tidal-card[data-position='0'] .tidal-card__content { padding: 24px; border-left: 1px solid var(--aqua-frame); }
++  .tidal-card__title { font-size: 23px; }
++}
++
++@media (max-width: 900px) {
++  .tidal-track { grid-template-columns: 1fr 1fr; gap: 16px; }
++  .tidal-card[data-position='0'] { grid-column: 1 / -1; grid-template-columns: 52% 48%; min-height: 440px; height: auto; }
++  .tidal-card[data-position='-1'], .tidal-card[data-position='1'] {
++    display: flex;
++    grid-row: 2;
++    align-items: center;
++    gap: 14px;
++    min-height: 88px;
++  }
++  .tidal-card[data-position='1'] { grid-column: 2; }
++  .tidal-card:not([data-position='0']) .tidal-card__media { width: 88px; height: 72px; aspect-ratio: auto; flex-shrink: 0; }
++  .tidal-card__preview { padding: 4px 0; border-top: 0; }
++  .tidal-card__direction { font-size: 9px; }
++  .tidal-card__name { font-size: 12px; }
++  .tidal-card:not([data-position='0']) .tidal-prototype > strong { font-size: 13px; }
++  .tidal-card:not([data-position='0']) .tidal-prototype { padding: 8px; justify-content: center; }
++}
++
++@media (max-width: 760px) {
++  .slider-region { padding: 18px 20px 72px; }
++  .projects__head { padding: 72px 20px 0; }
++  .tidal-track { grid-template-columns: 1fr 1fr; }
++  .tidal-card[data-position='0'] { grid-column: 1 / -1; grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); min-height: 560px; height: auto; }
++  .tidal-card[data-position='0'] .tidal-card__media { height: auto; aspect-ratio: 16 / 9; border: 0; border-radius: 0; }
++  .tidal-card[data-position='0'] .tidal-card__content { padding: 22px; border-left: 0; border-top: 1px solid var(--aqua-frame); }
++  .tidal-card__title { font-size: 23px; margin-bottom: 14px; }
++  .tidal-card__meta { margin-bottom: 12px; }
++  .tidal-card__description { font-size: 13px; margin-bottom: 14px; }
++  .tidal-card__tech { margin-bottom: 12px; }
++  .tidal-prototype { padding: 18px 24px; }
++  .tidal-prototype > strong { font-size: 42px; }
++  .tidal-prototype > strong > span { margin-top: 4px; }
++  .tidal-prototype__ticket { padding-top: 8px; }
++  .tidal-prototype > span { font-size: 8px; }
++  .tidal-track { gap: 14px; }
++  .tidal-card:not([data-position='0']) .tidal-card__media { width: 56px; height: 60px; aspect-ratio: auto; }
++  .tidal-card[data-position='-1'], .tidal-card[data-position='1'] { gap: 10px; }
++  .tidal-card:not([data-position='0']) .tidal-prototype > strong { font-size: 10px; }
++  .slider-controls { justify-content: space-between; gap: 8px; margin-top: 16px; }
++}
++
++html[data-perf='lite'] .tidal-prototype { background: var(--aqua-pill-bg); }
++
++
++.slider-detail-overlay {
++  animation: detail-overlay-in 0.25s ease both;
+ }
+ 
+ .slider-detail {
+@@ -2933,11 +3320,35 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
+   box-shadow: var(--aqua-card-shadow), inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+   backdrop-filter: blur(10px);
+   -webkit-backdrop-filter: blur(10px);
+-  padding: 22px;
++  padding: 8px;
+   display: flex;
+   flex-direction: column;
+-  gap: 16px;
++  gap: 18px;
+   overflow: hidden;
++  animation: detail-rise 0.3s var(--ease-water) both;
++}
++
++.slider-detail__scroll {
++  display: flex;
++  flex-direction: column;
++  flex: 1 1 auto;
++  gap: 18px;
++  min-height: 0;
++  overflow-y: auto;
++  overflow-x: hidden;
++  scrollbar-gutter: stable;
++  padding: 14px;
++  padding-top: clamp(24px, 3vw, 34px);
++}
++
++@keyframes detail-overlay-in {
++  from { opacity: 0; }
++  to { opacity: 1; }
++}
++
++@keyframes detail-rise {
++  from { opacity: 0; transform: translateY(10px); }
++  to { opacity: 1; transform: none; }
+ }
+ 
+ .slider-detail:focus {
+@@ -3274,30 +3685,42 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
+ }
+ 
+ 
+-@media (max-width: 1100px) {
+-  .slider-card {
+-    width: min(340px, 78vw);
++@media (prefers-reduced-motion: reduce) {
++  .slider-card__banner img,
++  .tidal-card[data-position='0'] .tidal-card__media img,
++  .tidal-card__action > span,
++  .slider-control span[aria-hidden='true'] {
++    transition: none;
+   }
+ 
+-  .slider-card__desc {
+-    -webkit-line-clamp: 3;
++  .slider-detail-overlay,
++  .slider-detail {
++    animation: none;
+   }
+ }
+ 
+-@media (max-width: 720px) {
+-  .slider-card {
+-    width: 85vw;
+-  }
++html[data-perf='lite'] .slider-detail {
++  backdrop-filter: none;
++  -webkit-backdrop-filter: none;
++  box-shadow: 0 2px 10px rgba(30, 60, 90, 0.08);
++}
+ 
+-  .slider-card__desc {
+-    -webkit-line-clamp: 2;
+-  }
++html[data-perf='lite'] .slider-card__banner img,
++html[data-perf='lite'] .tidal-card[data-position='0'] .tidal-card__media img,
++html[data-perf='lite'] .tidal-card__action > span,
++html[data-perf='lite'] .slider-control span[aria-hidden='true'] {
++  transition: none;
+ }
+ 
+-@media (prefers-reduced-motion: reduce) {
+-  .slider-card {
+-    transition: none;
+-  }
++html[data-perf='lite'] .slider-detail-overlay {
++  animation: none;
++  backdrop-filter: none !important;
++  -webkit-backdrop-filter: none !important;
++  background: rgba(3, 11, 20, 0.72) !important;
++}
++
++html[data-perf='lite'] .slider-detail {
++  animation-duration: 0.15s;
+ }
+ 
+ 
+@@ -3326,12 +3749,10 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
+   border-color: var(--aqua-card-border-hover);
+ }
+ 
+-html:not([data-perf='lite']):not([data-theme='dark']) .slider-card,
+ html:not([data-perf='lite']):not([data-theme='dark']) .slider-detail {
+   background: color-mix(in srgb, var(--aqua-bg-0) 84%, white);
+ }
+ 
+-html[data-perf='lite']:not([data-theme='dark']) .slider-card,
+ html[data-perf='lite']:not([data-theme='dark']) .slider-detail {
+   background: color-mix(in srgb, var(--aqua-bg-0) 68%, transparent);
+ }
+@@ -3340,24 +3761,16 @@ html[data-perf='lite']:not([data-theme='dark']) .slider-card__banner {
+   background: var(--aqua-pill-bg);
+ }
+ 
+-html[data-perf='lite']:not([data-theme='dark']) .slider-card__banner::after {
+-  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--aqua-bg-0) 68%, transparent));
+-}
+-
+-html[data-perf='lite']:not([data-theme='dark']) .slider-detail__title,
+-html[data-perf='lite']:not([data-theme='dark']) .slider-card__title {
++html[data-perf='lite']:not([data-theme='dark']) .slider-detail__title {
+   color: var(--text);
+ }
+ 
+-html[data-perf='lite']:not([data-theme='dark']) .slider-card__desc,
+ html[data-perf='lite']:not([data-theme='dark']) .case-study__paragraph,
+ html[data-perf='lite']:not([data-theme='dark']) .case-study__item p,
+ html[data-perf='lite']:not([data-theme='dark']) .case-study__points li {
+   color: var(--aqua-ink);
+ }
+ 
+-html[data-perf='lite']:not([data-theme='dark']) .slider-card__meta,
+-html[data-perf='lite']:not([data-theme='dark']) .slider-card__tech,
+ html[data-perf='lite']:not([data-theme='dark']) .slider-card__banner-stub,
+ html[data-perf='lite']:not([data-theme='dark']) .case-study__meta,
+ html[data-perf='lite']:not([data-theme='dark']) .case-study__section-title,
+@@ -3539,14 +3952,6 @@ a.contact__item:hover .contact__link {
+ }
+ 
+ /* ---------- Phase 11B: GSAP typography handoff ---------- */
+-.hero__title-word {
+-  display: inline-block;
+-}
+-
+-.hero__title-word + .hero__title-word {
+-  margin-left: 0.24em;
+-}
+-
+ .depth-zone__label {
+   display: inline-block;
+ }
+@@ -3555,12 +3960,8 @@ a.contact__item:hover .contact__link {
+   animation: none;
+ }
+ 
+-.type-animated .hero__eyebrow,
+ .type-animated .hero__title,
+-.type-animated .hero__role,
+-.type-animated .hero__actions,
+-.type-animated .hero__stats,
+-.type-animated .hero__meta {
++.type-animated .hero__role {
+   animation: none !important;
+ }
+ 
+@@ -3753,6 +4154,12 @@ html:not([data-perf='lite']) .about-identity__portrait::after {
+   margin: 0;
+ }
+ 
++.about-identity__location {
++  margin-top: 10px;
++  font-size: 0.78rem;
++  color: var(--aqua-muted);
++}
++
+ @keyframes about-pulse {
+   0%, 100% { box-shadow: 0 0 0 0 rgba(127, 199, 154, 0.55); }
+   50% { box-shadow: 0 0 0 7px rgba(127, 199, 154, 0); }
+@@ -3798,6 +4205,36 @@ html:not([data-perf='lite']) .about-identity__portrait::after {
+   border-color: var(--aqua-card-border-hover);
+ }
+ 
++.about-intro__stats {
++  display: flex;
++  flex-wrap: wrap;
++  gap: 12px 32px;
++  margin: 20px 0 0;
++  padding-top: 16px;
++  border-top: 1px solid var(--aqua-line);
++}
++
++.about-intro__stat {
++  display: flex;
++  flex-direction: row-reverse;
++  align-items: baseline;
++  gap: 8px;
++}
++
++.about-intro__stat dt {
++  font-family: var(--font-mono);
++  font-size: 0.74rem;
++  color: var(--aqua-muted);
++}
++
++.about-intro__stat dd {
++  margin: 0;
++  font-family: var(--font-display);
++  font-size: 1.35rem;
++  font-weight: 700;
++  color: var(--aqua-ink);
++}
++
+ .about-intro__notes {
+   margin-top: 16px;
+   border-left: 2px solid var(--aqua-pill-border);
+@@ -4039,7 +4476,11 @@ html:not([data-perf='lite']) .about-edu__stop--live .about-edu__dot {
+     width: 150px;
+   }
+ 
+-  .about-intro__toggle,
++  .about-intro__toggle {
++    flex: 1 1 auto;
++    justify-content: center;
++  }
++
+   .about-edu__link {
+     width: 100%;
+     justify-content: center;
+@@ -4259,3 +4700,50 @@ html[data-perf='lite'] .about-card--education.about-rv .about-edu__fill {
+     transition: none;
+   }
+ }
++
++
++.tidal-stage[data-morphing='true'] .tidal-card {
++  position: relative;
++  display: block;
++  overflow: hidden;
++  min-height: 0;
++  min-width: 0;
++}
++
++.tidal-stage[data-morphing='true'] .tidal-card__media {
++  position: absolute;
++  aspect-ratio: auto;
++  min-width: 0;
++  max-width: none;
++  flex: none;
++}
++
++.tidal-stage[data-morphing='true'] .tidal-card__body,
++.tidal-stage[data-morphing='true'] .tidal-card__preview {
++  position: absolute;
++  display: flex;
++  min-width: 0;
++  overflow: hidden;
++}
++
++.tidal-stage[data-morphing='true'] .tidal-card__content {
++  min-width: 0;
++  flex: 0 0 auto;
++}
++
++.tidal-stage[data-morphing='true'] .tidal-card[data-position='0'] .tidal-card__preview {
++  display: flex;
++}
++
++.tidal-stage[data-morphing='true'] .tidal-card[data-position='0'] .tidal-card__media img {
++  transition: none;
++}
++
++.tidal-stage[data-morphing='true'] .tidal-card__index {
++  display: flex;
++}
++
++.tidal-stage[data-morphing='true'] .tidal-card[data-position='0']:hover .tidal-card__media img,
++.tidal-stage[data-morphing='true'] .tidal-card[data-position='0']:focus-visible .tidal-card__media img {
++  transform: none;
++}
+\ No newline at end of file

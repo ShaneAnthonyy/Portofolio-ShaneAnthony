@@ -32,12 +32,8 @@ function timeline() {
 
 export const typeTimelines = {
   hero(q, tl, s) {
-    rise(tl, q('.hero__eyebrow'), { y: 8, d: 0.4, at: 0, s })
-    rise(tl, q('.hero__title-word'), { y: 18, d: 0.6, at: 0.08, stagger: 0.08, s })
+    rise(tl, q('.hero__title'), { y: 18, d: 0.6, at: 0.08, s })
     rise(tl, q('.hero__role'), { y: 10, d: 0.5, at: 0.3, s })
-    rise(tl, q('.hero__actions .btn'), { y: 10, d: 0.45, at: 0.42, stagger: 0.06, s })
-    rise(tl, q('.hero__stat'), { y: 8, d: 0.45, at: 0.58, stagger: 0.06, s })
-    rise(tl, q('.hero__meta'), { y: 8, d: 0.4, at: 0.68, s })
     return tl
   },
   about(q, tl, s) {
@@ -57,11 +53,8 @@ export const typeTimelines = {
     return tl
   },
   projects(q, tl, s) {
-    rise(tl, q('.section__rail .section__eyebrow'), { y: 8, d: 0.4, at: 0, s })
-    rise(tl, q('.projects__registry'), { y: 8, d: 0.4, at: 0.08, s })
-    rise(tl, q('.section__rail .section__title'), { y: 18, d: 0.6, at: 0.14, s })
-    rise(tl, q('.section__rail .section__sub'), { y: 10, d: 0.5, at: 0.26, s })
-    rise(tl, q('.projects__count'), { y: 8, d: 0.4, at: 0.34, s })
+    rise(tl, q('.section__rail .section__title'), { y: 18, d: 0.6, at: 0.08, s })
+    rise(tl, q('.section__rail .section__sub'), { y: 10, d: 0.5, at: 0.2, s })
     return tl
   },
   certificates(q, tl, s) {
@@ -113,6 +106,10 @@ export function useTypeReveal(build, id) {
   useGSAP(() => {
     const scope = scopeRef.current
     if (!scope) return
+    if (id === 'hero' && scope.closest('[data-dive-arrival]')) {
+      scope.classList.add('type-animated')
+      return
+    }
     if (playedRef.current || playedSections.has(id)) {
       scope.classList.add('type-animated')
       if (playedSections.has(id)) tlog(id, 'SKIP-played')

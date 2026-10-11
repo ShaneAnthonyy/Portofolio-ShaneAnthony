@@ -1,57 +1,24 @@
-import ActionButton from './ActionButton.jsx'
-import { profile, stats, contact } from '../data/content.js'
+import { profile } from '../data/content.js'
 import { typeTimelines, useTypeReveal } from '../animation/typography.js'
-import { scrollToSection } from '../animation/scrollTo.js'
+import HeroAquarium from './HeroAquarium.jsx'
 
-export default function Hero({ onDiveAgain }) {
+export default function Hero({ onDiveAgain, aquariumEnabled = false, aquariumPreview = false, aquariumReady = false, aquariumPrewarm = false, performanceMode = 'normal', onAquariumVisibilityChange }) {
   const typeRef = useTypeReveal(typeTimelines.hero, 'hero')
   return (
-    <section id="home" className="section hero" ref={typeRef}>
+    <section id="home" className={`section hero${aquariumEnabled || aquariumPreview ? ' hero--aquarium' : ''}`} ref={typeRef}>
+      <div className="hero-arrival-water" aria-hidden="true">
+        <HeroAquarium
+          enabled={aquariumEnabled}
+          preview={aquariumPreview}
+          sceneReady={aquariumReady}
+          prewarm={aquariumPrewarm}
+          performanceMode={performanceMode}
+          onVisibilityChange={onAquariumVisibilityChange}
+        />
+      </div>
       <div className="hero__content">
-        <p className="hero__eyebrow">
-          <span className="hero__status-dot" aria-hidden="true" />
-          {contact.availability}
-        </p>
-
-        <h1 className="hero__title">{profile.name.split(' ').map((word) => (
-          <span key={word} className="hero__title-word">{word}</span>
-        ))}{'.'}</h1>
+        <h1 className="hero__title">{profile.name}.</h1>
         <p className="hero__role">{profile.role}</p>
-
-        <div className="hero__actions">
-          <ActionButton
-            className="btn btn--primary"
-            onClick={() => scrollToSection('projects')}
-          >
-            View my projects
-          </ActionButton>
-          <ActionButton
-            className="btn btn--ghost"
-            onClick={() => scrollToSection('contact')}
-          >
-            Contact me
-          </ActionButton>
-          <ActionButton
-            as="a"
-            href={profile.cvUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="btn btn--ghost"
-          >
-            My CV
-          </ActionButton>
-        </div>
-
-        <dl className="hero__stats">
-          {stats.map((stat) => (
-            <div key={stat.label} className="hero__stat">
-              <dt className="hero__stat-label">{stat.label}</dt>
-              <dd className="hero__stat-value">{stat.value}</dd>
-            </div>
-          ))}
-        </dl>
-
-        <p className="hero__meta">{profile.location} · {contact.responseTime}</p>
       </div>
 
       {onDiveAgain && (

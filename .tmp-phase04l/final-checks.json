@@ -1,0 +1,13 @@
+[
+  { "command": "npm run build", "exitCode": 0 },
+  { "command": "node scripts/check-arrival.mjs", "exitCode": 0 },
+  { "command": "node scripts/check-hero.mjs", "exitCode": 0 },
+  { "command": "node scripts/check-dive-mobile.mjs", "exitCode": 0 },
+  { "command": "node scripts/check-dive-landing.mjs", "exitCode": 0 },
+  { "command": "node scripts/check-dive-replay.mjs", "exitCode": 0 },
+  { "command": "node scripts/check-dive-interruptions.mjs", "exitCode": 0 },
+  { "command": "node scripts/check-dive-matrix.mjs", "exitCode": 0 },
+  { "command": "node scripts/check-dive-webgl.mjs", "exitCode": 0 },
+  { "command": "git diff --check", "exitCode": 0 },
+  { "command": "node scripts/capture-dive-motion.mjs", "exitCode": 0 }
+]

@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import useSectionProgress from '../hooks/useSectionProgress.js'
 import { scrollToSection } from '../animation/scrollTo.js'
-import { useGSAP } from '../animation/gsap.js'
+import { gsap, useGSAP } from '../animation/gsap.js'
 import { nudgeActiveLabel, playNavEntry, syncIndicator } from '../animation/navbar.js'
+import { dockProgress } from '../animation/diveArrival.js'
 
 const LINKS = [
   { id: 'about', label: 'About' },
@@ -55,10 +56,50 @@ function MoonIcon() {
   )
 }
 
-export default function Navbar({ diveActive = false, entered = true, diveProgress = 1, performanceMode = 'normal', onPerformanceModeChange = null }) {
+function SpeakerOnIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M11 5 6 9H2v6h4l5 4V5Z" />
+      <path d="M15.5 8.5a5 5 0 0 1 0 7M18.6 5.4a9 9 0 0 1 0 13.2" />
+    </svg>
+  )
+}
+
+function SpeakerOffIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M11 5 6 9H2v6h4l5 4V5Z" />
+      <path d="m22 9-6 6M16 9l6 6" />
+    </svg>
+  )
+}
+
+export default function Navbar({ diveActive = false, entered = true, diveProgress = 1, arrivalRef, performanceMode = 'normal', onPerformanceModeChange = null, musicOn = false, musicLoading = false, musicFailed = false, onMusicToggle = null }) {
   const [open, setOpen] = useState(false)
   const [theme, setTheme] = useState(getInitialTheme)
   const themeToggleRef = useRef(null)
+  const dockRef = useRef(null)
+  const dockSourceRef = useRef(null)
   const headerRef = useRef(null)
   const linksRef = useRef(null)
   const logoRef = useRef(null)
@@ -72,7 +113,7 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
     new URLSearchParams(window.location.search).has('nav-debug')
   const { activeId, scrollY, reduced } = useSectionProgress()
   const displayedActiveId = pendingNavId ?? activeId
-  const scrolled = scrollY > 12
+  const scrolled = entered && scrollY > 12
   const introHidden = diveActive && !entered
   const holdNavbarPosition = diveActive && diveProgress < 1
   
@@ -86,7 +127,47 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
     setOpen(false)
   }, [holdNavbarPosition])
 
+  useLayoutEffect(() => {
+    const dock = dockRef.current
+    if (!dock || !arrivalRef) return
+    let timeline
+    const update = value => {
+      headerRef.current.style.setProperty('--arrival-progress', value)
+      const p = reduced ? Number(value === 1) : dockProgress(value)
+      if (!diveActive || p === 1) {
+        timeline?.progress(1)
+        gsap.set(dock, { clearProps: 'transform' })
+      } else {
+        timeline?.progress(p)
+      }
+    }
+    const measure = () => {
+      timeline?.kill()
+      gsap.set(dock, { clearProps: 'transform' })
+      headerRef.current.style.removeProperty('--arrival-progress')
+      if (!diveActive) return
+      const to = dock.getBoundingClientRect()
+      const from = dockSourceRef.current.getBoundingClientRect()
+      timeline = gsap.fromTo(dock, { x: from.x - to.x, y: from.y - to.y }, { x: 0, y: 0, duration: 1, ease: 'none', paused: true })
+      update(arrivalRef.current.progress)
+    }
+    arrivalRef.current.update = update
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(headerRef.current)
+    observer.observe(dock.parentElement)
+    window.addEventListener('resize', measure)
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('resize', measure)
+      arrivalRef.current.update = null
+      timeline?.kill()
+      gsap.set(dock, { clearProps: 'transform' })
+    }
+  }, [arrivalRef, diveActive, reduced])
+
   const handleLinkClick = (id) => {
+    if (introHidden) return
     setOpen(false)
     setPendingNavId(id)
     if (isNavDebug) {
@@ -143,7 +224,7 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
 
   useGSAP(
     () => {
-      if (reduced || entryPlayedRef.current || !entered) return
+      if (diveActive || reduced || entryPlayedRef.current || !entered) return
       const header = headerRef.current
       if (!header) return
       header.classList.add('gsap-entry')
@@ -162,7 +243,7 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
         header.classList.remove('gsap-entry')
       }
     },
-    { scope: headerRef, dependencies: [entered, reduced] }
+    { scope: headerRef, dependencies: [entered, reduced, diveActive] }
   )
 
   useGSAP(
@@ -193,7 +274,6 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
       ref={headerRef}
       className={`navbar ${scrolled ? 'is-scrolled' : ''}`}
       data-intro-hidden={introHidden || undefined}
-      data-dive-locked={(diveActive && !entered) || undefined}
     >
       <div className="navbar__inner">
         <a
@@ -234,6 +314,36 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
         </nav>
 
         <div className="navbar__actions">
+          <span className="navbar__dock-source" ref={dockSourceRef} aria-hidden="true" />
+          <div className="navbar__dock" ref={dockRef}>
+          <button
+            type="button"
+            className="audio-toggle"
+            onClick={() => onMusicToggle && onMusicToggle()}
+            disabled={musicFailed || undefined}
+            aria-pressed={musicOn}
+            aria-busy={musicLoading || undefined}
+            aria-label={
+              musicFailed
+                ? 'Background music unavailable'
+                : musicLoading
+                  ? 'Loading background music…'
+                  : musicOn
+                    ? 'Turn background music off'
+                    : 'Turn background music on'
+            }
+            title={
+              musicFailed
+                ? 'Background music unavailable'
+                : musicLoading
+                  ? 'Loading background music…'
+                  : musicOn
+                    ? 'Turn background music off'
+                    : 'Turn background music on'
+            }
+          >
+            {musicOn ? <SpeakerOnIcon /> : <SpeakerOffIcon />}
+          </button>
           <button
             type="button"
             className="theme-toggle"
@@ -245,6 +355,7 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
           >
             {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
           </button>
+          </div>
           <button
             type="button"
             className={`lite-toggle${lite ? ' is-on' : ''}`}

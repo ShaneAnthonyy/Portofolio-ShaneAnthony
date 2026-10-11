@@ -1,0 +1,7 @@
+<!doctype html>
+<html><head><meta name="viewport" content="width=device-width, initial-scale=1"><style>body{margin:0}#scene{width:100vw;height:100vh}</style></head>
+<body><div id="scene" class="hero-aquarium"></div><script type="module">
+import { createHeroAquarium } from '/src/scenes/heroAquarium.js'
+window.aquarium = createHeroAquarium(document.querySelector('#scene'))
+window.aquarium.render(18)
+</script></body></html>

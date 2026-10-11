@@ -8,6 +8,7 @@ import Hero from './Hero.jsx'
 import { createScrollSign } from './MinecraftScrollSign.js'
 import useSectionProgress from '../hooks/useSectionProgress.js'
 import { resolveQuality, effectivePixelRatio } from '../animation/quality.js'
+import { arrivalProgress } from '../animation/diveArrival.js'
 
 
 const KEYS = [
@@ -612,7 +613,7 @@ function buildScene({ hideFarRocks, liteWater = false } = {}) {
   return { scene, water, waterMat, waterVolMat, disposables, temp, rockDefs, kelpDefs, trackLoaded, retireTemp, lightsBase }
 }
 
-export default function AquariumDivePrototype({ backdrop = false, integrated = false, onHealthy, onFail, onReturnComplete, onProgress, probeRef = null, children, diveProgress, introComplete = false, returningToP0 = false, qualityMode = 'normal' } = {}) {
+export default function AquariumDivePrototype({ backdrop = false, integrated = false, onHealthy, onFail, onReturnComplete, onProgress, onBackdropPaused, onArrivalProgress, pauseBackdrop = false, probeRef = null, children, diveProgress, introComplete = false, magneticLanding = false, landingRef, returningToP0 = false, qualityMode = 'normal' } = {}) {
   const mountRef = useRef(null)
   const heroRevealRef = useRef(null)
   const [debug, setDebug] = useState({ p: 0, phase: 'FRONT' })
@@ -631,8 +632,15 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
   const qualityModeRef = useRef(qualityMode)
   qualityModeRef.current = qualityMode
   const runtimeApplyRef = useRef(null)
-  const cbRef = useRef({ onHealthy, onFail, onReturnComplete, onProgress })
-  cbRef.current = { onHealthy, onFail, onReturnComplete, onProgress }
+  const pauseRef = useRef(pauseBackdrop)
+  pauseRef.current = pauseBackdrop
+  const loopControlRef = useRef(null)
+  const cbRef = useRef({ onHealthy, onFail, onReturnComplete, onProgress, onBackdropPaused, onArrivalProgress })
+  cbRef.current = { onHealthy, onFail, onReturnComplete, onProgress, onBackdropPaused, onArrivalProgress }
+
+  useLayoutEffect(() => {
+    loopControlRef.current?.()
+  }, [pauseBackdrop])
 
   useLayoutEffect(() => {
     if (!integratedRef.current || !prog.reduced || !sceneCommandRef.current) return
@@ -3154,6 +3162,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
     }
     const syncReducedScene = (p) => {
       const value = Math.min(Math.max(p, 0), 1)
+      cbRef.current.onArrivalProgress?.(Number(value >= 0.995), heroRevealRef.current)
       applyProgress(value)
       applyRevealVisuals(revealK(value))
       updateOutdoor(0, value, performance.now() / 1000, true)
@@ -3167,7 +3176,20 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
     sceneCommandRef.current = syncReducedScene
 
     let raf = 0
-    let displayed = reduced ? 1 : 0
+    let displayed = reduced || diveProgressRef.current === 1 ? 1 : 0
+    let renderLoop = null
+    // Finish the existing entry before handing GPU time to the Hero. The last
+    // underwater frame stays available beneath the boundary with About.
+    const parked = () => pauseRef.current && displayed >= 0.9995 && !returningRef.current
+    const syncLoop = () => {
+      cancelAnimationFrame(raf)
+      raf = 0
+      const paused = parked()
+      cbRef.current.onBackdropPaused?.(paused)
+      mount.dataset.renderState = paused ? 'paused' : document.hidden ? 'hidden' : reduced ? 'static' : 'running'
+      if (!cancelled && !paused && !document.hidden && renderLoop) raf = requestAnimationFrame(renderLoop)
+    }
+    loopControlRef.current = syncLoop
     const markHealthy = () => {
       if (cancelled) return
       readiness.frames += 1
@@ -3234,7 +3256,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
           markHealthy()
           raf = requestAnimationFrame(tickBackdrop)
         }
-        raf = requestAnimationFrame(tickBackdrop)
+        renderLoop = tickBackdrop
       }
     } else if (reduced) {
       syncReducedScene(integratedRef.current ? (diveProgressRef.current ?? progRef.current.dive) : 1)
@@ -3277,6 +3299,8 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
               cbRef.current.onReturnComplete && cbRef.current.onReturnComplete()
             }
           }
+        } else if (landingRef?.current.active || landingRef?.current.dive === 1) {
+          displayed = landingRef.current.dive
         } else {
           returnStartedAt = null
           returnDoneSent = false
@@ -3284,11 +3308,12 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
           if (Math.abs(goal - displayed) < 0.0005) displayed = goal
         }
         applyProgress(displayed)
+        cbRef.current.onArrivalProgress?.(arrivalProgress(displayed), heroRevealRef.current)
         applyRevealVisuals(revealK(displayed))
         updateOutdoor(dt, displayed, now / 1000, false)
         updateSign(now / 1000, displayed)
         lastP = displayed
-        if (displayed > 0.96) setHeroMounted(true)
+        if (!integratedRef.current && displayed > 0.96) setHeroMounted(true)
         onFrame(mount.clientWidth, mount.clientHeight)
         renderFrame(displayed, now / 1000)
         markHealthy()
@@ -3329,10 +3354,14 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
             setDebug({ p: displayed, phase })
           }
         }
-        raf = requestAnimationFrame(tick)
+        if (parked()) syncLoop()
+        else raf = requestAnimationFrame(tick)
       }
-      raf = requestAnimationFrame(tick)
+      renderLoop = tick
     }
+
+    document.addEventListener('visibilitychange', syncLoop)
+    syncLoop()
 
     const ro = new ResizeObserver(() => {
       onFrame(mount.clientWidth, mount.clientHeight)
@@ -3345,6 +3374,9 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       cancelAnimationFrame(raf)
       sceneCommandRef.current = null
       runtimeApplyRef.current = null
+      loopControlRef.current = null
+      document.removeEventListener('visibilitychange', syncLoop)
+      cbRef.current.onBackdropPaused?.(false)
       ro.disconnect()
       if (themeObs) themeObs.disconnect()
       disposables.forEach((d) => d.dispose && d.dispose())
@@ -3363,8 +3395,8 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
   const revealProgress = integratedRef.current
     ? returningToP0 ? debug.p : diveProgress ?? prog.dive
     : debug.p
-  const rp = smooth(Math.min(Math.max((revealProgress - 0.94) / 0.06, 0), 1))
   const revealed = revealProgress >= 0.94
+  const rp = smooth(Math.min(Math.max((revealProgress - 0.94) / 0.06, 0), 1))
 
   useLayoutEffect(() => {
     if (heroRevealRef.current) heroRevealRef.current.inert = !revealed
@@ -3376,7 +3408,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         <div
           id="portfolio-dive"
           className="portfolio-dive-spacer"
-          style={introComplete ? { height: 0 } : undefined}
+          style={introComplete || magneticLanding ? { height: 0 } : undefined}
         >
           <div
             ref={mountRef}
@@ -3392,11 +3424,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
             position: introComplete ? 'relative' : 'fixed',
             inset: introComplete ? undefined : 0,
             zIndex: 10,
-            opacity: rp,
-            visibility: revealed || rp > 0 ? 'visible' : 'hidden',
             pointerEvents: revealed ? 'auto' : 'none',
-            transform: `translate3d(0, ${8 * (1 - rp)}px, 0) scale(${0.985 + 0.015 * rp})`,
-            transition: 'opacity 0.75s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.75s cubic-bezier(0.2, 0.8, 0.2, 1)',
           }}
         >
           {children}

@@ -2,16 +2,12 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { projects } from '../data/content.js'
 import { PROJECTS_FISH } from '../data/fauna.js'
 import AmbientFish from './AmbientFish.jsx'
-import { typeTimelines, useTypeReveal } from '../animation/typography.js'
+import { gsap, prefersReducedMotion } from '../animation/gsap.js'
+import './projects-motion.css'
 
 const N = projects.length
-const CARD_GAP = 24
-const DRAG_MIN = 60
-const CLICK_SLOP = 8
-const FLICK_VELOCITY = 0.5 // px/ms
-const FLICK_MIN_DIST = 24
-const WHEEL_THRESHOLD = 24
-const WHEEL_COOLDOWN = 400 // ms
+const previewNames = ['Sinefolis', 'Crypto Assets NER', 'Emotion Classification', 'FootFit', 'DevPath', 'TixConzer']
+const previewImages = [null, 'heuristic', 'emotion', 'footfit', 'devpath', 'tixconzer']
 
 function GitHubIcon() {
   return (
@@ -77,7 +73,7 @@ function technologyPreview(project) {
     .join(' · ')
 }
 
-function ProjectBanner({ project, variant = 'card' }) {
+function ProjectBanner({ project, variant = 'card', deferPrototype = false, eager = false }) {
   const banner = project.banner
   const imageSrc = typeof banner === 'string'
     ? banner
@@ -85,14 +81,14 @@ function ProjectBanner({ project, variant = 'card' }) {
       ? banner.src
       : null
   const hasImage = Boolean(imageSrc)
-  const hasPrototype = banner?.type === 'figma' && Boolean(banner.url)
+  const hasPrototype = banner?.type === 'figma' && Boolean(banner.url) && !deferPrototype
   const isDetail = variant === 'detail'
   const preview = technologyPreview(project)
 
   return (
     <div className="slider-card__banner" aria-hidden={hasImage || hasPrototype ? undefined : 'true'}>
       {hasImage ? (
-        <img src={imageSrc} alt="" draggable="false" loading="lazy" />
+        <img src={imageSrc} alt="" draggable="false" loading={eager ? 'eager' : 'lazy'} />
       ) : hasPrototype ? (
         isDetail ? (
           <iframe
@@ -224,60 +220,86 @@ function ProjectActions({ links }) {
   )
 }
 
-function ProjectCard({
-  project,
-  index,
-  position,
-  step,
-  dragX,
-  dragging,
-  isActive,
-  onSelect,
-  onOpen,
-  cardRef,
-}) {
-  const absPosition = Math.abs(position)
-  const hidden = absPosition > 2
-  const preview = technologyPreview(project)
-  const offset = position * step + (dragX ?? 0)
-  const sideOpacity =
-    isActive ? 1 : absPosition === 1 ? 0.38 : 0
-  const handleCardKeyDown = (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault()
-      if (isActive) onOpen(index)
-      else onSelect(index)
+function sinefolisEmbedUrl(project) {
+  const source = (project.banner?.type === 'figma' && project.banner.url) || project.links?.prototype
+  if (!source || typeof source !== 'string') return null
+  try {
+    const url = new URL(source)
+    if (url.protocol !== 'https:') return null
+    if (url.hostname === 'embed.figma.com' || url.pathname.startsWith('/embed')) return source
+    if (url.hostname === 'figma.com' || url.hostname.endsWith('.figma.com')) {
+      return `https://www.figma.com/embed?embed_host=share&url=${encodeURIComponent(source)}`
     }
+    return source
+  } catch {
+    return null
   }
+}
+
+function ProjectCard({ project, index, position, featured, visible, cardRef, onActivate }) {
+  const image = previewImages[index]
+  const prototypeUrl = index === 0 ? sinefolisEmbedUrl(project) : null
+  const loadPrototype = Math.abs(position) <= 2
+
   return (
     <article
       ref={cardRef}
-      className={`slider-card${isActive ? ' is-active' : ''}${hidden ? ' is-hidden' : ''}`}
-      style={{
-        transform: `translateX(-50%) translateX(${offset}px) scale(${isActive ? 1 : 0.88})`,
-        opacity: hidden ? 0 : sideOpacity,
-        zIndex: 10 - absPosition,
-        transition: dragging ? 'none' : undefined,
-        pointerEvents: hidden ? 'none' : undefined,
-        cursor: hidden ? 'default' : 'pointer',
-      }}
-      role="button"
-      tabIndex={hidden ? -1 : 0}
-      aria-label={isActive ? `Open details for ${project.title}` : `Show ${project.title}`}
-      aria-hidden={hidden || undefined}
+      className="tidal-card"
       data-project-index={index}
-      onKeyDown={handleCardKeyDown}
+      data-position={position}
+      role="button"
+      tabIndex={visible ? 0 : -1}
+      aria-hidden={!visible}
+      aria-label={featured ? `Open case study: ${project.title}` : `Show ${project.title}`}
+      aria-haspopup={featured ? 'dialog' : undefined}
+      aria-controls={featured ? 'project-detail-dialog' : undefined}
+      onClick={onActivate}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault()
+          onActivate(event)
+        }
+      }}
     >
-      <ProjectBanner project={project} />
-      <div className="slider-card__body">
-        <h3 className="slider-card__title">{project.title}</h3>
-        {(project.role || project.year) && (
-          <p className="slider-card__meta">
-            {[project.role, project.year].filter(Boolean).join(' · ')}
-          </p>
+      <div className={`tidal-card__media${image ? '' : ' tidal-card__media--prototype'}`}>
+        {image ? (
+          <img
+            src={`/projects/${image}-960.webp`}
+            alt=""
+            width="960"
+            height="540"
+            loading="lazy"
+            decoding="async"
+            draggable="false"
+          />
+        ) : prototypeUrl ? (
+          <iframe
+            className="tidal-card__prototype-frame"
+            src={loadPrototype ? prototypeUrl : undefined}
+            title={`${project.title} live prototype preview`}
+            loading="lazy"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
+            aria-hidden="true"
+            tabIndex={-1}
+          />
+        ) : (
+          <div className="tidal-card__prototype-fallback" aria-hidden="true" />
         )}
-        <p className="slider-card__desc">{project.description}</p>
-        {preview && <p className="slider-card__tech">{preview}</p>}
+      </div>
+      <div className="tidal-card__body">
+        <div className="tidal-card__content">
+          <p className="tidal-card__index">{String(index + 1).padStart(2, '0')} — Featured / {String(N).padStart(2, '0')}</p>
+          <p className="tidal-card__meta">{[project.role, project.year].filter(Boolean).join(' · ')}</p>
+          <h3 className="tidal-card__title">{project.title}</h3>
+          <p className="tidal-card__description">{project.description}</p>
+          <p className="tidal-card__tech">{technologyPreview(project)}</p>
+          <span className="tidal-card__action">Explore case study <span aria-hidden="true">↗</span></span>
+        </div>
+      </div>
+      <div className="tidal-card__preview" aria-hidden="true">
+        <span className="tidal-card__preview-kicker">Project {String(index + 1).padStart(2, '0')}</span>
+        <span className="tidal-card__name">{previewNames[index]}</span>
       </div>
     </article>
   )
@@ -346,16 +368,30 @@ function ProjectDetail({ project, detailRef, onClose }) {
         aria-labelledby="project-detail-title"
         className="slider-detail"
         onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => {
+          if (e.key !== 'Tab') return
+          const root = detailRef.current
+          if (!root) return
+          const items = root.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])')
+          if (!items.length) return
+          const first = items[0]
+          const last = items[items.length - 1]
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault()
+            last.focus()
+          } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault()
+            first.focus()
+          }
+        }}
         style={{
           position: 'relative',
           width: 'min(920px, 100%)',
           maxHeight: 'calc(100dvh - var(--project-detail-nav-height) - var(--project-detail-gap) - var(--project-detail-gap))',
-          overflowY: 'auto',
           margin: 0,
-          paddingTop: 'clamp(24px, 3vw, 34px)',
-          scrollbarGutter: 'stable',
         }}
       >
+        <div className="slider-detail__scroll">
         <button
           type="button"
           className="slider-detail__close"
@@ -385,7 +421,7 @@ function ProjectDetail({ project, detailRef, onClose }) {
           <span aria-hidden="true">×</span>
         </button>
 
-        <ProjectBanner project={project} variant="detail" />
+        <ProjectBanner project={project} variant="detail" eager />
         <header className="case-study__header">
           <h3 id="project-detail-title" className="slider-detail__title">{project.title}</h3>
           {(project.role || project.year) && (
@@ -408,283 +444,501 @@ function ProjectDetail({ project, detailRef, onClose }) {
           />
         )}
         <ProjectActions links={project.links || {}} />
+        </div>
       </div>
     </div>
   )
 }
 
 function distance(index, active) {
-  let d = (index - active) % N
-  if (d >= N / 2) d -= N
-  if (d < -N / 2) d += N
-  return d
+  let value = (index - active) % N
+  if (value >= N / 2) value -= N
+  if (value < -N / 2) value += N
+  return value
+}
+
+const clamp = (value, min, max) => Math.max(min, Math.min(value, max))
+const interpolate = (start, end, amount) => start + (end - start) * amount
+const smoothstep = (start, end, value) => {
+  const position = clamp((value - start) / (end - start), 0, 1)
+  return position * position * (3 - 2 * position)
+}
+
+function getLayout(width) {
+  const mobile = width <= 760
+  const tablet = width > 760 && width <= 900
+  const compact = width > 900 && width <= 1100
+  const gap = mobile ? 12 : 20
+  const featuredWidth = mobile || tablet ? width : width * (compact ? 0.69 : 0.70)
+  const featuredHeight = mobile ? Math.round(width * 9 / 16) + 390 : tablet ? 470 : compact ? 500 : 460
+  const featuredMediaWidth = mobile ? featuredWidth : featuredWidth * (compact ? 0.48 : tablet ? 0.52 : 0.58)
+  const featuredMediaHeight = mobile ? Math.round(width * 9 / 16) : featuredHeight
+  const previewWidth = mobile || tablet ? (width - gap) / 2 : width * (compact ? 0.14 : 0.132)
+  const previewMediaWidth = mobile ? 62 : tablet ? 88 : previewWidth
+  const previewMediaHeight = mobile ? 70 : tablet ? 74 : Math.min(235, featuredHeight * 0.55)
+  const previewHeight = mobile ? 88 : tablet ? 90 : previewMediaHeight + 55
+  const below = mobile || tablet
+  const centerX = (width - featuredWidth) / 2
+  const previewY = below ? featuredHeight + 18 : (featuredHeight - previewHeight) / 2
+  const previewRightX = width - previewWidth
+  return {
+    mobile,
+    below,
+    width,
+    featuredWidth,
+    featuredHeight,
+    featuredMediaWidth,
+    featuredMediaHeight,
+    previewWidth,
+    previewMediaWidth,
+    previewMediaHeight,
+    previewHeight,
+    previewY,
+    centerX,
+    previewRightX,
+    bodyWidth: mobile ? featuredWidth : featuredWidth - featuredMediaWidth,
+    bodyHeight: mobile ? featuredHeight - featuredMediaHeight : featuredHeight,
+    stageHeight: below ? featuredHeight + previewHeight + 32 : featuredHeight + 4,
+  }
+}
+
+function geometry(position, layout) {
+  const side = position < 0 ? -1 : 1
+  const far = Math.abs(position) >= 2
+  if (position === 0) {
+    return {
+      x: layout.centerX, y: 0,
+      width: layout.featuredWidth, height: layout.featuredHeight,
+      mediaWidth: layout.featuredMediaWidth,
+      mediaHeight: layout.featuredMediaHeight,
+      reveal: 1, alpha: 1,
+    }
+  }
+  return {
+    x: far ? (side < 0 ? -layout.previewWidth - 36 : layout.width + 36)
+      : side < 0 ? 0 : layout.previewRightX,
+    y: layout.previewY,
+    width: layout.previewWidth,
+    height: layout.previewHeight,
+    mediaWidth: layout.previewMediaWidth,
+    mediaHeight: layout.previewMediaHeight,
+    reveal: 0,
+    alpha: far ? 0 : 1,
+  }
+}
+
+function paintCard(card, frame, layout) {
+  if (!card) return
+  const { x, y, width, height, mediaWidth, mediaHeight, reveal, alpha } = frame
+  const visible = alpha > 0.003
+  card.style.visibility = visible ? 'visible' : 'hidden'
+  card.style.pointerEvents = visible ? 'auto' : 'none'
+  if (!visible) return
+  card.style.opacity = String(alpha)
+  card.style.transform = `translate3d(${x}px, ${y}px, 0)`
+  card.style.width = `${width}px`
+  card.style.height = `${height}px`
+  card.style.setProperty('--tidal-feature', String(reveal))
+  const media = card.querySelector('.tidal-card__media')
+  const body = card.querySelector('.tidal-card__body')
+  const content = card.querySelector('.tidal-card__content')
+  const preview = card.querySelector('.tidal-card__preview')
+  if (media) {
+    media.style.width = `${mediaWidth}px`
+    media.style.height = `${mediaHeight}px`
+    media.style.borderRadius = `${interpolate(11, 0, reveal)}px`
+    media.style.opacity = '1'
+  }
+  if (body && content) {
+    body.style.width = `${layout.bodyWidth}px`
+    body.style.height = `${layout.bodyHeight}px`
+    body.style.left = layout.mobile ? '0px' : `${mediaWidth - (1 - reveal) * layout.bodyWidth}px`
+    body.style.top = layout.mobile ? `${mediaHeight - (1 - reveal) * layout.bodyHeight}px` : '0px'
+    content.style.width = `${layout.bodyWidth}px`
+    content.style.height = `${layout.bodyHeight}px`
+    body.style.visibility = reveal < 0.005 ? 'hidden' : 'visible'
+  }
+  if (preview) {
+    preview.style.opacity = String(frame.labelOpacity ?? (1 - reveal))
+    preview.style.left = layout.below ? `${mediaWidth + 9}px` : '0px'
+    preview.style.top = layout.below ? '7px' : `${mediaHeight + 10}px`
+    preview.style.width = layout.below ? `${Math.max(0, width - mediaWidth - 10)}px` : `${width}px`
+  }
 }
 
 export default function Projects() {
-  const typeRef = useTypeReveal(typeTimelines.projects, 'projects-rail')
   const [active, setActive] = useState(0)
   const [detailOpen, setDetailOpen] = useState(false)
-  const [dragX, setDragX] = useState(null)
-  const [step, setStep] = useState(0)
-  const [trackH, setTrackH] = useState(0)
+  const activeRef = useRef(0)
+  const detailOpenRef = useRef(false)
   const cardRefs = useRef({})
-  const gestureRef = useRef(null)
-  const wheelRef = useRef(0)
+  const stageRef = useRef(null)
+  const trackRef = useRef(null)
+  const controlsRef = useRef(null)
   const detailRef = useRef(null)
-  const sliderViewportRef = useRef(null)
+  const layoutRef = useRef(null)
+  const animationRef = useRef(null)
+  const gestureRef = useRef(null)
+  const suppressClickRef = useRef(false)
+  const pendingDirectionRef = useRef(0)
+  const wheelRef = useRef({ acc: 0, last: 0, fired: false })
+  const navigateRef = useRef(null)
+  const preloadRef = useRef(false)
+  const entranceRef = useRef(null)
+  const gestureCleanupRef = useRef(null)
 
-  useLayoutEffect(() => {
-    const measure = () => {
-      const w = cardRefs.current[0]?.offsetWidth || 0
-      setStep(w + CARD_GAP)
-      const h = cardRefs.current[active]?.offsetHeight || 0
-      if (h > 0) setTrackH(h)
-    }
-    measure()
-    window.addEventListener('resize', measure)
-    return () => window.removeEventListener('resize', measure)
-  }, [active])
+  detailOpenRef.current = detailOpen
 
-  const go = (dir) => {
-    setActive((a) => (a + dir + N) % N)
-    setDetailOpen(false)
-    setDragX(null)
+  const paint = (from, direction = 0, progress = 0) => {
+    const layout = layoutRef.current
+    if (!layout) return
+    projects.forEach((_, index) => {
+      const original = distance(index, from)
+      const starting = geometry(original, layout)
+      const destination = geometry(original - direction, layout)
+      const frame = {}
+      Object.keys(starting).forEach((key) => {
+        frame[key] = interpolate(starting[key], destination[key], progress)
+      })
+      if (direction !== 0 && original === 0) {
+        frame.reveal = 1 - smoothstep(0, 0.65, progress)
+        frame.labelOpacity = smoothstep(0.78, 1, progress)
+      }
+      if (direction !== 0 && original === direction) {
+        frame.reveal = smoothstep(0.35, 1, progress)
+        frame.labelOpacity = 1 - smoothstep(0, 0.22, progress)
+      }
+      if (!layout.below && Math.abs(original) <= 1 && Math.abs(original - direction) <= 1) {
+        frame.mediaWidth = frame.width - frame.reveal * layout.bodyWidth
+      }
+      const card = cardRefs.current[index]
+      if (card) {
+        const incoming = original === direction
+        const outgoing = original === 0
+        card.style.zIndex = incoming ? '4' : outgoing ? '3' : '2'
+        paintCard(card, frame, layout)
+      }
+    })
   }
 
+  const cancelEntrance = () => {
+    if (entranceRef.current) entranceRef.current.progress(1).kill()
+    entranceRef.current = null
+    const heading = stageRef.current?.closest('section')?.querySelector('.projects__head')
+    if (heading) gsap.set(heading.querySelectorAll('.section__title, .section__sub'), { clearProps: 'opacity,transform' })
+    if (trackRef.current) gsap.set(trackRef.current, { clearProps: 'opacity,transform' })
+    if (controlsRef.current) gsap.set(controlsRef.current, { clearProps: 'opacity,transform' })
+  }
+
+  const animate = (direction, start = 0, complete = true) => {
+    if (prefersReducedMotion()) {
+      if (complete) {
+        activeRef.current = (activeRef.current + direction + N) % N
+        setActive(activeRef.current)
+      }
+      paint(activeRef.current)
+      return
+    }
+    cancelEntrance()
+    animationRef.current?.kill()
+    const from = activeRef.current
+    const tween = { progress: start }
+    const end = complete ? 1 : 0
+    const duration = Math.max(0.16, Math.abs(end - start) * (layoutRef.current?.mobile ? 0.88 : 1.12))
+    animationRef.current = gsap.to(tween, {
+      progress: end,
+      duration,
+      ease: complete ? 'power2.inOut' : 'power3.out',
+      onUpdate: () => paint(from, direction, tween.progress),
+      onComplete: () => {
+        animationRef.current = null
+        if (complete) {
+          activeRef.current = (from + direction + N) % N
+          setActive(activeRef.current)
+        }
+        paint(activeRef.current)
+        const pending = pendingDirectionRef.current
+        pendingDirectionRef.current = 0
+        if (pending) navigateRef.current?.(pending)
+      },
+    })
+  }
+
+  const navigate = (direction) => {
+    if (detailOpenRef.current) return
+    if (gestureRef.current?.dragging) return
+    if (animationRef.current) {
+      pendingDirectionRef.current = direction
+      return
+    }
+    animate(direction)
+  }
+
+  navigateRef.current = navigate
+
+  useLayoutEffect(() => {
+    const update = () => {
+      gestureCleanupRef.current?.()
+      const stage = stageRef.current
+      const track = trackRef.current
+      if (!stage || !track) return
+      animationRef.current?.progress(1)
+      const layout = getLayout(stage.clientWidth)
+      layoutRef.current = layout
+      track.style.height = `${layout.stageHeight}px`
+      paint(activeRef.current)
+    }
+    update()
+    window.addEventListener('resize', update)
+    return () => {
+      window.removeEventListener('resize', update)
+      gestureCleanupRef.current?.()
+      animationRef.current?.kill()
+    }
+  }, [])
+
+  useEffect(() => {
+    const stage = stageRef.current
+    const section = stage?.closest('section')
+    if (!stage || !section || prefersReducedMotion() || !('IntersectionObserver' in window)) return
+    const heading = section.querySelector('.projects__head .section__title')
+    const subtitle = section.querySelector('.projects__head .section__sub')
+    const targets = [heading, subtitle, trackRef.current, controlsRef.current].filter(Boolean)
+    gsap.set(targets, { opacity: 0 })
+    let played = false
+    let intersecting = false
+    const activate = () => {
+      if (played || !intersecting || document.body.style.overflow === 'hidden') return
+      played = true
+      intersection.disconnect()
+      readiness.disconnect()
+      const tl = gsap.timeline({ defaults: { ease: 'power2.out' } })
+      if (heading) tl.fromTo(heading, { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5 }, 0)
+      if (subtitle) tl.fromTo(subtitle, { y: 10, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45 }, 0.1)
+      if (trackRef.current) tl.fromTo(trackRef.current, { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7 }, 0.16)
+      if (controlsRef.current) tl.fromTo(controlsRef.current, { y: 10, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4 }, 0.38)
+      tl.set(targets, { clearProps: 'opacity,transform' })
+      entranceRef.current = tl
+    }
+    const intersection = new IntersectionObserver(([entry]) => {
+      intersecting = entry.isIntersecting && entry.intersectionRatio >= 0.18
+      activate()
+    }, { threshold: [0, 0.18, 0.4] })
+    const readiness = new MutationObserver(activate)
+    readiness.observe(document.body, { attributes: true, attributeFilter: ['style', 'class'] })
+    intersection.observe(stage)
+    return () => {
+      intersection.disconnect()
+      readiness.disconnect()
+      entranceRef.current?.kill()
+      gsap.set(targets, { clearProps: 'opacity,transform' })
+    }
+  }, [])
+
+  useEffect(() => {
+    if (preloadRef.current) return
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting || preloadRef.current) return
+      preloadRef.current = true
+      observer.disconnect()
+      previewImages.filter(Boolean).forEach((key) => {
+        const image = new Image()
+        image.src = `/projects/${key}-960.webp`
+        image.decode?.().catch(() => {})
+      })
+    }, { rootMargin: '600px' })
+    if (stageRef.current) observer.observe(stageRef.current)
+    return () => observer.disconnect()
+  }, [])
 
   useEffect(() => {
     if (!detailOpen) return
-    const onKey = (e) => {
-      if (e.key === 'Escape') setDetailOpen(false)
+    const onKey = (event) => {
+      if (event.key === 'Escape') setDetailOpen(false)
     }
     const previousOverflow = document.body.style.overflow
+    const previousPadding = document.body.style.paddingRight
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
     document.body.style.overflow = 'hidden'
+    if (scrollbarWidth > 0) document.body.style.paddingRight = `${scrollbarWidth}px`
     window.addEventListener('keydown', onKey)
     detailRef.current?.focus({ preventScroll: true })
     return () => {
       window.removeEventListener('keydown', onKey)
       document.body.style.overflow = previousOverflow
-    }
-  }, [detailOpen, active])
-
-  const handlePointerDown = (e) => {
-    if (e.pointerType === 'mouse' && e.button !== 0) return
-    if (e.target.closest('button, a')) return
-    const card = e.target.closest('.slider-card')
-    if (!card || card.classList.contains('is-hidden')) return
-    const cardIndex = Number(card.dataset.projectIndex)
-    if (!Number.isInteger(cardIndex)) return
-
-    gestureRef.current = {
-      startX: e.clientX,
-      startY: e.clientY,
-      locked: false,
-      moves: [],
-      cardIndex,
-    }
-    try {
-      e.currentTarget.setPointerCapture(e.pointerId)
-    } catch {
-    }
-  }
-
-  const handlePointerMove = (e) => {
-    const g = gestureRef.current
-    if (!g) return
-    const dx = e.clientX - g.startX
-    const dy = e.clientY - g.startY
-    if (!g.locked) {
-      if (Math.abs(dx) < CLICK_SLOP && Math.abs(dy) < CLICK_SLOP) return
-      if (Math.abs(dx) < Math.abs(dy)) {
-        gestureRef.current = null
-        return
-      }
-      g.locked = true
-    }
-    g.moves.push({ x: e.clientX, t: performance.now() })
-    if (g.moves.length > 6) g.moves.shift()
-    setDragX(dx)
-  }
-
-  const endGesture = (commit) => {
-    const g = gestureRef.current
-    gestureRef.current = null
-    if (!g) return
-    if (commit !== 0) go(commit)
-    else setDragX(null)
-  }
-
-  const handlePointerUp = (e) => {
-    const g = gestureRef.current
-    if (!g) return
-
-    if (!g.locked) {
-      const cardIndex = g.cardIndex
-      gestureRef.current = null
-      setDragX(null)
-      if (cardIndex !== active) selectProject(cardIndex)
-      else openProject(cardIndex)
-      return
-    }
-
-    const dx = e.clientX - g.startX
-    const threshold = Math.max(DRAG_MIN, step * 0.25)
-    let commit = 0
-    if (dx <= -threshold) commit = 1
-    else if (dx >= threshold) commit = -1
-    else if (g.moves.length >= 2) {
-      const first = g.moves[0]
-      const last = g.moves[g.moves.length - 1]
-      const dt = Math.max(last.t - first.t, 1)
-      const v = (last.x - first.x) / dt
-      if (v <= -FLICK_VELOCITY && dx <= -FLICK_MIN_DIST) commit = 1
-      else if (v >= FLICK_VELOCITY && dx >= FLICK_MIN_DIST) commit = -1
-    }
-    endGesture(commit)
-  }
-
-  const handlePointerCancel = () => {
-    gestureRef.current = null
-    setDragX(null)
-  }
-
-  useEffect(() => {
-    const el = sliderViewportRef.current
-    if (!el) return
-
-    const onWheel = (e) => {
-      if (detailOpen || N < 2) return
-      const delta =
-        Math.abs(e.deltaX) > Math.abs(e.deltaY)
-          ? e.deltaX
-          : e.deltaY
-
-      const threshold = e.deltaMode === 0 ? WHEEL_THRESHOLD : 1
-
-      if (Math.abs(delta) < threshold) return
-
-      e.preventDefault()
-      e.stopPropagation()
-
-      const now = performance.now()
-      if (now - wheelRef.current < WHEEL_COOLDOWN) return
-
-      wheelRef.current = now
-      go(delta > 0 ? 1 : -1)
-    }
-
-    el.addEventListener('wheel', onWheel, { passive: false })
-
-    return () => {
-      el.removeEventListener('wheel', onWheel)
+      document.body.style.paddingRight = previousPadding
+      queueMicrotask(() => cardRefs.current[activeRef.current]?.focus({ preventScroll: true }))
     }
   }, [detailOpen])
 
-  const handleRegionKeyDown = (e) => {
-    if (e.key === 'ArrowRight') {
-      e.preventDefault()
-      go(1)
-    } else if (e.key === 'ArrowLeft') {
-      e.preventDefault()
-      go(-1)
+  const onPointerDown = (event) => {
+    if (event.button !== 0 || detailOpenRef.current || animationRef.current) return
+    const target = event.target.closest('.tidal-card')
+    if (!target || !stageRef.current?.contains(target)) return
+    const gesture = {
+      id: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      lastX: event.clientX,
+      lastTime: performance.now(),
+      velocity: 0,
+      dragging: false,
+      cancelled: false,
+      direction: 0,
+      progress: 0,
+    }
+    gestureRef.current = gesture
+    const cleanup = () => {
+      window.removeEventListener('pointermove', move)
+      window.removeEventListener('pointerup', end)
+      window.removeEventListener('pointercancel', cancel)
+      if (stageRef.current) delete stageRef.current.dataset.dragging
+      gestureRef.current = null
+      gestureCleanupRef.current = null
+    }
+    gestureCleanupRef.current = cleanup
+    const move = (pointerEvent) => {
+      if (pointerEvent.pointerId !== gesture.id || gesture.cancelled) return
+      const dx = pointerEvent.clientX - gesture.startX
+      const dy = pointerEvent.clientY - gesture.startY
+      if (!gesture.dragging) {
+        if (Math.abs(dy) > Math.abs(dx) * 1.15 && Math.abs(dy) > 10) {
+          gesture.cancelled = true
+          cleanup()
+          return
+        }
+        if (Math.abs(dx) < 9 || Math.abs(dx) < Math.abs(dy) * 1.15) return
+        gesture.dragging = true
+        cancelEntrance()
+        if (stageRef.current) stageRef.current.dataset.dragging = 'true'
+      }
+      pointerEvent.preventDefault()
+      const now = performance.now()
+      gesture.velocity = (pointerEvent.clientX - gesture.lastX) / Math.max(1, now - gesture.lastTime)
+      gesture.lastX = pointerEvent.clientX
+      gesture.lastTime = now
+      gesture.direction = dx < 0 ? 1 : -1
+      const width = layoutRef.current?.featuredWidth || 500
+      const travel = Math.min(460, Math.max(180, width * 0.5))
+      gesture.progress = clamp(Math.abs(dx) / travel, 0, 1)
+      paint(activeRef.current, gesture.direction, gesture.progress)
+    }
+    const end = (pointerEvent) => {
+      if (pointerEvent.pointerId !== gesture.id) return
+      const dragging = gesture.dragging
+      const direction = gesture.direction
+      const progress = gesture.progress
+      const velocity = gesture.velocity
+      cleanup()
+      if (!dragging) return
+      suppressClickRef.current = true
+      window.setTimeout(() => { suppressClickRef.current = false }, 0)
+      const commit = progress > 0.23 || Math.abs(velocity) > 0.55
+      animate(direction, progress, commit)
+    }
+    const cancel = (pointerEvent) => {
+      if (pointerEvent.pointerId !== gesture.id) return
+      const dragging = gesture.dragging
+      const direction = gesture.direction
+      const progress = gesture.progress
+      cleanup()
+      if (dragging) animate(direction, progress, false)
+    }
+    window.addEventListener('pointermove', move, { passive: false })
+    window.addEventListener('pointerup', end)
+    window.addEventListener('pointercancel', cancel)
+  }
+
+  useEffect(() => {
+    const element = stageRef.current
+    if (!element) return
+    const onWheel = (event) => {
+      if (detailOpenRef.current || event.ctrlKey) return
+      const horizontal = Math.abs(event.deltaX) > Math.abs(event.deltaY)
+      const intentional = horizontal || event.shiftKey
+      if (!intentional) return
+      event.preventDefault()
+      const state = wheelRef.current
+      const now = performance.now()
+      if (now - state.last > 220) { state.acc = 0; state.fired = false }
+      state.last = now
+      if (state.fired) return
+      const delta = (horizontal ? event.deltaX : event.deltaY) * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? element.clientWidth : 1)
+      if (Math.sign(delta) !== Math.sign(state.acc)) state.acc = 0
+      state.acc += delta
+      if (Math.abs(state.acc) >= 56) {
+        state.fired = true
+        navigateRef.current?.(state.acc > 0 ? 1 : -1)
+      }
+    }
+    element.addEventListener('wheel', onWheel, { passive: false })
+    return () => element.removeEventListener('wheel', onWheel)
+  }, [])
+
+  const onRegionKeyDown = (event) => {
+    if (detailOpen || event.altKey || event.ctrlKey || event.metaKey) return
+    if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+      event.preventDefault()
+      if (!event.repeat) navigate(event.key === 'ArrowRight' ? 1 : -1)
     }
   }
 
-  const dragging = dragX !== null
+  const activateProject = (index, event) => {
+    if (suppressClickRef.current || animationRef.current || event.detail > 1) return
+    if (index === activeRef.current) {
+      setDetailOpen(true)
+      return
+    }
+    navigate(distance(index, activeRef.current) < 0 ? -1 : 1)
+  }
+
   const activeProject = projects[active]
 
-  const selectProject = (index) => {
-    setActive(index)
-    setDragX(null)
-    setDetailOpen(false)
-  }
-
-  const openProject = (index) => {
-    setActive(index)
-    setDragX(null)
-    setDetailOpen(true)
-  }
-
   return (
-    <section id="projects" className="section projects" ref={typeRef}>
+    <section id="projects" className="section projects tidal-v3">
       <AmbientFish sectionId="projects" defs={PROJECTS_FISH} mode="ambient" speed={0.15} trimTo={2} />
       <div className="section__rail projects__head">
         <h2 className="section__title">Projects</h2>
-        <p className="section__sub">
-          Selected systems, experiments, and things I&apos;ve built.
-        </p>
+        <p className="section__sub">Selected systems, experiments, and things I&apos;ve built.</p>
       </div>
-
       <div
-        className="slider-region"
+        className="slider-region tidal-showcase"
         role="region"
         tabIndex={0}
         aria-roledescription="carousel"
-        aria-label="Projects carousel. Scroll, drag, swipe, or use arrow keys to browse. Click a side card to show it, click the active card for details."
-        onKeyDown={handleRegionKeyDown}
+        aria-label="Projects carousel. Use arrow keys or swipe horizontally to browse. Select the featured project to explore its case study."
+        onKeyDown={onRegionKeyDown}
       >
-        <p className="sr-only" aria-live="polite">
-          Showing {active + 1} of {N}: {activeProject.title}
-        </p>
-        <div
-          ref={sliderViewportRef}
-          className={`slider-viewport${dragging ? ' is-dragging' : ''}`}
-          title="Scroll or drag to browse. Click a side card to show it, click the active card for details."
-          style={{ overscrollBehavior: 'contain' }}
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onPointerCancel={handlePointerCancel}
-        >
-          <div className="slider-track" style={trackH > 0 ? { height: trackH } : undefined}>
-            {projects.map((project, index) => (
-              <ProjectCard
-                key={project.title}
-                project={project}
-                index={index}
-                position={distance(index, active)}
-                step={step}
-                dragX={dragX}
-                dragging={dragging}
-                isActive={index === active}
-                onSelect={selectProject}
-                onOpen={openProject}
-                cardRef={(el) => {
-                  if (el) cardRefs.current[index] = el
-                }}
-              />
-            ))}
+        <p className="sr-only" aria-live="polite">Showing {active + 1} of {N}: {activeProject.title}</p>
+        <div className="tidal-stage" ref={stageRef} onPointerDown={onPointerDown}>
+          <div className="tidal-track" ref={trackRef}>
+            {projects.map((project, index) => {
+              const position = distance(index, active)
+              return (
+                <ProjectCard
+                  key={project.title}
+                  project={project}
+                  index={index}
+                  position={position}
+                  featured={position === 0}
+                  visible={Math.abs(position) <= 1}
+                  cardRef={(element) => { cardRefs.current[index] = element }}
+                  onActivate={(event) => activateProject(index, event)}
+                />
+              )
+            })}
           </div>
         </div>
-
-        <div className="slider-controls">
-          <button
-            type="button"
-            className="archive-specimen__link slider-control"
-            onClick={() => go(-1)}
-            aria-label="Show previous project"
-          >
-            <span aria-hidden="true">←</span>
-            <span>Previous</span>
+        <div className="slider-controls" ref={controlsRef}>
+          <button type="button" className="archive-specimen__link slider-control" onClick={() => navigate(-1)} aria-label="Show previous project">
+            <span aria-hidden="true">←</span><span>Previous</span>
           </button>
-          <button
-            type="button"
-            className="archive-specimen__link slider-control"
-            onClick={() => go(1)}
-            aria-label="Show next project"
-          >
-            <span>Next</span>
-            <span aria-hidden="true">→</span>
+          <p className="slider-counter" aria-hidden="true"><span className="slider-counter__current">{String(active + 1).padStart(2, '0')}</span><span className="slider-counter__sep"> / </span><span>{String(N).padStart(2, '0')}</span></p>
+          <button type="button" className="archive-specimen__link slider-control" onClick={() => navigate(1)} aria-label="Show next project">
+            <span>Next</span><span aria-hidden="true">→</span>
           </button>
         </div>
-
-        {detailOpen && (
-          <ProjectDetail
-            project={activeProject}
-            detailRef={detailRef}
-            onClose={() => setDetailOpen(false)}
-          />
-        )}
+        {detailOpen && <ProjectDetail project={activeProject} detailRef={detailRef} onClose={() => setDetailOpen(false)} />}
       </div>
     </section>
   )

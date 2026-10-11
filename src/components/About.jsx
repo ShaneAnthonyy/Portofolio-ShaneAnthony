@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { about, contact, profile } from '../data/content.js'
+import { about, contact, profile, stats } from '../data/content.js'
 import { ABOUT_FISH } from '../data/fauna.js'
 import AmbientFish from './AmbientFish.jsx'
 import { scrollToSection } from '../animation/scrollTo.js'
@@ -78,6 +78,7 @@ export default function About({ unlocked = true }) {
             </figure>
             <h3 className="about-identity__name">{profile.name}</h3>
             <p className="about-identity__role">{profile.role}</p>
+            <p className="about-identity__location">{profile.location}</p>
           </article>
 
           <article className="about-card about-card--intro" aria-label="Introduction" ref={introRef}>
@@ -97,6 +98,14 @@ export default function About({ unlocked = true }) {
               >
                 {notesOpen ? 'Show less' : 'Read more'}
               </button>
+              <a
+                href={profile.cvUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="about-intro__toggle"
+              >
+                View CV
+              </a>
             </div>
             <div
               id="about-more"
@@ -114,6 +123,15 @@ export default function About({ unlocked = true }) {
                 {about.languages.map((lang) => `${lang.name} (${lang.level})`).join(' · ')}
               </p>
             </div>
+            {/* GPA stays with its existing education note and progress indicator. */}
+            <dl className="about-intro__stats">
+              {stats.filter((stat) => !stat.label.startsWith('GPA')).map((stat) => (
+                <div key={stat.label} className="about-intro__stat">
+                  <dt>{stat.label}</dt>
+                  <dd>{stat.value}</dd>
+                </div>
+              ))}
+            </dl>
           </article>
 
           <article className="about-card about-card--toolkit" aria-label="Toolkit" ref={toolkitRef}>
