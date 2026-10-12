@@ -1,98 +1,111 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
+import { gsap, useGSAP } from '../animation/gsap.js'
 import { subscribeProgressFrame } from '../hooks/useSectionProgress.js'
 
 export default function HeroAquarium({ enabled, preview = false, sceneReady, prewarm = false, performanceMode, onVisibilityChange }) {
+  const surfaceRef = useRef(null)
   const hostRef = useRef(null)
   const clockRef = useRef(18)
+  const progressRef = useRef(0)
+  const approachRef = useRef({ value: 0 })
+  const sceneRef = useRef(null)
+  const loopRef = useRef(null)
+  const visibilityRef = useRef(onVisibilityChange)
   const prewarmRef = useRef(prewarm)
+  visibilityRef.current = onVisibilityChange
   prewarmRef.current = prewarm
-  const [inView, setInView] = useState(false)
-  const [exitRatio, setExitRatio] = useState(1)
-  // Last reported (visible, ratio). Effect cleanups run on every re-run, not
-  // just on unmount — reporting there would fake visibility transitions and
-  // permanently trip the App's handoff hysteresis/latch. Only a real unmount
-  // reports, using the last known ratio (never a hard 0).
-  const visRef = useRef([false, 1])
-  const unmountedRef = useRef(false)
-  useEffect(() => () => { unmountedRef.current = true }, [])
-  const [pageVisible, setPageVisible] = useState(() => !document.hidden)
+  const id = useId().replace(/:/g, '')
+  const [near, setNear] = useState(true)
   const [reduced, setReduced] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches)
   const [failed, setFailed] = useState(false)
   const [ready, setReady] = useState(false)
   const staticMode = performanceMode === 'lite' || reduced
-  const animate = enabled && sceneReady && inView && pageVisible && !staticMode && !failed
+
+  useGSAP(() => {
+    const surface = surfaceRef.current
+    const home = surface.closest('#home')
+    const scene = surface.querySelector('.hero-surface__scene')
+    const clip = surface.querySelector('clipPath path')
+    const reflection = surface.querySelector('.hero-surface__reflection')
+    const meniscus = surface.querySelector('.hero-surface__meniscus')
+    const media = gsap.matchMedia()
+    media.add({ compact: '(max-width: 720px)', full: '(min-width: 721px)', reduced: '(prefers-reduced-motion: reduce)' }, context => {
+      const { compact, reduced: simple } = context.conditions
+      const curveScale = compact ? .45 : 1
+      const timeline = gsap.timeline({ paused: true, defaults: { ease: 'none' } })
+      const travel = { progress: 0 }
+      timeline.to(travel, { progress: 1, duration: 1 }, 0)
+      if (!simple) {
+        timeline.fromTo(approachRef.current, { value: 0 }, { value: 1, duration: .62, ease: 'sine.inOut' }, 0)
+        timeline.fromTo(hostRef.current, { scaleX: 1, scaleY: 1, yPercent: 0 }, {
+          scaleX: compact ? 1.012 : 1.025, scaleY: compact ? 1.035 : 1.065,
+          yPercent: compact ? -1 : -2, duration: .62, ease: 'sine.inOut',
+        }, 0)
+        timeline.fromTo(reflection, { opacity: 0, yPercent: 5 }, { opacity: .6, yPercent: -8, duration: .32, ease: 'sine.inOut' }, .04)
+        timeline.to(reflection, { opacity: 0, yPercent: -18, duration: .38 }, .36)
+        timeline.fromTo(clip, { attr: { transform: `translate(0 1.08) scale(1 ${curveScale})` } }, { attr: { transform: `translate(0 -0.12) scale(1 ${curveScale})` }, duration: .68, ease: 'sine.inOut' }, .1)
+        timeline.fromTo(meniscus, { yPercent: 108 }, { yPercent: -12, duration: .68, ease: 'sine.inOut' }, .1)
+        timeline.fromTo(meniscus, { opacity: 0 }, { opacity: 1, duration: .12 }, .2)
+        timeline.to(meniscus, { opacity: 0, duration: .14 }, .64)
+      }
+      let previous = -1
+      let resident = surface.dataset.resident !== 'false'
+      let handoff = -1
+      const update = () => {
+        const rect = home.getBoundingClientRect()
+        const distance = -rect.top / Math.max(rect.height, 1)
+        const p = gsap.utils.clamp(0, 1, distance)
+        const nextResident = distance < 1.45 ? true : distance > 1.8 ? false : resident
+        if (nextResident !== resident) {
+          resident = nextResident
+          setNear(resident)
+        }
+        const ratio = p < .27 ? 1 : p > .32 ? 0 : .15
+        if (handoff !== ratio || nextResident !== (surface.dataset.resident === 'true')) {
+          handoff = ratio
+          surface.dataset.resident = String(resident)
+          visibilityRef.current?.(enabled && resident, ratio)
+        }
+        if (p === previous) return
+        previous = p
+        progressRef.current = p
+        timeline.progress(p)
+        sceneRef.current?.setApproach(approachRef.current.value)
+        surface.dataset.progress = p.toFixed(4)
+        surface.dataset.surfaceState = p === 0 ? 'surface' : p >= .8 ? 'submerged' : 'crossing'
+        surface.style.visibility = !simple && p >= .8 ? 'hidden' : ''
+        scene.style.visibility = !simple && p >= .76 ? 'hidden' : ''
+        loopRef.current?.()
+      }
+      const unsubscribe = subscribeProgressFrame(update)
+      const resize = new ResizeObserver(update)
+      resize.observe(home)
+      return () => {
+        unsubscribe()
+        resize.disconnect()
+        surface.style.visibility = ''
+        scene.style.visibility = ''
+      }
+    })
+    return () => media.revert()
+  }, { scope: surfaceRef, dependencies: [enabled], revertOnUpdate: true })
 
   useEffect(() => {
     const media = window.matchMedia('(prefers-reduced-motion: reduce)')
     const motion = () => setReduced(media.matches)
-    const visibility = () => setPageVisible(!document.hidden)
-    // Continuous exit progress for cinematic scrubbing. Driven by the
-    // existing rAF-throttled scroll feed (no new listeners, no React
-    // re-renders): normalized 0 (hero fully visible) to 1 (fully out),
-    // derived from live hero geometry so spacer collapse, resize and font
-    // loads can't desync it. Writes go straight to the DOM, gated to the
-    // transition region, and skip when values haven't changed.
-    // IntersectionObserver below stays on visibility/lifecycle duty only.
-    let lastDepth = null
-    let lastEdge = null
-    const writeProgress = () => {
-      const host = hostRef.current
-      const home = document.getElementById('home')
-      if (!host || !home) return
-      const rect = home.getBoundingClientRect()
-      const p = Math.min(Math.max(-rect.top / Math.max(rect.height, 1), 0), 1)
-      let depth, edge
-      if (media.matches) {
-        depth = p > 0.85 ? 1 : 0
-        edge = depth
-      } else {
-        depth = Math.min(Math.max((p - 0.4) / 0.55, 0), 1)
-        edge = Math.min(Math.max((p - 0.3) / 0.65, 0), 1)
-      }
-      const d = depth.toFixed(3)
-      const e = edge.toFixed(3)
-      if (d === lastDepth && e === lastEdge) return
-      lastDepth = d
-      lastEdge = e
-      host.style.setProperty('--surface-depth', d)
-      host.style.setProperty('--dive-edge', e)
-    }
-    const unsubProgress = subscribeProgressFrame(writeProgress)
+    const visibility = () => loopRef.current?.()
     media.addEventListener('change', motion)
     document.addEventListener('visibilitychange', visibility)
-    const observer = 'IntersectionObserver' in window
-      ? new IntersectionObserver(
-          (entries) => {
-            // Rapid scrolls cross several thresholds in one frame; the last
-            // entry is the freshest.
-            const entry = entries[entries.length - 1]
-            const ratio = entry.isIntersecting ? entry.intersectionRatio : 0
-            setInView(ratio > 0)
-            setExitRatio(ratio)
-          },
-          { threshold: [0, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1] }
-        )
-      : null
-    if (observer) observer.observe(hostRef.current)
-    else setInView(true)
     return () => {
-      unsubProgress()
-      observer?.disconnect()
       media.removeEventListener('change', motion)
       document.removeEventListener('visibilitychange', visibility)
     }
   }, [])
 
-  useEffect(() => {
-    visRef.current = [enabled && inView, exitRatio]
-    onVisibilityChange?.(...visRef.current)
-    return () => {
-      if (unmountedRef.current) onVisibilityChange?.(false, visRef.current[1])
-    }
-  }, [enabled, inView, exitRatio, onVisibilityChange])
+  useEffect(() => { loopRef.current?.() }, [prewarm, ready])
 
   useEffect(() => {
-    if (!animate) return
+    if (!enabled || !sceneReady || !near || staticMode || failed) return
     const host = hostRef.current
     let cancelled = false, frame = 0, scene, resize, theme
     const contextLost = event => {
@@ -102,19 +115,21 @@ export default function HeroAquarium({ enabled, preview = false, sceneReady, pre
     import('../scenes/heroAquarium.js').then(({ createHeroAquarium }) => {
       if (cancelled) return
       scene = createHeroAquarium(host)
+      sceneRef.current = scene
+      scene.setApproach(approachRef.current.value)
       scene.canvas.addEventListener('webglcontextlost', contextLost)
-      const resizeScene = () => {
+      const render = () => scene.render(clockRef.current)
+      resize = new ResizeObserver(() => {
         scene.resize(host.clientWidth, host.clientHeight)
-        scene.render(clockRef.current)
-      }
-      resize = new ResizeObserver(resizeScene)
+        if (!document.hidden) render()
+      })
       resize.observe(host)
       theme = new MutationObserver(() => {
         scene.setTheme(document.documentElement.dataset.theme === 'dark')
-        scene.render(clockRef.current)
+        if (!document.hidden) render()
       })
       theme.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
-      scene.render(clockRef.current)
+      render()
       if (preview && clockRef.current === 18) {
         scene.canvas.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 220, easing: 'ease-out' })
       }
@@ -122,22 +137,35 @@ export default function HeroAquarium({ enabled, preview = false, sceneReady, pre
       let last = performance.now()
       let previous = last
       const tick = now => {
-        // Water and slow swimming need only 30 updates/sec. Time advances only
-        // while visible, so returning to the Hero never fast-forwards the fish.
-        if (!prewarmRef.current && now - last >= 1000 / 30) {
-          clockRef.current += Math.min((now - previous) / 1000, 0.1)
+        if (now - last >= 1000 / 30) {
+          clockRef.current += Math.min((now - previous) / 1000, .1)
           previous = now
-          scene.render(clockRef.current)
+          render()
           last = now - (now - last) % (1000 / 30)
         }
         frame = requestAnimationFrame(tick)
       }
-      frame = requestAnimationFrame(tick)
+      const syncLoop = () => {
+        const running = !prewarmRef.current && !document.hidden && progressRef.current < .76
+        host.dataset.state = prewarmRef.current ? 'prewarmed' : document.hidden ? 'hidden' : running ? 'running' : 'parked'
+        if (running && !frame) {
+          render()
+          previous = last = performance.now()
+          frame = requestAnimationFrame(tick)
+        } else if (!running && frame) {
+          cancelAnimationFrame(frame)
+          frame = 0
+        }
+      }
+      loopRef.current = syncLoop
+      syncLoop()
     }).catch(() => {
       if (!cancelled) setFailed(true)
     })
     return () => {
       cancelled = true
+      loopRef.current = null
+      sceneRef.current = null
       cancelAnimationFrame(frame)
       resize?.disconnect()
       theme?.disconnect()
@@ -145,17 +173,43 @@ export default function HeroAquarium({ enabled, preview = false, sceneReady, pre
       scene?.dispose()
       setReady(false)
     }
-  }, [animate])
+  }, [enabled, sceneReady, near, staticMode, failed])
 
   return (
-    <div
-      ref={hostRef}
-      className="hero-aquarium"
-      aria-hidden="true"
-      data-enabled={enabled}
-      data-preview={preview}
-      data-ready={ready}
-      data-state={ready ? prewarm ? 'prewarmed' : 'running' : staticMode || failed ? 'poster' : 'paused'}
-    />
+    <div ref={surfaceRef} className="hero-surface" aria-hidden="true">
+      <svg className="hero-surface__defs" width="0" height="0">
+        <defs>
+          <clipPath id={`surface-${id}`} clipPathUnits="objectBoundingBox">
+            <path d="M-.04 -4H1.04V.012C.88 .03 .8 -.032 .65 -.016S.41 .04 .27 .008S.08 -.03 -.04 .012Z" transform="translate(0 1.08)" />
+          </clipPath>
+          <clipPath id={`lens-${id}`} clipPathUnits="objectBoundingBox">
+            <path d="M1.04 .5C.88 .68 .8 .06 .65 .22C.5 .38 .41 .78 .27 .46C.13 .14 .08 .08 -.04 .5V.74C.08 .32 .13 .38 .27 .7C.41 1.02 .5 .62 .65 .46C.8 .3 .88 .92 1.04 .74Z" />
+          </clipPath>
+          <linearGradient id={`water-${id}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="var(--surface-shadow)" stopOpacity="0" />
+            <stop offset=".46" stopColor="var(--surface-shadow)" stopOpacity=".5" />
+            <stop offset=".62" stopColor="var(--surface-light)" stopOpacity=".2" />
+            <stop offset="1" stopColor="var(--surface-light)" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+      </svg>
+      <div className="hero-surface__scene" style={{ clipPath: `url(#surface-${id})` }}>
+        <div
+          ref={hostRef}
+          className="hero-aquarium"
+          data-enabled={enabled}
+          data-preview={preview}
+          data-ready={ready}
+          data-state={ready ? prewarm ? 'prewarmed' : 'running' : staticMode || failed ? 'poster' : 'paused'}
+        />
+        <div className="hero-surface__reflection" />
+      </div>
+      <div className="hero-surface__meniscus">
+        <div className="hero-surface__lens" style={{ clipPath: `url(#lens-${id})` }} />
+        <svg viewBox="0 0 1000 1000" preserveAspectRatio="none">
+          <path d="M1040 -14C880 4 800 -58 650 -42S410 14 270 -18S80 -56 -40 -14V27C80 -15 130 -9 270 23C410 55 500 15 650 -1C800 -17 880 45 1040 27Z" fill={`url(#water-${id})`} />
+        </svg>
+      </div>
+    </div>
   )
 }

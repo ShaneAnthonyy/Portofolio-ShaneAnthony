@@ -409,6 +409,10 @@ export function createHeroAquarium(host) {
   resize(host.clientWidth, host.clientHeight)
   return {
     render, resize, setTheme, canvas: renderer.domElement, info: renderer.info,
+    setApproach(progress) {
+      camera.position.y = -3.2 * progress
+      camera.lookAt(0, 0, 0)
+    },
     dispose() {
       for (const mesh of [fish, shadows, rocks, plants]) mesh.dispose()
       resources.forEach(resource => resource.dispose())

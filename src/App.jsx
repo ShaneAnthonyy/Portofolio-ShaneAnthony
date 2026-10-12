@@ -76,21 +76,13 @@ export default function App() {
     arrivalRef.current.update?.(value)
     if (value > 0) landingRef.current.start?.()
   }, [])
-  // Surface-to-depth handoff: the Dive backdrop stays parked while the Hero
-  // is meaningfully visible, and resumes once it is mostly scrolled out —
-  // while the Hero still renders its fade-out (brief controlled overlap).
-  // Hysteresis (off ≤0.1, on ≥0.2) stops mount/unmount thrashing at the edge.
   const handleAquariumVisibility = useCallback((visible, ratio = visible ? 1 : 0) => {
     setHeroInView(visible)
     setHeroActive((prev) => (ratio >= 0.2 ? true : ratio <= 0.1 ? false : prev))
   }, [])
   const [backdropPaused, setBackdropPaused] = useState(false)
-  // Scene-ready latch: the Hero mounts once the Dive backdrop parks for
-  // handoff, then stays alive through the exit overlap even as the backdrop
-  // resumes beneath it. Resets once the Hero fully leaves view so the next
-  // entry re-waits for a parked backdrop (poster covers the remount).
   useEffect(() => {
-    if (backdropPaused) setHeroLive(true)
+    if (backdropPaused || heroInView) setHeroLive(true)
     else if (!heroInView) setHeroLive(false)
   }, [backdropPaused, heroInView])
   const showProbe = isProbeEnabled()

@@ -1646,97 +1646,107 @@ html:not([data-theme='dark']) .contact__hint {
   opacity: 1;
 }
 
-/* SUBMERGE reveal (Phase 03C). The hero layer uncovers the fixed underwater
-   backdrop through an organic wave edge that recedes overhead as the
-   visitor descends — one continuous aquatic world, no rectangular seam.
-   --surface-depth stages the atmosphere; --dive-edge (0 = edge below the
-   hero, 1 = edge above it) positions the mask AND the highlight riding it,
-   so reveal and edge share geometry and progress. Both vars are scrubbed
-   per-frame by HeroAquarium (no transitions on scrubbed properties);
-   text, nav and controls are never touched. Neutral at both ends. */
-.hero-aquarium[data-enabled='true'] {
-  --surface-depth: 0;
-  --dive-edge: 0;
-  --dive-a: clamp(0, var(--surface-depth) / 0.25, 1);
-  --dive-band: max(0, min(var(--dive-edge) / 0.06, (0.93 - var(--dive-edge)) / 0.1, 1));
-  --dive-shaft: max(0, min((var(--surface-depth) - 0.58) / 0.08, (0.86 - var(--surface-depth)) / 0.08, 1));
-  --dive-shaft-bg:
-    linear-gradient(105deg, transparent 62%, rgba(205, 236, 241, calc(var(--dive-shaft) * 0.16)) 78%, transparent 92%),
-    linear-gradient(105deg, transparent 30%, rgba(205, 236, 241, calc(var(--dive-shaft) * 0.12)) 52%, transparent 68%);
-  --dive-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 220' preserveAspectRatio='none'%3E%3Cpath d='M0,0 L200,0 L200,114 C170,109 152,117 128,112 C102,107 86,118 62,113 C38,108 22,117 0,111 Z' fill='%23ffffff' fill-opacity='0.55'/%3E%3Cpath d='M0,0 L200,0 L200,107 C170,102 152,110 128,105 C102,100 86,111 62,106 C38,101 22,110 0,104 Z' fill='%23ffffff'/%3E%3C/svg%3E");
-  -webkit-mask-image: var(--dive-mask);
-  mask-image: var(--dive-mask);
-  -webkit-mask-size: 100% 220%;
-  mask-size: 100% 220%;
-  -webkit-mask-position: 50% calc(var(--dive-edge) * 100%);
-  mask-position: 50% calc(var(--dive-edge) * 100%);
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  opacity: calc(1 - clamp((var(--surface-depth) - 0.9) / 0.1, 0, 1));
-  transform: scale(calc(1 + var(--dive-a) * 0.05));
-  transform-origin: 50% 42%;
-}
 
-/* The water-entry highlight. Anchored to the same --dive-edge as the mask
-   (band center = edge position), so it rides the reveal boundary instead
-   of floating over an independent crossfade. Scroll carries it upward
-   through the viewport — the surface receding overhead. */
-.hero-aquarium[data-enabled='true']::before {
-  content: '';
-  position: absolute;
-  left: -12%;
-  width: 124%;
-  top: 97.5%;
-  height: 17%;
-  transform: translateY(calc(var(--dive-edge) * -705.9%)) rotate(-2deg);
-  opacity: var(--dive-band);
-  background:
-    radial-gradient(38% 70% at 24% 48%, rgba(235, 248, 240, 0.5), transparent 70%),
-    radial-gradient(30% 60% at 68% 56%, rgba(225, 242, 223, 0.4), transparent 70%),
-    linear-gradient(180deg, transparent 10%, rgba(38, 84, 92, 0.30) 34%, rgba(242, 252, 246, 0.9) 50%, rgba(170, 220, 214, 0.4) 60%, transparent 86%);
-}
-
-[data-theme='dark'] .hero-aquarium[data-enabled='true']::before {
-  background:
-    radial-gradient(38% 70% at 24% 48%, rgba(150, 220, 226, 0.45), transparent 70%),
-    radial-gradient(30% 60% at 68% 56%, rgba(118, 196, 204, 0.38), transparent 70%),
-    linear-gradient(180deg, transparent 10%, rgba(1, 8, 16, 0.38) 34%, rgba(155, 225, 231, 0.8) 50%, rgba(60, 120, 138, 0.42) 58%, transparent 86%);
-}
-
-.hero-aquarium[data-enabled='true']::after {
-  content: '';
+.hero-surface {
+  --surface-shadow: #2d646c;
+  --surface-light: #c2dedb;
   position: absolute;
   inset: 0;
+  overflow: clip;
   pointer-events: none;
-  opacity: var(--surface-depth);
+}
+
+[data-theme='dark'] .hero-surface {
+  --surface-shadow: #031e2b;
+  --surface-light: #78a9ae;
+}
+
+.aqua-root.is-portfolio-unlocked .hero-surface {
+  position: fixed;
+  right: calc(100vw - 100%);
+}
+
+.aqua-root.is-portfolio-unlocked[data-arrival-state='settled'] .hero-reveal {
+  z-index: auto !important;
+}
+
+.hero-surface__defs {
+  position: absolute;
+}
+
+.hero-surface__scene,
+.hero-surface__reflection,
+.hero-surface__meniscus {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.hero-surface__reflection {
+  opacity: 0;
   background:
-    var(--dive-shaft-bg),
-    linear-gradient(180deg, rgba(144, 204, 214, 0) 20%, rgba(110, 185, 200, 0.35) 65%, rgba(28, 92, 104, 0.55) 100%);
+    radial-gradient(ellipse at 20% 0%, color-mix(in srgb, var(--surface-light) 22%, transparent), transparent 64%),
+    linear-gradient(165deg, transparent 22%, color-mix(in srgb, var(--surface-light) 10%, transparent) 43%, transparent 61%);
 }
 
-[data-theme='dark'] .hero-aquarium[data-enabled='true'] {
-  --dive-shaft-bg:
-    linear-gradient(105deg, transparent 62%, rgba(118, 196, 204, calc(var(--dive-shaft) * 0.2)) 78%, transparent 92%),
-    linear-gradient(105deg, transparent 30%, rgba(118, 196, 204, calc(var(--dive-shaft) * 0.15)) 52%, transparent 68%);
+.hero-surface__meniscus {
+  overflow: visible;
+  opacity: 0;
 }
 
-[data-theme='dark'] .hero-aquarium[data-enabled='true']::after {
-  background:
-    var(--dive-shaft-bg),
-    linear-gradient(180deg, rgba(8, 39, 60, 0) 20%, rgba(10, 80, 96, 0.38) 65%, rgba(2, 18, 30, 0.6) 100%);
+.hero-surface__meniscus svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
 }
 
-/* Lite Mode: same narrative, inexpensive only — poster approach + entry
-   accent, no underwater shafts, no WebGL. */
-html[data-perf='lite'] .hero-aquarium[data-enabled='true'] {
-  --dive-shaft-bg: none;
+.hero-surface__lens {
+  position: absolute;
+  top: -5%;
+  left: 0;
+  width: 100%;
+  height: 10%;
+  backdrop-filter: blur(1.5px) contrast(1.12) saturate(.82);
+}
+
+html[data-perf='lite'] .hero-surface__lens {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .hero-surface__lens {
+    display: none;
+  }
+
+  .hero-surface__meniscus svg {
+    transform: scaleY(.45);
+    transform-origin: 50% 0;
+  }
+}
+
+.hero-surface[data-surface-state='submerged'] .hero-aquarium {
+  visibility: hidden;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-aquarium[data-enabled='true'],
-  .hero-aquarium[data-enabled='true']::before,
-  .hero-aquarium[data-enabled='true']::after {
-    transition: none;
+  .aqua-root.is-portfolio-unlocked .hero-surface {
+    position: absolute;
+    right: 0;
+  }
+
+  .hero-surface__scene {
+    clip-path: none !important;
+  }
+
+  .hero-surface__reflection,
+  .hero-surface__meniscus {
+    display: none;
+  }
+
+  .hero-surface[data-surface-state='submerged'] .hero-aquarium[data-enabled='true'] {
+    visibility: visible;
   }
 }
 
@@ -1753,11 +1763,6 @@ html[data-perf='lite'] .hero-aquarium[data-enabled='true'] {
 @media (max-width: 720px) {
   .hero-aquarium {
     --hero-poster: url('/aquarium/hero/surface-light-mobile.webp');
-  }
-
-  /* Mobile approach: shorter travel, same narrative. */
-  .hero-aquarium[data-enabled='true'] {
-    transform: scale(calc(1 + var(--dive-a) * 0.03));
   }
 
   [data-theme='dark'] .hero-aquarium {
