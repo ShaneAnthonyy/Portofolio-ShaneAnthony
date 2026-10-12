@@ -1,0 +1,524 @@
+[
+  {
+    "label": "1440-dive-full",
+    "width": 1440,
+    "height": 900,
+    "lite": false,
+    "block": [],
+    "wins": [
+      {
+        "frac": 0,
+        "frames": 226,
+        "medianMs": 13.3,
+        "p95Ms": 13.5,
+        "longFrames": 0,
+        "scriptMs": 536.9,
+        "styleMs": 71.9,
+        "layoutMs": 0,
+        "diveDraws": 26442,
+        "heroDraws": 0
+      },
+      {
+        "frac": 0.5,
+        "frames": 224,
+        "medianMs": 13.3,
+        "p95Ms": 13.4,
+        "longFrames": 0,
+        "scriptMs": 521.7,
+        "styleMs": 73.3,
+        "layoutMs": 0,
+        "diveDraws": 26208,
+        "heroDraws": 0
+      },
+      {
+        "frac": 0.91,
+        "frames": 223,
+        "medianMs": 13.3,
+        "p95Ms": 13.5,
+        "longFrames": 1,
+        "scriptMs": 903.4,
+        "styleMs": 128.3,
+        "layoutMs": 0.1,
+        "diveDraws": 18571,
+        "heroDraws": 0
+      }
+    ],
+    "net": [
+      {
+        "url": "tree.glb",
+        "bytes": 34861800
+      },
+      {
+        "url": "grass_ground_nor_gl_2k.png",
+        "bytes": 24557731
+      },
+      {
+        "url": "floor.glb",
+        "bytes": 7915396
+      },
+      {
+        "url": "grass_ground_rough_2k.png",
+        "bytes": 6773940
+      },
+      {
+        "url": "fish_b.glb",
+        "bytes": 5046348
+      },
+      {
+        "url": "fish_a.glb",
+        "bytes": 4933884
+      },
+      {
+        "url": "fish_c.glb",
+        "bytes": 4405448
+      },
+      {
+        "url": "butterfly_koi_a.glb",
+        "bytes": 4146564
+      },
+      {
+        "url": "grass_ground_ao_2k.jpg",
+        "bytes": 4064520
+      },
+      {
+        "url": "butterfly_koi_b.glb",
+        "bytes": 3840508
+      },
+      {
+        "url": "grass_ground_diff_2k.jpg",
+        "bytes": 3787330
+      },
+      {
+        "url": "intermediate7.png",
+        "bytes": 1906732
+      },
+      {
+        "url": "intermediate4.png",
+        "bytes": 1888334
+      },
+      {
+        "url": "intermediate2.png",
+        "bytes": 1866694
+      }
+    ],
+    "errors": []
+  },
+  {
+    "label": "1440-dive-no-trees",
+    "width": 1440,
+    "height": 900,
+    "lite": false,
+    "block": [
+      "*/tree.glb"
+    ],
+    "wins": [
+      {
+        "frac": 0,
+        "frames": 224,
+        "medianMs": 13.3,
+        "p95Ms": 13.5,
+        "longFrames": 0,
+        "scriptMs": 547.9,
+        "styleMs": 70.5,
+        "layoutMs": 0,
+        "diveDraws": 25312,
+        "heroDraws": 0
+      },
+      {
+        "frac": 0.5,
+        "frames": 226,
+        "medianMs": 13.3,
+        "p95Ms": 13.4,
+        "longFrames": 0,
+        "scriptMs": 520.3,
+        "styleMs": 73.5,
+        "layoutMs": 0,
+        "diveDraws": 25538,
+        "heroDraws": 0
+      },
+      {
+        "frac": 0.91,
+        "frames": 226,
+        "medianMs": 13.3,
+        "p95Ms": 13.5,
+        "longFrames": 0,
+        "scriptMs": 874.3,
+        "styleMs": 129.6,
+        "layoutMs": 0.1,
+        "diveDraws": 17853,
+        "heroDraws": 0
+      }
+    ],
+    "net": [
+      {
+        "url": "grass_ground_nor_gl_2k.png",
+        "bytes": 24557731
+      },
+      {
+        "url": "floor.glb",
+        "bytes": 7915396
+      },
+      {
+        "url": "grass_ground_rough_2k.png",
+        "bytes": 6773940
+      },
+      {
+        "url": "fish_b.glb",
+        "bytes": 5046348
+      },
+      {
+        "url": "fish_a.glb",
+        "bytes": 4933884
+      },
+      {
+        "url": "fish_c.glb",
+        "bytes": 4405448
+      },
+      {
+        "url": "butterfly_koi_a.glb",
+        "bytes": 4146564
+      },
+      {
+        "url": "grass_ground_ao_2k.jpg",
+        "bytes": 4064520
+      },
+      {
+        "url": "butterfly_koi_b.glb",
+        "bytes": 3840508
+      },
+      {
+        "url": "grass_ground_diff_2k.jpg",
+        "bytes": 3787330
+      },
+      {
+        "url": "intermediate7.png",
+        "bytes": 1906732
+      },
+      {
+        "url": "intermediate4.png",
+        "bytes": 1888334
+      },
+      {
+        "url": "intermediate2.png",
+        "bytes": 1866694
+      },
+      {
+        "url": "shrimp_b.glb",
+        "bytes": 1853968
+      }
+    ],
+    "errors": []
+  },
+  {
+    "label": "1440-dive-lite",
+    "width": 1440,
+    "height": 900,
+    "lite": true,
+    "block": [],
+    "wins": [
+      {
+        "frac": 0,
+        "frames": 224,
+        "medianMs": 13.3,
+        "p95Ms": 13.5,
+        "longFrames": 0,
+        "scriptMs": 490.2,
+        "styleMs": 50.5,
+        "layoutMs": 0,
+        "diveDraws": 21056,
+        "heroDraws": 0
+      },
+      {
+        "frac": 0.5,
+        "frames": 222,
+        "medianMs": 13.3,
+        "p95Ms": 13.5,
+        "longFrames": 1,
+        "scriptMs": 445.5,
+        "styleMs": 47.6,
+        "layoutMs": 0,
+        "diveDraws": 20868,
+        "heroDraws": 0
+      },
+      {
+        "frac": 0.91,
+        "frames": 223,
+        "medianMs": 13.3,
+        "p95Ms": 13.5,
+        "longFrames": 1,
+        "scriptMs": 490.4,
+        "styleMs": 74.8,
+        "layoutMs": 0.1,
+        "diveDraws": 12699,
+        "heroDraws": 0
+      }
+    ],
+    "net": [
+      {
+        "url": "tree-lite.glb",
+        "bytes": 7375276
+      },
+      {
+        "url": "butterfly_koi_a.glb",
+        "bytes": 4146564
+      },
+      {
+        "url": "butterfly_koi_b.glb",
+        "bytes": 3840508
+      },
+      {
+        "url": "floor.glb",
+        "bytes": 2767036
+      },
+      {
+        "url": "fish_b.glb",
+        "bytes": 2111948
+      },
+      {
+        "url": "fish_a.glb",
+        "bytes": 2068860
+      },
+      {
+        "url": "fish_c.glb",
+        "bytes": 1907736
+      },
+      {
+        "url": "intermediate7.png",
+        "bytes": 1906732
+      },
+      {
+        "url": "intermediate4.png",
+        "bytes": 1888334
+      },
+      {
+        "url": "intermediate2.png",
+        "bytes": 1866694
+      },
+      {
+        "url": "shrimp_b.glb",
+        "bytes": 1853968
+      },
+      {
+        "url": "shrimp_a.glb",
+        "bytes": 1802788
+      },
+      {
+        "url": "sky-night.png",
+        "bytes": 1711315
+      },
+      {
+        "url": "intermediate1.png",
+        "bytes": 1689426
+      }
+    ],
+    "errors": []
+  },
+  {
+    "label": "390-dive-full",
+    "width": 390,
+    "height": 844,
+    "lite": false,
+    "block": [],
+    "wins": [
+      {
+        "frac": 0,
+        "frames": 226,
+        "medianMs": 13.3,
+        "p95Ms": 13.5,
+        "longFrames": 0,
+        "scriptMs": 552.7,
+        "styleMs": 77.5,
+        "layoutMs": 0,
+        "diveDraws": 20792,
+        "heroDraws": 0
+      },
+      {
+        "frac": 0.5,
+        "frames": 224,
+        "medianMs": 13.3,
+        "p95Ms": 13.5,
+        "longFrames": 0,
+        "scriptMs": 478.6,
+        "styleMs": 68.2,
+        "layoutMs": 0,
+        "diveDraws": 20608,
+        "heroDraws": 0
+      },
+      {
+        "frac": 0.91,
+        "frames": 223,
+        "medianMs": 13.3,
+        "p95Ms": 13.5,
+        "longFrames": 1,
+        "scriptMs": 595.7,
+        "styleMs": 109.1,
+        "layoutMs": 0,
+        "diveDraws": 13390,
+        "heroDraws": 0
+      }
+    ],
+    "net": [
+      {
+        "url": "tree.glb",
+        "bytes": 34861800
+      },
+      {
+        "url": "grass_ground_nor_gl_2k.png",
+        "bytes": 24557731
+      },
+      {
+        "url": "floor.glb",
+        "bytes": 7915396
+      },
+      {
+        "url": "grass_ground_rough_2k.png",
+        "bytes": 6773940
+      },
+      {
+        "url": "fish_b.glb",
+        "bytes": 5046348
+      },
+      {
+        "url": "fish_a.glb",
+        "bytes": 4933884
+      },
+      {
+        "url": "fish_c.glb",
+        "bytes": 4405448
+      },
+      {
+        "url": "butterfly_koi_a.glb",
+        "bytes": 4146564
+      },
+      {
+        "url": "grass_ground_ao_2k.jpg",
+        "bytes": 4064520
+      },
+      {
+        "url": "grass_ground_diff_2k.jpg",
+        "bytes": 3787330
+      },
+      {
+        "url": "intermediate7.png",
+        "bytes": 1906732
+      },
+      {
+        "url": "intermediate4.png",
+        "bytes": 1888334
+      },
+      {
+        "url": "intermediate2.png",
+        "bytes": 1866694
+      },
+      {
+        "url": "amateur1.png",
+        "bytes": 1823272
+      }
+    ],
+    "errors": []
+  },
+  {
+    "label": "1024-spot",
+    "width": 1024,
+    "height": 768,
+    "lite": false,
+    "block": [],
+    "wins": [
+      {
+        "frac": 0,
+        "frames": 226,
+        "medianMs": 13.3,
+        "p95Ms": 13.5,
+        "longFrames": 0,
+        "scriptMs": 562.1,
+        "styleMs": 71.1,
+        "layoutMs": 0,
+        "diveDraws": 26442,
+        "heroDraws": 0
+      },
+      {
+        "frac": 0.5,
+        "frames": 223,
+        "medianMs": 13.3,
+        "p95Ms": 13.4,
+        "longFrames": 0,
+        "scriptMs": 614.6,
+        "styleMs": 78.5,
+        "layoutMs": 0,
+        "diveDraws": 26091,
+        "heroDraws": 0
+      },
+      {
+        "frac": 0.91,
+        "frames": 223,
+        "medianMs": 13.3,
+        "p95Ms": 13.5,
+        "longFrames": 1,
+        "scriptMs": 991.7,
+        "styleMs": 130.6,
+        "layoutMs": 0.7,
+        "diveDraws": 18625,
+        "heroDraws": 0
+      }
+    ],
+    "net": [
+      {
+        "url": "tree.glb",
+        "bytes": 34861800
+      },
+      {
+        "url": "grass_ground_nor_gl_2k.png",
+        "bytes": 24557731
+      },
+      {
+        "url": "floor.glb",
+        "bytes": 7915396
+      },
+      {
+        "url": "grass_ground_rough_2k.png",
+        "bytes": 6773940
+      },
+      {
+        "url": "fish_b.glb",
+        "bytes": 5046348
+      },
+      {
+        "url": "fish_a.glb",
+        "bytes": 4933884
+      },
+      {
+        "url": "fish_c.glb",
+        "bytes": 4405448
+      },
+      {
+        "url": "butterfly_koi_a.glb",
+        "bytes": 4146564
+      },
+      {
+        "url": "grass_ground_ao_2k.jpg",
+        "bytes": 4064520
+      },
+      {
+        "url": "butterfly_koi_b.glb",
+        "bytes": 3840508
+      },
+      {
+        "url": "grass_ground_diff_2k.jpg",
+        "bytes": 3787330
+      },
+      {
+        "url": "intermediate7.png",
+        "bytes": 1906732
+      },
+      {
+        "url": "intermediate4.png",
+        "bytes": 1888334
+      },
+      {
+        "url": "intermediate2.png",
+        "bytes": 1866694
+      }
+    ],
+    "errors": []
+  }
+]

@@ -1,0 +1,183 @@
+[
+  {
+    "label": "1440-normal-full",
+    "width": 1440,
+    "height": 900,
+    "lite": false,
+    "blockTrees": false,
+    "frames": 367,
+    "medianMs": 13.3,
+    "p95Ms": 13.5,
+    "longFrames": 1,
+    "scriptMs": 97.1,
+    "layoutMs": 0,
+    "styleMs": 368.7,
+    "draws": {
+      "hero": 1182,
+      "dive": 6798
+    },
+    "treeBytes": [
+      {
+        "url": "tree.glb",
+        "mime": "model/gltf-binary"
+      },
+      {
+        "url": "tree.glb",
+        "mime": "model/gltf-binary"
+      }
+    ],
+    "big": [],
+    "errors": []
+  },
+  {
+    "label": "1440-normal-no-trees",
+    "width": 1440,
+    "height": 900,
+    "lite": false,
+    "blockTrees": true,
+    "frames": 371,
+    "medianMs": 13.3,
+    "p95Ms": 13.5,
+    "longFrames": 1,
+    "scriptMs": 92.3,
+    "layoutMs": 0,
+    "styleMs": 357.9,
+    "draws": {
+      "hero": 1176,
+      "dive": 6630
+    },
+    "treeBytes": [],
+    "big": [],
+    "errors": []
+  },
+  {
+    "label": "1440-lite",
+    "width": 1440,
+    "height": 900,
+    "lite": true,
+    "blockTrees": false,
+    "frames": 373,
+    "medianMs": 13.3,
+    "p95Ms": 13.5,
+    "longFrames": 1,
+    "scriptMs": 38.3,
+    "layoutMs": 0,
+    "styleMs": 189,
+    "draws": {
+      "hero": 0,
+      "dive": 6118
+    },
+    "treeBytes": [
+      {
+        "url": "tree-lite.glb",
+        "mime": "model/gltf-binary"
+      }
+    ],
+    "big": [],
+    "errors": []
+  },
+  {
+    "label": "390-normal-full",
+    "width": 390,
+    "height": 844,
+    "lite": false,
+    "blockTrees": false,
+    "frames": 373,
+    "medianMs": 13.3,
+    "p95Ms": 13.5,
+    "longFrames": 1,
+    "scriptMs": 95,
+    "layoutMs": 0.1,
+    "styleMs": 372.7,
+    "draws": {
+      "hero": 1218,
+      "dive": 5334
+    },
+    "treeBytes": [
+      {
+        "url": "tree.glb",
+        "mime": "model/gltf-binary"
+      }
+    ],
+    "big": [],
+    "errors": []
+  },
+  {
+    "label": "390-lite",
+    "width": 390,
+    "height": 844,
+    "lite": true,
+    "blockTrees": false,
+    "frames": 373,
+    "medianMs": 13.3,
+    "p95Ms": 13.5,
+    "longFrames": 1,
+    "scriptMs": 37.8,
+    "layoutMs": 0.1,
+    "styleMs": 203.9,
+    "draws": {
+      "hero": 0,
+      "dive": 4134
+    },
+    "treeBytes": [
+      {
+        "url": "tree-lite.glb",
+        "mime": "model/gltf-binary"
+      }
+    ],
+    "big": [],
+    "errors": []
+  },
+  {
+    "label": "768-spot",
+    "width": 768,
+    "height": 1024,
+    "lite": false,
+    "blockTrees": false,
+    "frames": 374,
+    "medianMs": 13.3,
+    "p95Ms": 13.5,
+    "longFrames": 0,
+    "scriptMs": 170.8,
+    "layoutMs": 0,
+    "styleMs": 827,
+    "draws": {
+      "hero": 1218,
+      "dive": 6926
+    },
+    "treeBytes": [
+      {
+        "url": "tree.glb",
+        "mime": "model/gltf-binary"
+      }
+    ],
+    "big": [],
+    "errors": []
+  },
+  {
+    "label": "1920-spot",
+    "width": 1920,
+    "height": 1080,
+    "lite": false,
+    "blockTrees": false,
+    "frames": 352,
+    "medianMs": 13.3,
+    "p95Ms": 13.5,
+    "longFrames": 2,
+    "scriptMs": 154.6,
+    "layoutMs": 0,
+    "styleMs": 572.9,
+    "draws": {
+      "hero": 1212,
+      "dive": 6870
+    },
+    "treeBytes": [
+      {
+        "url": "tree.glb",
+        "mime": "model/gltf-binary"
+      }
+    ],
+    "big": [],
+    "errors": []
+  }
+]

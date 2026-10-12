@@ -1,0 +1,66 @@
+{
+  "cold": {
+    "requests": [
+      "grass_ground_nor_gl_512.webp 200",
+      "grass_ground_nor_gl_512.webp 200"
+    ],
+    "timing": [
+      {
+        "url": "grass_ground_nor_gl_512.webp",
+        "duration": 639.2,
+        "transfer": 551122,
+        "decoded": 550822
+      }
+    ],
+    "decodedDims": [
+      512,
+      512
+    ],
+    "wins": [
+      {
+        "frac": 0,
+        "medianMs": 13.3,
+        "p95Ms": 13.5,
+        "longFrames": 0,
+        "scriptMs": 537.5,
+        "styleMs": 84.4,
+        "diveDraws": 26442
+      },
+      {
+        "frac": 0.5,
+        "medianMs": 13.3,
+        "p95Ms": 13.4,
+        "longFrames": 1,
+        "scriptMs": 563.3,
+        "styleMs": 81.7,
+        "diveDraws": 26091
+      },
+      {
+        "frac": 0.91,
+        "medianMs": 13.3,
+        "p95Ms": 13.4,
+        "longFrames": 1,
+        "scriptMs": 922.4,
+        "styleMs": 107.9,
+        "diveDraws": 18341
+      }
+    ]
+  },
+  "warm": {
+    "requests": [
+      "grass_ground_nor_gl_512.webp 200"
+    ]
+  },
+  "lite": {
+    "norRequests": [],
+    "liteMap": [
+      "grass_ground_lite.jpg 200"
+    ]
+  },
+  "mobile": {
+    "requests": [
+      "grass_ground_nor_gl_512.webp 304"
+    ]
+  },
+  "errors": []
+}

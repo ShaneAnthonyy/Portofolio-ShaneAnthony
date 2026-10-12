@@ -7,7 +7,7 @@ import './projects-motion.css'
 
 const N = projects.length
 const previewNames = ['Sinefolis', 'Crypto Assets NER', 'Emotion Classification', 'FootFit', 'DevPath', 'TixConzer']
-const previewImages = [null, 'heuristic', 'emotion', 'footfit', 'devpath', 'tixconzer']
+const previewImages = ['sinefolis', 'heuristic', 'emotion', 'footfit', 'devpath', 'tixconzer']
 
 function GitHubIcon() {
   return (
@@ -220,26 +220,8 @@ function ProjectActions({ links }) {
   )
 }
 
-function sinefolisEmbedUrl(project) {
-  const source = (project.banner?.type === 'figma' && project.banner.url) || project.links?.prototype
-  if (!source || typeof source !== 'string') return null
-  try {
-    const url = new URL(source)
-    if (url.protocol !== 'https:') return null
-    if (url.hostname === 'embed.figma.com' || url.pathname.startsWith('/embed')) return source
-    if (url.hostname === 'figma.com' || url.hostname.endsWith('.figma.com')) {
-      return `https://www.figma.com/embed?embed_host=share&url=${encodeURIComponent(source)}`
-    }
-    return source
-  } catch {
-    return null
-  }
-}
-
 function ProjectCard({ project, index, position, featured, visible, cardRef, onActivate }) {
   const image = previewImages[index]
-  const prototypeUrl = index === 0 ? sinefolisEmbedUrl(project) : null
-  const loadPrototype = Math.abs(position) <= 2
 
   return (
     <article
@@ -271,17 +253,6 @@ function ProjectCard({ project, index, position, featured, visible, cardRef, onA
             loading="lazy"
             decoding="async"
             draggable="false"
-          />
-        ) : prototypeUrl ? (
-          <iframe
-            className="tidal-card__prototype-frame"
-            src={loadPrototype ? prototypeUrl : undefined}
-            title={`${project.title} live prototype preview`}
-            loading="lazy"
-            referrerPolicy="strict-origin-when-cross-origin"
-            allowFullScreen
-            aria-hidden="true"
-            tabIndex={-1}
           />
         ) : (
           <div className="tidal-card__prototype-fallback" aria-hidden="true" />
@@ -434,6 +405,24 @@ function ProjectDetail({ project, detailRef, onClose }) {
           <CaseStudySection
             section={{ type: 'overview', title: 'Project Overview', text: detail.overview }}
           />
+        )}
+        {project.links?.prototype && (
+          <section className="case-study__section case-study__section--prototype">
+            <h4 className="case-study__section-title">Live Prototype</h4>
+            <div style={{ position: 'relative', width: '100%', aspectRatio: '16 / 10', overflow: 'hidden', borderRadius: 12 }}>
+              <iframe
+                src={project.links.prototype}
+                title={`${project.title} — live prototype`}
+                loading="lazy"
+                allowFullScreen
+                referrerPolicy="strict-origin-when-cross-origin"
+                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 0 }}
+              />
+            </div>
+            <p className="case-study__paragraph">
+              <a href={project.links.prototype} target="_blank" rel="noopener noreferrer">Open live prototype in a new tab</a>
+            </p>
+          </section>
         )}
         {sections.map((section, index) => (
           <CaseStudySection section={section} key={`${section.type || 'section'}-${index}`} />

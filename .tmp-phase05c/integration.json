@@ -1,0 +1,65 @@
+{
+  "normal": {
+    "treeRequests": [
+      "tree-opt-150k-1024.glb 200"
+    ],
+    "origTreeHits": 0,
+    "optHits": 1,
+    "timing": [
+      {
+        "url": "tree-opt-150k-1024.glb",
+        "duration": 1499.9,
+        "transfer": 7402856,
+        "decoded": 7402556
+      }
+    ],
+    "wins": [
+      {
+        "frac": 0,
+        "frames": 223,
+        "medianMs": 13.3,
+        "p95Ms": 13.5,
+        "longFrames": 0,
+        "scriptMs": 549.3,
+        "styleMs": 76.6,
+        "diveDraws": 26208,
+        "heroDraws": 0
+      },
+      {
+        "frac": 0.5,
+        "frames": 223,
+        "medianMs": 13.3,
+        "p95Ms": 13.5,
+        "longFrames": 0,
+        "scriptMs": 579.6,
+        "styleMs": 83.5,
+        "diveDraws": 26091,
+        "heroDraws": 0
+      },
+      {
+        "frac": 0.91,
+        "frames": 221,
+        "medianMs": 13.3,
+        "p95Ms": 13.4,
+        "longFrames": 1,
+        "scriptMs": 1029.4,
+        "styleMs": 137.5,
+        "diveDraws": 18246,
+        "heroDraws": 0
+      }
+    ]
+  },
+  "lite": {
+    "treeRequests": [
+      "tree-lite.glb 200"
+    ],
+    "liteHits": 1,
+    "optHits": 0
+  },
+  "mobile": {
+    "treeRequests": [
+      "tree-opt-150k-1024.glb 200"
+    ]
+  },
+  "errors": []
+}

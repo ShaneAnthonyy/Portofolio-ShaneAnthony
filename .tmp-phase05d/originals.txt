@@ -1,0 +1,4 @@
+('grass_ground_ao_2k.jpg', 4064520, 'ae4739457175ab2a', (2048, 2048), 'L')
+('grass_ground_diff_2k.jpg', 3787330, '4272bddc71a7fa65', (2048, 2048), 'RGB')
+('grass_ground_nor_gl_2k.png', 24557731, 'd215b1ef91e7fdda', (2048, 2048), 'RGB')
+('grass_ground_rough_2k.png', 6773940, '4bb2ecca7bca7aa8', (2048, 2048), 'I')

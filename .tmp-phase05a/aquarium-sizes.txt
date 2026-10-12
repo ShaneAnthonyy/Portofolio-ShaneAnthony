@@ -1,0 +1,30 @@
+﻿
+Name                          Length Directory                                                                      
+----                          ------ ---------                                                                      
+tree.glb                    34861800 C:\CODE\ReactWeb\Portfolio-Shane\public\aquarium\environment                   
+grass_ground_nor_gl_2k.png  24557731 C:\CODE\ReactWeb\Portfolio-Shane\public\aquarium\terrain\grass_ground          
+floor.glb                    7915396 C:\CODE\ReactWeb\Portfolio-Shane\public\aquarium                               
+tree-lite.glb                7375276 C:\CODE\ReactWeb\Portfolio-Shane\public\aquarium\lite                          
+grass_ground_rough_2k.png    6773940 C:\CODE\ReactWeb\Portfolio-Shane\public\aquarium\terrain\grass_ground          
+fish_b.glb                   5046348 C:\CODE\ReactWeb\Portfolio-Shane\public\aquarium                               
+fish_a.glb                   4933884 C:\CODE\ReactWeb\Portfolio-Shane\public\aquarium                               
+fish_c.glb                   4405448 C:\CODE\ReactWeb\Portfolio-Shane\public\aquarium                               
+butterfly_koi_a.glb          4146564 C:\CODE\ReactWeb\Portfolio-Shane\public\aquarium                               
+grass_ground_ao_2k.jpg       4064520 C:\CODE\ReactWeb\Portfolio-Shane\public\aquarium\terrain\grass_ground          
+butterfly_koi_b.glb          3840508 C:\CODE\ReactWeb\Portfolio-Shane\public\aquarium                               
+grass_ground_diff_2k.jpg     3787330 C:\CODE\ReactWeb\Portfolio-Shane\public\aquarium\terrain\grass_ground          
+side_table_01_diff_4k.jpg    2802240 C:\CODE\ReactWeb\Portfolio-Shane\public\aquarium\room\props\side_table\textures
+floor.glb                    2767036 C:\CODE\ReactWeb\Portfolio-Shane\public\aquarium\lite                          
+fish_b.glb                   2111948 C:\CODE\ReactWeb\Portfolio-Shane\public\aquarium\lite                          
+side_table_01_arm_4k.jpg     2082748 C:\CODE\ReactWeb\Portfolio-Shane\public\aquarium\room\props\side_table\textures
+fish_a.glb                   2068860 C:\CODE\ReactWeb\Portfolio-Shane\public\aquarium\lite                          
+fish_c.glb                   1907736 C:\CODE\ReactWeb\Portfolio-Shane\public\aquarium\lite                          
+shrimp_b.glb                 1853968 C:\CODE\ReactWeb\Portfolio-Shane\public\aquarium                               
+shrimp_a.glb                 1802788 C:\CODE\ReactWeb\Portfolio-Shane\public\aquarium                               
+sky-night.png                1711315 C:\CODE\ReactWeb\Portfolio-Shane\public\aquarium\sky                           
+sky-morning.png              1687628 C:\CODE\ReactWeb\Portfolio-Shane\public\aquarium\sky                           
+side_table_01_nor_gl_4k.jpg   828179 C:\CODE\ReactWeb\Portfolio-Shane\public\aquarium\room\props\side_table\textures
+side-table-lite.glb           294796 C:\CODE\ReactWeb\Portfolio-Shane\public\aquarium\lite                          
+grass_ground_lite.jpg         236139 C:\CODE\ReactWeb\Portfolio-Shane\public\aquarium\lite                          
+
+

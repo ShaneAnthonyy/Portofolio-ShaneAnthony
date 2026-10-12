@@ -6,26 +6,26 @@
     "live Lite switch disposes Hero; normal mode remains parked while submerged",
     "hidden tab stops both renderer draw calls and resumes in place",
     "About navigation and Projects navigation during crossing settle cleanly and dispose distant Hero",
-    "deep reverse has poster continuity; Home restores a live aquarium",
+    "deep reverse prepares Hero while hidden; Home reuses that canvas with poster continuity",
     "Dive Again and Phase 04L magnetic arrival remain functional",
     "live reduced motion clears compositing; reduced Dive Again remains immediate",
     "native mobile touch scroll and viewport-height resize remain continuous"
   ],
   "before": {
-    "hero": 144,
-    "dive": 92
+    "hero": 120,
+    "dive": 32
   },
   "after": {
-    "hero": 144,
-    "dive": 188
+    "hero": 120,
+    "dive": 88
   },
   "hiddenBefore": {
-    "hero": 264,
-    "dive": 328
+    "hero": 192,
+    "dive": 184
   },
   "hiddenAfter": {
-    "hero": 264,
-    "dive": 328
+    "hero": 192,
+    "dive": 184
   },
   "errors": []
 }

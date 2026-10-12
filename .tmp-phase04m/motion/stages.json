@@ -1,0 +1,236 @@
+[
+  {
+    "width": 1440,
+    "frames": [
+      {
+        "file": "1440-0051.jpg",
+        "time": 690.7348144531252,
+        "p": 0,
+        "direction": "forward",
+        "requested": 0
+      },
+      {
+        "file": "1440-0092.jpg",
+        "time": 1297.0541503906252,
+        "p": 0.145125,
+        "direction": "forward",
+        "requested": 0.15
+      },
+      {
+        "file": "1440-0121.jpg",
+        "time": 1921.0429199218752,
+        "p": 0.3018500000000001,
+        "direction": "forward",
+        "requested": 0.3
+      },
+      {
+        "file": "1440-0148.jpg",
+        "time": 2521.731884765625,
+        "p": 0.45192499999999997,
+        "direction": "forward",
+        "requested": 0.45
+      },
+      {
+        "file": "1440-0190.jpg",
+        "time": 3111.914013671875,
+        "p": 0.598675,
+        "direction": "forward",
+        "requested": 0.6
+      },
+      {
+        "file": "1440-0234.jpg",
+        "time": 3718.1349609375,
+        "p": 0.75205,
+        "direction": "forward",
+        "requested": 0.75
+      },
+      {
+        "file": "1440-0278.jpg",
+        "time": 4307.82880859375,
+        "p": 0.9021250000000002,
+        "direction": "forward",
+        "requested": 0.9
+      },
+      {
+        "file": "1440-0352.jpg",
+        "time": 5385.41376953125,
+        "p": 1,
+        "direction": "forward",
+        "requested": 1
+      },
+      {
+        "file": "1440-0658.jpg",
+        "time": 9993.419873046874,
+        "p": 0,
+        "direction": "reverse",
+        "requested": 0
+      },
+      {
+        "file": "1440-0570.jpg",
+        "time": 8814.956982421874,
+        "p": 0.14910000000000034,
+        "direction": "reverse",
+        "requested": 0.15
+      },
+      {
+        "file": "1440-0525.jpg",
+        "time": 8218.265087890624,
+        "p": 0.2991750000000002,
+        "direction": "reverse",
+        "requested": 0.3
+      },
+      {
+        "file": "1440-0478.jpg",
+        "time": 7589.95380859375,
+        "p": 0.45255,
+        "direction": "reverse",
+        "requested": 0.45
+      },
+      {
+        "file": "1440-0434.jpg",
+        "time": 6999.90595703125,
+        "p": 0.6026499999999999,
+        "direction": "reverse",
+        "requested": 0.6
+      },
+      {
+        "file": "1440-0393.jpg",
+        "time": 6412.502880859375,
+        "p": 0.7493500000000002,
+        "direction": "reverse",
+        "requested": 0.75
+      },
+      {
+        "file": "1440-0371.jpg",
+        "time": 5784.096875,
+        "p": 0.9027499999999997,
+        "direction": "reverse",
+        "requested": 0.9
+      },
+      {
+        "file": "1440-0353.jpg",
+        "time": 5400.971875,
+        "p": 0.9994500000000001,
+        "direction": "reverse",
+        "requested": 1
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "frames": [
+      {
+        "file": "390-0051.jpg",
+        "time": 695.7800781249998,
+        "p": 0,
+        "direction": "forward",
+        "requested": 0
+      },
+      {
+        "file": "390-0096.jpg",
+        "time": 1295.2209960937498,
+        "p": 0.1450999999999999,
+        "direction": "forward",
+        "requested": 0.15
+      },
+      {
+        "file": "390-0144.jpg",
+        "time": 1932.3821289062498,
+        "p": 0.301875,
+        "direction": "forward",
+        "requested": 0.3
+      },
+      {
+        "file": "390-0186.jpg",
+        "time": 2506.360888671875,
+        "p": 0.44857500000000006,
+        "direction": "forward",
+        "requested": 0.45
+      },
+      {
+        "file": "390-0230.jpg",
+        "time": 3107.146044921875,
+        "p": 0.5986249999999997,
+        "direction": "forward",
+        "requested": 0.6
+      },
+      {
+        "file": "390-0277.jpg",
+        "time": 3733.339892578125,
+        "p": 0.7520249999999998,
+        "direction": "forward",
+        "requested": 0.75
+      },
+      {
+        "file": "390-0319.jpg",
+        "time": 4296.30693359375,
+        "p": 0.8954249999999999,
+        "direction": "forward",
+        "requested": 0.9
+      },
+      {
+        "file": "390-0401.jpg",
+        "time": 5389.9490234375,
+        "p": 1,
+        "direction": "forward",
+        "requested": 1
+      },
+      {
+        "file": "390-0745.jpg",
+        "time": 10000.026904296876,
+        "p": 0,
+        "direction": "reverse",
+        "requested": 0
+      },
+      {
+        "file": "390-0654.jpg",
+        "time": 8785.547900390626,
+        "p": 0.15244999999999986,
+        "direction": "reverse",
+        "requested": 0.15
+      },
+      {
+        "file": "390-0611.jpg",
+        "time": 8214.702197265626,
+        "p": 0.2991750000000002,
+        "direction": "reverse",
+        "requested": 0.3
+      },
+      {
+        "file": "390-0565.jpg",
+        "time": 7602.628955078125,
+        "p": 0.45255,
+        "direction": "reverse",
+        "requested": 0.45
+      },
+      {
+        "file": "390-0522.jpg",
+        "time": 7012.36796875,
+        "p": 0.5993250000000001,
+        "direction": "reverse",
+        "requested": 0.6
+      },
+      {
+        "file": "390-0477.jpg",
+        "time": 6411.1990234375,
+        "p": 0.7493500000000002,
+        "direction": "reverse",
+        "requested": 0.75
+      },
+      {
+        "file": "390-0432.jpg",
+        "time": 5814.871142578125,
+        "p": 0.8994249999999999,
+        "direction": "reverse",
+        "requested": 0.9
+      },
+      {
+        "file": "390-0402.jpg",
+        "time": 5403.479052734375,
+        "p": 0.9994500000000001,
+        "direction": "reverse",
+        "requested": 1
+      }
+    ]
+  }
+]

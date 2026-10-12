@@ -1,0 +1,1353 @@
+{
+  "pillow": "8.4.0",
+  "webp": "1.2.1",
+  "models": [
+    {
+      "name": "fish_a",
+      "source": "public/aquarium/fish_a.glb",
+      "sha256": "bbabe123e9231089cba55b823fdef061855ece57efc252144d340700096ef54f",
+      "bytes": 4933884,
+      "meshes": 1,
+      "primitives": 1,
+      "materialCount": 1,
+      "triangles": 20000,
+      "vertices": 29170,
+      "images": [
+        {
+          "index": 0,
+          "bytes": 972348,
+          "mime": "image/png",
+          "width": 1024,
+          "height": 1024,
+          "mode": "RGB",
+          "sha256": "25c9a8088a14876823b4b1a34231109acda4d1e4f71333ec1b06a5fbbf818348",
+          "rgbaSha256": "2db45d1e4a0562517f077ab34dac557bc30915990b692225fec71bc6644ea8c8",
+          "alphaMinMax": [
+            255,
+            255
+          ],
+          "transparentPixels": 0,
+          "partialAlphaPixels": 0,
+          "opaquePixels": 1048576,
+          "metadataKeys": [
+            "srgb",
+            "gamma",
+            "chromaticity",
+            "exif",
+            "dpi"
+          ],
+          "slots": [
+            {
+              "slot": "normalTexture",
+              "path": "materials[0].normalTexture",
+              "texture": 0,
+              "texCoord": 0
+            }
+          ],
+          "sharedAcrossSlots": false
+        },
+        {
+          "index": 1,
+          "bytes": 1974407,
+          "mime": "image/png",
+          "width": 1024,
+          "height": 1024,
+          "mode": "RGB",
+          "sha256": "8a943a8f9624c47e3e3c5641d62ae41903e9ada4771b750fe7025da1fed62af2",
+          "rgbaSha256": "e354d0a9296a755dc8b0abe18748b94ce5432158140c9b121e5711f94b628dd9",
+          "alphaMinMax": [
+            255,
+            255
+          ],
+          "transparentPixels": 0,
+          "partialAlphaPixels": 0,
+          "opaquePixels": 1048576,
+          "metadataKeys": [
+            "srgb",
+            "gamma",
+            "chromaticity",
+            "exif",
+            "dpi"
+          ],
+          "slots": [
+            {
+              "slot": "baseColorTexture",
+              "path": "materials[0].pbrMetallicRoughness.baseColorTexture",
+              "texture": 1,
+              "texCoord": 0
+            }
+          ],
+          "sharedAcrossSlots": false
+        },
+        {
+          "index": 2,
+          "bytes": 931710,
+          "mime": "image/png",
+          "width": 1024,
+          "height": 1024,
+          "mode": "RGB",
+          "sha256": "176254a0a4d0569cc2e5cc5c4a7cebaba10b0d72a5d85804cd0b6e39815e03b2",
+          "rgbaSha256": "4946f9ee232db19aade95c49d4db4f235e7ad579fe3c610b8e7324832d38bf04",
+          "alphaMinMax": [
+            255,
+            255
+          ],
+          "transparentPixels": 0,
+          "partialAlphaPixels": 0,
+          "opaquePixels": 1048576,
+          "metadataKeys": [
+            "srgb",
+            "gamma",
+            "chromaticity",
+            "exif",
+            "dpi"
+          ],
+          "slots": [
+            {
+              "slot": "metallicRoughnessTexture",
+              "path": "materials[0].pbrMetallicRoughness.metallicRoughnessTexture",
+              "texture": 2,
+              "texCoord": 0
+            }
+          ],
+          "sharedAcrossSlots": false
+        }
+      ],
+      "embeddedTextureBytes": 3878465,
+      "textureCount": 3,
+      "estimatedRgba8MipBytes": 16777212,
+      "uvAttributes": [
+        {
+          "TEXCOORD_0": 2
+        }
+      ],
+      "positionBounds": [
+        {
+          "min": [
+            -0.5915760397911072,
+            -0.13762086629867554,
+            -0.7228427529335022
+          ],
+          "max": [
+            0.4493807852268219,
+            0.1711445152759552,
+            -0.0005393473547883332
+          ]
+        }
+      ],
+      "nodes": [
+        {
+          "mesh": 0,
+          "name": "node_0",
+          "rotation": [
+            0.70710688829422,
+            0,
+            0,
+            0.7071066498756409
+          ]
+        }
+      ],
+      "scenes": [
+        {
+          "name": "Scene",
+          "nodes": [
+            0
+          ]
+        }
+      ],
+      "materials": [
+        {
+          "doubleSided": true,
+          "extensions": {
+            "KHR_materials_specular": {
+              "specularColorFactor": [
+                2.0,
+                2.0,
+                2.0
+              ]
+            }
+          },
+          "name": "Material.001",
+          "normalTexture": {
+            "index": 0
+          },
+          "pbrMetallicRoughness": {
+            "baseColorTexture": {
+              "index": 1
+            },
+            "metallicRoughnessTexture": {
+              "index": 2
+            }
+          }
+        }
+      ],
+      "samplers": [
+        {
+          "magFilter": 9729,
+          "minFilter": 9987
+        }
+      ],
+      "extensionsUsed": [
+        "KHR_materials_specular"
+      ],
+      "extensionsRequired": [],
+      "skins": 0,
+      "animations": 0,
+      "morphTargets": 0
+    },
+    {
+      "name": "fish_b",
+      "source": "public/aquarium/fish_b.glb",
+      "sha256": "7985ae1fa04c94e261fcac848e34696c993bda419e4b6d6c68ed25a56945c747",
+      "bytes": 5046348,
+      "meshes": 1,
+      "primitives": 1,
+      "materialCount": 1,
+      "triangles": 20000,
+      "vertices": 31355,
+      "images": [
+        {
+          "index": 0,
+          "bytes": 1016923,
+          "mime": "image/png",
+          "width": 1024,
+          "height": 1024,
+          "mode": "RGB",
+          "sha256": "31276cd019a0edb737187ced5d496d987bcf8294c5f8854964f85884f685f9e4",
+          "rgbaSha256": "81e7bb5a0e1b6ec2a59b4ad91f36714571443f8c4dbb75068ed1f8880287c2f8",
+          "alphaMinMax": [
+            255,
+            255
+          ],
+          "transparentPixels": 0,
+          "partialAlphaPixels": 0,
+          "opaquePixels": 1048576,
+          "metadataKeys": [
+            "srgb",
+            "gamma",
+            "chromaticity",
+            "exif",
+            "dpi"
+          ],
+          "slots": [
+            {
+              "slot": "normalTexture",
+              "path": "materials[0].normalTexture",
+              "texture": 0,
+              "texCoord": 0
+            }
+          ],
+          "sharedAcrossSlots": false
+        },
+        {
+          "index": 1,
+          "bytes": 1944808,
+          "mime": "image/png",
+          "width": 1024,
+          "height": 1024,
+          "mode": "RGB",
+          "sha256": "97b08c904c8dd9bacf8bdf7d33ee7849108644540d8cb5b70675f4c214ffbe4e",
+          "rgbaSha256": "5afa2c4c780c55ea99320456f68747921ff439007cc78719427c1eb0cafc1e49",
+          "alphaMinMax": [
+            255,
+            255
+          ],
+          "transparentPixels": 0,
+          "partialAlphaPixels": 0,
+          "opaquePixels": 1048576,
+          "metadataKeys": [
+            "srgb",
+            "gamma",
+            "chromaticity",
+            "exif",
+            "dpi"
+          ],
+          "slots": [
+            {
+              "slot": "baseColorTexture",
+              "path": "materials[0].pbrMetallicRoughness.baseColorTexture",
+              "texture": 1,
+              "texCoord": 0
+            }
+          ],
+          "sharedAcrossSlots": false
+        },
+        {
+          "index": 2,
+          "bytes": 959280,
+          "mime": "image/png",
+          "width": 1024,
+          "height": 1024,
+          "mode": "RGB",
+          "sha256": "a035439cee6448a2504e2aa904d854fecaae1788f22b9c041cb0747966689263",
+          "rgbaSha256": "90f0944b99d3cf47ee76f4b04d5698fdf62133547249563693ba65c2cc8dfed6",
+          "alphaMinMax": [
+            255,
+            255
+          ],
+          "transparentPixels": 0,
+          "partialAlphaPixels": 0,
+          "opaquePixels": 1048576,
+          "metadataKeys": [
+            "srgb",
+            "gamma",
+            "chromaticity",
+            "exif",
+            "dpi"
+          ],
+          "slots": [
+            {
+              "slot": "metallicRoughnessTexture",
+              "path": "materials[0].pbrMetallicRoughness.metallicRoughnessTexture",
+              "texture": 2,
+              "texCoord": 0
+            }
+          ],
+          "sharedAcrossSlots": false
+        }
+      ],
+      "embeddedTextureBytes": 3921011,
+      "textureCount": 3,
+      "estimatedRgba8MipBytes": 16777212,
+      "uvAttributes": [
+        {
+          "TEXCOORD_0": 2
+        }
+      ],
+      "positionBounds": [
+        {
+          "min": [
+            -0.5987333655357361,
+            -0.24605421721935272,
+            -0.571083664894104
+          ],
+          "max": [
+            0.5206419825553894,
+            0.19422496855258942,
+            -0.0018409645417705178
+          ]
+        }
+      ],
+      "nodes": [
+        {
+          "mesh": 0,
+          "name": "node_0",
+          "rotation": [
+            0.70710688829422,
+            0,
+            0,
+            0.7071066498756409
+          ]
+        }
+      ],
+      "scenes": [
+        {
+          "name": "Scene",
+          "nodes": [
+            0
+          ]
+        }
+      ],
+      "materials": [
+        {
+          "doubleSided": true,
+          "extensions": {
+            "KHR_materials_specular": {
+              "specularColorFactor": [
+                2.0,
+                2.0,
+                2.0
+              ]
+            }
+          },
+          "name": "Material.001",
+          "normalTexture": {
+            "index": 0
+          },
+          "pbrMetallicRoughness": {
+            "baseColorTexture": {
+              "index": 1
+            },
+            "metallicRoughnessTexture": {
+              "index": 2
+            }
+          }
+        }
+      ],
+      "samplers": [
+        {
+          "magFilter": 9729,
+          "minFilter": 9987
+        }
+      ],
+      "extensionsUsed": [
+        "KHR_materials_specular"
+      ],
+      "extensionsRequired": [],
+      "skins": 0,
+      "animations": 0,
+      "morphTargets": 0
+    },
+    {
+      "name": "fish_c",
+      "source": "public/aquarium/fish_c.glb",
+      "sha256": "ff829184347a5f5022e6ec6b1190779ffd31523c95788a2bc25e6ca6d5e47e11",
+      "bytes": 4405448,
+      "meshes": 1,
+      "primitives": 1,
+      "materialCount": 1,
+      "triangles": 20000,
+      "vertices": 28345,
+      "images": [
+        {
+          "index": 0,
+          "bytes": 913715,
+          "mime": "image/png",
+          "width": 1024,
+          "height": 1024,
+          "mode": "RGB",
+          "sha256": "cd810f0d582f2b89a8ee33081be562395df4826b0864cceb3b8bd4bd11ae0257",
+          "rgbaSha256": "05485754ddc0d4c56163ed3d00aca8e7589f54b61a01ff06dfa0ed7c9feda042",
+          "alphaMinMax": [
+            255,
+            255
+          ],
+          "transparentPixels": 0,
+          "partialAlphaPixels": 0,
+          "opaquePixels": 1048576,
+          "metadataKeys": [
+            "srgb",
+            "gamma",
+            "chromaticity",
+            "exif",
+            "dpi"
+          ],
+          "slots": [
+            {
+              "slot": "normalTexture",
+              "path": "materials[0].normalTexture",
+              "texture": 0,
+              "texCoord": 0
+            }
+          ],
+          "sharedAcrossSlots": false
+        },
+        {
+          "index": 1,
+          "bytes": 1526291,
+          "mime": "image/png",
+          "width": 1024,
+          "height": 1024,
+          "mode": "RGB",
+          "sha256": "0dd1cb1bf185ef62b5ab1871607af6519498b3365532238b10db496137df11a8",
+          "rgbaSha256": "3712be0ab17824906f14a2a16ec53012be3da5f567982ebb6f69ee13390be559",
+          "alphaMinMax": [
+            255,
+            255
+          ],
+          "transparentPixels": 0,
+          "partialAlphaPixels": 0,
+          "opaquePixels": 1048576,
+          "metadataKeys": [
+            "srgb",
+            "gamma",
+            "chromaticity",
+            "exif",
+            "dpi"
+          ],
+          "slots": [
+            {
+              "slot": "baseColorTexture",
+              "path": "materials[0].pbrMetallicRoughness.baseColorTexture",
+              "texture": 1,
+              "texCoord": 0
+            }
+          ],
+          "sharedAcrossSlots": false
+        },
+        {
+          "index": 2,
+          "bytes": 936421,
+          "mime": "image/png",
+          "width": 1024,
+          "height": 1024,
+          "mode": "RGB",
+          "sha256": "4dd7cb82e4c6845665b988bd17f78500b5f399be1b2473da55edfb2e3d8ede6d",
+          "rgbaSha256": "0ebfb2a62eeed5ed5793642ffb20f10e3bc1ac6525916e742d4f3c3cee0c7b1e",
+          "alphaMinMax": [
+            255,
+            255
+          ],
+          "transparentPixels": 0,
+          "partialAlphaPixels": 0,
+          "opaquePixels": 1048576,
+          "metadataKeys": [
+            "srgb",
+            "gamma",
+            "chromaticity",
+            "exif",
+            "dpi"
+          ],
+          "slots": [
+            {
+              "slot": "metallicRoughnessTexture",
+              "path": "materials[0].pbrMetallicRoughness.metallicRoughnessTexture",
+              "texture": 2,
+              "texCoord": 0
+            }
+          ],
+          "sharedAcrossSlots": false
+        }
+      ],
+      "embeddedTextureBytes": 3376427,
+      "textureCount": 3,
+      "estimatedRgba8MipBytes": 16777212,
+      "uvAttributes": [
+        {
+          "TEXCOORD_0": 2
+        }
+      ],
+      "positionBounds": [
+        {
+          "min": [
+            -0.6334660053253174,
+            -0.16743479669094086,
+            -0.6963347792625427
+          ],
+          "max": [
+            0.4695776104927063,
+            0.1595929116010666,
+            -0.0002021784894168377
+          ]
+        }
+      ],
+      "nodes": [
+        {
+          "mesh": 0,
+          "name": "node_0",
+          "rotation": [
+            0.70710688829422,
+            0,
+            0,
+            0.7071066498756409
+          ]
+        }
+      ],
+      "scenes": [
+        {
+          "name": "Scene",
+          "nodes": [
+            0
+          ]
+        }
+      ],
+      "materials": [
+        {
+          "doubleSided": true,
+          "extensions": {
+            "KHR_materials_specular": {
+              "specularColorFactor": [
+                2.0,
+                2.0,
+                2.0
+              ]
+            }
+          },
+          "name": "Material.001",
+          "normalTexture": {
+            "index": 0
+          },
+          "pbrMetallicRoughness": {
+            "baseColorTexture": {
+              "index": 1
+            },
+            "metallicRoughnessTexture": {
+              "index": 2
+            }
+          }
+        }
+      ],
+      "samplers": [
+        {
+          "magFilter": 9729,
+          "minFilter": 9987
+        }
+      ],
+      "extensionsUsed": [
+        "KHR_materials_specular"
+      ],
+      "extensionsRequired": [],
+      "skins": 0,
+      "animations": 0,
+      "morphTargets": 0
+    },
+    {
+      "name": "butterfly_koi_a",
+      "source": "public/aquarium/butterfly_koi_a.glb",
+      "sha256": "0c1357bc9d72268639fc8940525ad1d7242dafbb5b51b1b7cd92322b1ffd2f2a",
+      "bytes": 4146564,
+      "meshes": 1,
+      "primitives": 1,
+      "materialCount": 1,
+      "triangles": 35905,
+      "vertices": 46394,
+      "images": [
+        {
+          "index": 0,
+          "bytes": 1051708,
+          "mime": "image/png",
+          "width": 1024,
+          "height": 1024,
+          "mode": "RGB",
+          "sha256": "8f0c676660e57468e3d24735419fe7c36a5baa3927c7834527976836e5c0580f",
+          "rgbaSha256": "c8425db26277df4557b2d1d9e76a3053917457ee409085d7aab0dfea28f659bf",
+          "alphaMinMax": [
+            255,
+            255
+          ],
+          "transparentPixels": 0,
+          "partialAlphaPixels": 0,
+          "opaquePixels": 1048576,
+          "metadataKeys": [
+            "srgb",
+            "gamma",
+            "chromaticity",
+            "exif",
+            "dpi"
+          ],
+          "slots": [
+            {
+              "slot": "normalTexture",
+              "path": "materials[0].normalTexture",
+              "texture": 0,
+              "texCoord": 0
+            }
+          ],
+          "sharedAcrossSlots": false
+        },
+        {
+          "index": 1,
+          "bytes": 364006,
+          "mime": "image/jpeg",
+          "width": 1024,
+          "height": 1024,
+          "mode": "RGB",
+          "sha256": "6db720c02bf7e449a30d7dd97878de9e3e690626ecfe2e79ff077aea8606adc1",
+          "rgbaSha256": "f7f0c939e0ae3f84862bde26aa818ad79b2fe1f37a07d2480a40ec44c5985969",
+          "alphaMinMax": [
+            255,
+            255
+          ],
+          "transparentPixels": 0,
+          "partialAlphaPixels": 0,
+          "opaquePixels": 1048576,
+          "metadataKeys": [
+            "jfif",
+            "jfif_version",
+            "jfif_unit",
+            "jfif_density"
+          ],
+          "slots": [
+            {
+              "slot": "baseColorTexture",
+              "path": "materials[0].pbrMetallicRoughness.baseColorTexture",
+              "texture": 1,
+              "texCoord": 0
+            }
+          ],
+          "sharedAcrossSlots": false
+        },
+        {
+          "index": 2,
+          "bytes": 1028833,
+          "mime": "image/png",
+          "width": 1024,
+          "height": 1024,
+          "mode": "RGB",
+          "sha256": "1c5cb238c83f5ba3999b3197ee014dcf8ad7a18b683eebcf10ec1dd2185c6256",
+          "rgbaSha256": "bc7d2365554fb16c1fb636e099efde34027344e9ef3c28d2cdb41bafaa035c9f",
+          "alphaMinMax": [
+            255,
+            255
+          ],
+          "transparentPixels": 0,
+          "partialAlphaPixels": 0,
+          "opaquePixels": 1048576,
+          "metadataKeys": [
+            "srgb",
+            "gamma",
+            "chromaticity",
+            "exif",
+            "dpi"
+          ],
+          "slots": [
+            {
+              "slot": "metallicRoughnessTexture",
+              "path": "materials[0].pbrMetallicRoughness.metallicRoughnessTexture",
+              "texture": 2,
+              "texCoord": 0
+            }
+          ],
+          "sharedAcrossSlots": false
+        }
+      ],
+      "embeddedTextureBytes": 2444547,
+      "textureCount": 3,
+      "estimatedRgba8MipBytes": 16777212,
+      "uvAttributes": [
+        {
+          "TEXCOORD_0": 2
+        }
+      ],
+      "positionBounds": [
+        {
+          "min": [
+            -0.5127741694450378,
+            -0.19938212633132935,
+            -0.5690050721168518
+          ],
+          "max": [
+            0.5535776615142822,
+            0.16683053970336914,
+            -0.0003688696015160531
+          ]
+        }
+      ],
+      "nodes": [
+        {
+          "mesh": 0,
+          "name": "node_0",
+          "rotation": [
+            0.70710688829422,
+            0,
+            0,
+            0.7071066498756409
+          ]
+        }
+      ],
+      "scenes": [
+        {
+          "name": "Scene",
+          "nodes": [
+            0
+          ]
+        }
+      ],
+      "materials": [
+        {
+          "doubleSided": true,
+          "extensions": {
+            "KHR_materials_specular": {
+              "specularColorFactor": [
+                2.0,
+                2.0,
+                2.0
+              ]
+            }
+          },
+          "name": "Material.001",
+          "normalTexture": {
+            "index": 0
+          },
+          "pbrMetallicRoughness": {
+            "baseColorTexture": {
+              "index": 1
+            },
+            "metallicRoughnessTexture": {
+              "index": 2
+            }
+          }
+        }
+      ],
+      "samplers": [
+        {
+          "magFilter": 9729,
+          "minFilter": 9987
+        }
+      ],
+      "extensionsUsed": [
+        "KHR_materials_specular"
+      ],
+      "extensionsRequired": [],
+      "skins": 0,
+      "animations": 0,
+      "morphTargets": 0
+    },
+    {
+      "name": "butterfly_koi_b",
+      "source": "public/aquarium/butterfly_koi_b.glb",
+      "sha256": "669da8a476c55a11228147be7bf56a3820d6afc995bc9cb607556e61d64c63db",
+      "bytes": 3840508,
+      "meshes": 1,
+      "primitives": 1,
+      "materialCount": 1,
+      "triangles": 36703,
+      "vertices": 45832,
+      "images": [
+        {
+          "index": 0,
+          "bytes": 893462,
+          "mime": "image/png",
+          "width": 1024,
+          "height": 1024,
+          "mode": "RGB",
+          "sha256": "69377d85a7323ffd5a9788500ca6c74180951e467cdcbbc01c442208744ad499",
+          "rgbaSha256": "85849af48d329709f1f4abdf1be9d5f4a44ce162d6fb92756c23c17b75dde74d",
+          "alphaMinMax": [
+            255,
+            255
+          ],
+          "transparentPixels": 0,
+          "partialAlphaPixels": 0,
+          "opaquePixels": 1048576,
+          "metadataKeys": [
+            "srgb",
+            "gamma",
+            "chromaticity",
+            "exif",
+            "dpi"
+          ],
+          "slots": [
+            {
+              "slot": "normalTexture",
+              "path": "materials[0].normalTexture",
+              "texture": 0,
+              "texCoord": 0
+            }
+          ],
+          "sharedAcrossSlots": false
+        },
+        {
+          "index": 1,
+          "bytes": 254557,
+          "mime": "image/jpeg",
+          "width": 1024,
+          "height": 1024,
+          "mode": "RGB",
+          "sha256": "03d0ec6a5ce2f7130988b4622b504fa01b5e25751ccba45cb07cce4d89c1f845",
+          "rgbaSha256": "1b415ec46b811de71934daa99b6003d00d698d2bf8a91b117f8a81ef579d1222",
+          "alphaMinMax": [
+            255,
+            255
+          ],
+          "transparentPixels": 0,
+          "partialAlphaPixels": 0,
+          "opaquePixels": 1048576,
+          "metadataKeys": [
+            "jfif",
+            "jfif_version",
+            "jfif_unit",
+            "jfif_density"
+          ],
+          "slots": [
+            {
+              "slot": "baseColorTexture",
+              "path": "materials[0].pbrMetallicRoughness.baseColorTexture",
+              "texture": 1,
+              "texCoord": 0
+            }
+          ],
+          "sharedAcrossSlots": false
+        },
+        {
+          "index": 2,
+          "bytes": 1003672,
+          "mime": "image/png",
+          "width": 1024,
+          "height": 1024,
+          "mode": "RGB",
+          "sha256": "221abd5eb7293c5493403d7130c5e513b00a21546fad5516854a92ab44f66664",
+          "rgbaSha256": "9b6c4010eec203898c4acd56e47db77fe55ad2682868358992752e668816d53d",
+          "alphaMinMax": [
+            255,
+            255
+          ],
+          "transparentPixels": 0,
+          "partialAlphaPixels": 0,
+          "opaquePixels": 1048576,
+          "metadataKeys": [
+            "srgb",
+            "gamma",
+            "chromaticity",
+            "exif",
+            "dpi"
+          ],
+          "slots": [
+            {
+              "slot": "metallicRoughnessTexture",
+              "path": "materials[0].pbrMetallicRoughness.metallicRoughnessTexture",
+              "texture": 2,
+              "texCoord": 0
+            }
+          ],
+          "sharedAcrossSlots": false
+        }
+      ],
+      "embeddedTextureBytes": 2151691,
+      "textureCount": 3,
+      "estimatedRgba8MipBytes": 16777212,
+      "uvAttributes": [
+        {
+          "TEXCOORD_0": 2
+        }
+      ],
+      "positionBounds": [
+        {
+          "min": [
+            -0.548239529132843,
+            -0.17717096209526062,
+            -0.5856419205665588
+          ],
+          "max": [
+            0.5739489197731018,
+            0.16421456634998322,
+            0.0002825582050718367
+          ]
+        }
+      ],
+      "nodes": [
+        {
+          "mesh": 0,
+          "name": "node_0",
+          "rotation": [
+            0.70710688829422,
+            0,
+            0,
+            0.7071066498756409
+          ]
+        }
+      ],
+      "scenes": [
+        {
+          "name": "Scene",
+          "nodes": [
+            0
+          ]
+        }
+      ],
+      "materials": [
+        {
+          "doubleSided": true,
+          "extensions": {
+            "KHR_materials_specular": {
+              "specularColorFactor": [
+                2.0,
+                2.0,
+                2.0
+              ]
+            }
+          },
+          "name": "Material.001",
+          "normalTexture": {
+            "index": 0
+          },
+          "pbrMetallicRoughness": {
+            "baseColorTexture": {
+              "index": 1
+            },
+            "metallicRoughnessTexture": {
+              "index": 2
+            }
+          }
+        }
+      ],
+      "samplers": [
+        {
+          "magFilter": 9729,
+          "minFilter": 9987
+        }
+      ],
+      "extensionsUsed": [
+        "KHR_materials_specular"
+      ],
+      "extensionsRequired": [],
+      "skins": 0,
+      "animations": 0,
+      "morphTargets": 0
+    },
+    {
+      "name": "shrimp_a",
+      "source": "public/aquarium/shrimp_a.glb",
+      "sha256": "c33b4dc066f33c8595e176660687d5a64987ee88c093930bc2b537c68788c277",
+      "bytes": 1802788,
+      "meshes": 1,
+      "primitives": 1,
+      "materialCount": 1,
+      "triangles": 21041,
+      "vertices": 27205,
+      "images": [
+        {
+          "index": 0,
+          "bytes": 251242,
+          "mime": "image/png",
+          "width": 512,
+          "height": 512,
+          "mode": "RGB",
+          "sha256": "3c2a4be72d1450bbf172334b22f47f1b449aad4727637eec8757296810e7f3fc",
+          "rgbaSha256": "f0e0d092b7d3821c4a166e6aacc2d88a15ec82828c31da40ee806a7126d330b7",
+          "alphaMinMax": [
+            255,
+            255
+          ],
+          "transparentPixels": 0,
+          "partialAlphaPixels": 0,
+          "opaquePixels": 262144,
+          "metadataKeys": [
+            "srgb",
+            "gamma",
+            "chromaticity",
+            "exif",
+            "dpi"
+          ],
+          "slots": [
+            {
+              "slot": "normalTexture",
+              "path": "materials[0].normalTexture",
+              "texture": 0,
+              "texCoord": 0
+            }
+          ],
+          "sharedAcrossSlots": false
+        },
+        {
+          "index": 1,
+          "bytes": 283250,
+          "mime": "image/jpeg",
+          "width": 1024,
+          "height": 1024,
+          "mode": "RGB",
+          "sha256": "ccbda1ef0f265418af4e24a19346dfc43e3e252e980b8356bb8457b30be7c1ea",
+          "rgbaSha256": "fcb3026c4692833699433ec4feeb7f4838489588dbea63d2b3be34ee747cd7c0",
+          "alphaMinMax": [
+            255,
+            255
+          ],
+          "transparentPixels": 0,
+          "partialAlphaPixels": 0,
+          "opaquePixels": 1048576,
+          "metadataKeys": [
+            "jfif",
+            "jfif_version",
+            "jfif_unit",
+            "jfif_density"
+          ],
+          "slots": [
+            {
+              "slot": "baseColorTexture",
+              "path": "materials[0].pbrMetallicRoughness.baseColorTexture",
+              "texture": 1,
+              "texCoord": 0
+            }
+          ],
+          "sharedAcrossSlots": false
+        },
+        {
+          "index": 2,
+          "bytes": 269513,
+          "mime": "image/png",
+          "width": 512,
+          "height": 512,
+          "mode": "RGB",
+          "sha256": "c1c20e7d6a6e606d78b21c163757346cbf40555f8b2ae4fc48a64ca367702176",
+          "rgbaSha256": "93bcf1beb73e636515d427712c11cf84a084ee961bd6250152126af084b75607",
+          "alphaMinMax": [
+            255,
+            255
+          ],
+          "transparentPixels": 0,
+          "partialAlphaPixels": 0,
+          "opaquePixels": 262144,
+          "metadataKeys": [
+            "srgb",
+            "gamma",
+            "chromaticity",
+            "exif",
+            "dpi"
+          ],
+          "slots": [
+            {
+              "slot": "metallicRoughnessTexture",
+              "path": "materials[0].pbrMetallicRoughness.metallicRoughnessTexture",
+              "texture": 2,
+              "texCoord": 0
+            }
+          ],
+          "sharedAcrossSlots": false
+        }
+      ],
+      "embeddedTextureBytes": 804005,
+      "textureCount": 3,
+      "estimatedRgba8MipBytes": 8388604,
+      "uvAttributes": [
+        {
+          "TEXCOORD_0": 2
+        }
+      ],
+      "positionBounds": [
+        {
+          "min": [
+            -0.6183819770812988,
+            -0.19044378399848938,
+            -0.678189218044281
+          ],
+          "max": [
+            0.469124972820282,
+            0.1867477297782898,
+            -0.0002765135723166168
+          ]
+        }
+      ],
+      "nodes": [
+        {
+          "mesh": 0,
+          "name": "node_0",
+          "rotation": [
+            0.70710688829422,
+            0,
+            0,
+            0.7071066498756409
+          ]
+        }
+      ],
+      "scenes": [
+        {
+          "name": "Scene",
+          "nodes": [
+            0
+          ]
+        }
+      ],
+      "materials": [
+        {
+          "doubleSided": true,
+          "extensions": {
+            "KHR_materials_specular": {
+              "specularColorFactor": [
+                2.0,
+                2.0,
+                2.0
+              ]
+            }
+          },
+          "name": "Material.001",
+          "normalTexture": {
+            "index": 0
+          },
+          "pbrMetallicRoughness": {
+            "baseColorTexture": {
+              "index": 1
+            },
+            "metallicRoughnessTexture": {
+              "index": 2
+            }
+          }
+        }
+      ],
+      "samplers": [
+        {
+          "magFilter": 9729,
+          "minFilter": 9987
+        }
+      ],
+      "extensionsUsed": [
+        "KHR_materials_specular"
+      ],
+      "extensionsRequired": [],
+      "skins": 0,
+      "animations": 0,
+      "morphTargets": 0
+    },
+    {
+      "name": "shrimp_b",
+      "source": "public/aquarium/shrimp_b.glb",
+      "sha256": "f58364a48e0465e2525f7a80f4fbbdebc8ef5afe92ef778a9197fe7875b9a0f8",
+      "bytes": 1853968,
+      "meshes": 1,
+      "primitives": 1,
+      "materialCount": 1,
+      "triangles": 20912,
+      "vertices": 27341,
+      "images": [
+        {
+          "index": 0,
+          "bytes": 278380,
+          "mime": "image/png",
+          "width": 512,
+          "height": 512,
+          "mode": "RGB",
+          "sha256": "4261b6e6e39bd6d62ef998efd5963674555bd055f912b238f485a1aa7caf913c",
+          "rgbaSha256": "c22ad9422aecdbe5f90c2acd67251acff8a0cf1dbbf6952def59fde519759721",
+          "alphaMinMax": [
+            255,
+            255
+          ],
+          "transparentPixels": 0,
+          "partialAlphaPixels": 0,
+          "opaquePixels": 262144,
+          "metadataKeys": [
+            "srgb",
+            "gamma",
+            "chromaticity",
+            "exif",
+            "dpi"
+          ],
+          "slots": [
+            {
+              "slot": "normalTexture",
+              "path": "materials[0].normalTexture",
+              "texture": 0,
+              "texCoord": 0
+            }
+          ],
+          "sharedAcrossSlots": false
+        },
+        {
+          "index": 1,
+          "bytes": 342253,
+          "mime": "image/jpeg",
+          "width": 1024,
+          "height": 1024,
+          "mode": "RGB",
+          "sha256": "6c88221d77dda7939efa1c2c2d801b072796297a6a8c52ad6d748c305d9fb12e",
+          "rgbaSha256": "ea86f35ff8dcfc36612a13c2c1804296591f2e6ef6faec9551389b48f9c46c56",
+          "alphaMinMax": [
+            255,
+            255
+          ],
+          "transparentPixels": 0,
+          "partialAlphaPixels": 0,
+          "opaquePixels": 1048576,
+          "metadataKeys": [
+            "jfif",
+            "jfif_version",
+            "jfif_unit",
+            "jfif_density"
+          ],
+          "slots": [
+            {
+              "slot": "baseColorTexture",
+              "path": "materials[0].pbrMetallicRoughness.baseColorTexture",
+              "texture": 1,
+              "texCoord": 0
+            }
+          ],
+          "sharedAcrossSlots": false
+        },
+        {
+          "index": 2,
+          "bytes": 230979,
+          "mime": "image/png",
+          "width": 512,
+          "height": 512,
+          "mode": "RGB",
+          "sha256": "6a5b5afb162c66c8c332dd4852ac92f2f3fce654ba5a1a44914b4f41beefa842",
+          "rgbaSha256": "bfa6a0a5b0fe6b3358617890202814f4dee1d99c16ac7ddec98c58f9ffaf1531",
+          "alphaMinMax": [
+            255,
+            255
+          ],
+          "transparentPixels": 0,
+          "partialAlphaPixels": 0,
+          "opaquePixels": 262144,
+          "metadataKeys": [
+            "srgb",
+            "gamma",
+            "chromaticity",
+            "exif",
+            "dpi"
+          ],
+          "slots": [
+            {
+              "slot": "metallicRoughnessTexture",
+              "path": "materials[0].pbrMetallicRoughness.metallicRoughnessTexture",
+              "texture": 2,
+              "texCoord": 0
+            }
+          ],
+          "sharedAcrossSlots": false
+        }
+      ],
+      "embeddedTextureBytes": 851612,
+      "textureCount": 3,
+      "estimatedRgba8MipBytes": 8388604,
+      "uvAttributes": [
+        {
+          "TEXCOORD_0": 2
+        }
+      ],
+      "positionBounds": [
+        {
+          "min": [
+            -0.5728960037231445,
+            -0.253421425819397,
+            -0.6560389399528503
+          ],
+          "max": [
+            0.4702170789241791,
+            0.24926656484603882,
+            -0.00013977767957840115
+          ]
+        }
+      ],
+      "nodes": [
+        {
+          "mesh": 0,
+          "name": "node_0",
+          "rotation": [
+            0.70710688829422,
+            0,
+            0,
+            0.7071066498756409
+          ]
+        }
+      ],
+      "scenes": [
+        {
+          "name": "Scene",
+          "nodes": [
+            0
+          ]
+        }
+      ],
+      "materials": [
+        {
+          "doubleSided": true,
+          "extensions": {
+            "KHR_materials_specular": {
+              "specularColorFactor": [
+                2.0,
+                2.0,
+                2.0
+              ]
+            }
+          },
+          "name": "Material.001",
+          "normalTexture": {
+            "index": 0
+          },
+          "pbrMetallicRoughness": {
+            "baseColorTexture": {
+              "index": 1
+            },
+            "metallicRoughnessTexture": {
+              "index": 2
+            }
+          }
+        }
+      ],
+      "samplers": [
+        {
+          "magFilter": 9729,
+          "minFilter": 9987
+        }
+      ],
+      "extensionsUsed": [
+        "KHR_materials_specular"
+      ],
+      "extensionsRequired": [],
+      "skins": 0,
+      "animations": 0,
+      "morphTargets": 0
+    }
+  ]
+}

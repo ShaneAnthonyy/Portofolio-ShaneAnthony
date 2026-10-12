@@ -1,0 +1,74 @@
+{
+  "shots": [
+    {
+      "candidate": "original",
+      "label": "p0",
+      "file": "original-p0.jpg",
+      "timing": {}
+    },
+    {
+      "candidate": "original",
+      "label": "p05",
+      "file": "original-p05.jpg",
+      "timing": {}
+    },
+    {
+      "candidate": "original",
+      "label": "p091",
+      "file": "original-p091.jpg",
+      "timing": {}
+    },
+    {
+      "candidate": "opt-250k",
+      "label": "p0",
+      "file": "opt-250k-p0.jpg",
+      "timing": {}
+    },
+    {
+      "candidate": "opt-250k",
+      "label": "p05",
+      "file": "opt-250k-p05.jpg",
+      "timing": {}
+    },
+    {
+      "candidate": "opt-250k",
+      "label": "p091",
+      "file": "opt-250k-p091.jpg",
+      "timing": {}
+    },
+    {
+      "candidate": "opt-150k",
+      "label": "p0",
+      "file": "opt-150k-p0.jpg",
+      "timing": {}
+    },
+    {
+      "candidate": "opt-150k",
+      "label": "p05",
+      "file": "opt-150k-p05.jpg",
+      "timing": {}
+    },
+    {
+      "candidate": "opt-150k",
+      "label": "p091",
+      "file": "opt-150k-p091.jpg",
+      "timing": {}
+    },
+    {
+      "candidate": "lite",
+      "label": "p0",
+      "file": "lite-p0.jpg"
+    },
+    {
+      "candidate": "lite",
+      "label": "p05",
+      "file": "lite-p05.jpg"
+    },
+    {
+      "candidate": "lite",
+      "label": "p091",
+      "file": "lite-p091.jpg"
+    }
+  ],
+  "errors": []
+}

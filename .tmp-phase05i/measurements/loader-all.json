@@ -1,0 +1,5655 @@
+{
+  "results": [
+    {
+      "name": "fish_a",
+      "variants": [
+        {
+          "loadMs": 87.5,
+          "meshes": [
+            {
+              "name": "node_0",
+              "matrix": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "world": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "triangles": 20000,
+              "attributes": {
+                "position": {
+                  "count": 29170,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "normal": {
+                  "count": 29170,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "uv": {
+                  "count": 29170,
+                  "itemSize": 2,
+                  "normalized": false
+                }
+              },
+              "morph": null
+            }
+          ],
+          "textures": [
+            {
+              "slot": "map",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "srgb",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "normalMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "roughnessMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "metalnessMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            }
+          ],
+          "comparisons": [
+            {
+              "slot": "map",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "normalMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "roughnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "metalnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ],
+          "bounds": {
+            "min": [
+              -0.5915760397911072,
+              0.0005392954887348887,
+              -0.13762086142471677
+            ],
+            "max": [
+              0.4493807852268219,
+              0.7228427698833563,
+              0.17114472840043818
+            ]
+          },
+          "cloneBounds": {
+            "min": [
+              0.2094137050714271,
+              1.7986056491494506,
+              2.7942725563895316
+            ],
+            "max": [
+              1.4545972162472107,
+              2.8369891450289035,
+              3.372327411196974
+            ]
+          },
+          "animations": 0,
+          "materials": [
+            {
+              "doubleSided": true,
+              "extensions": {
+                "KHR_materials_specular": {
+                  "specularColorFactor": [
+                    2,
+                    2,
+                    2
+                  ]
+                }
+              },
+              "name": "Material.001",
+              "normalTexture": {
+                "index": 0
+              },
+              "pbrMetallicRoughness": {
+                "baseColorTexture": {
+                  "index": 1
+                },
+                "metallicRoughnessTexture": {
+                  "index": 2
+                }
+              }
+            }
+          ],
+          "variant": "original"
+        },
+        {
+          "loadMs": 93.5,
+          "meshes": [
+            {
+              "name": "node_0",
+              "matrix": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "world": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "triangles": 20000,
+              "attributes": {
+                "position": {
+                  "count": 29170,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "normal": {
+                  "count": 29170,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "uv": {
+                  "count": 29170,
+                  "itemSize": 2,
+                  "normalized": false
+                }
+              },
+              "morph": null
+            }
+          ],
+          "textures": [
+            {
+              "slot": "map",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "srgb",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "normalMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "roughnessMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "metalnessMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            }
+          ],
+          "comparisons": [
+            {
+              "slot": "map",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "normalMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "roughnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "metalnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ],
+          "bounds": {
+            "min": [
+              -0.5915760397911072,
+              0.0005392954887348887,
+              -0.13762086142471677
+            ],
+            "max": [
+              0.4493807852268219,
+              0.7228427698833563,
+              0.17114472840043818
+            ]
+          },
+          "cloneBounds": {
+            "min": [
+              0.2094137050714271,
+              1.7986056491494506,
+              2.7942725563895316
+            ],
+            "max": [
+              1.4545972162472107,
+              2.8369891450289035,
+              3.372327411196974
+            ]
+          },
+          "animations": 0,
+          "materials": [
+            {
+              "doubleSided": true,
+              "extensions": {
+                "KHR_materials_specular": {
+                  "specularColorFactor": [
+                    2,
+                    2,
+                    2
+                  ]
+                }
+              },
+              "name": "Material.001",
+              "normalTexture": {
+                "index": 0
+              },
+              "pbrMetallicRoughness": {
+                "baseColorTexture": {
+                  "index": 1
+                },
+                "metallicRoughnessTexture": {
+                  "index": 2
+                }
+              }
+            }
+          ],
+          "variant": "lossless"
+        },
+        {
+          "loadMs": 78.60000000149012,
+          "meshes": [
+            {
+              "name": "node_0",
+              "matrix": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "world": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "triangles": 20000,
+              "attributes": {
+                "position": {
+                  "count": 29170,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "normal": {
+                  "count": 29170,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "uv": {
+                  "count": 29170,
+                  "itemSize": 2,
+                  "normalized": false
+                }
+              },
+              "morph": null
+            }
+          ],
+          "textures": [
+            {
+              "slot": "map",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "srgb",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "normalMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "roughnessMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "metalnessMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            }
+          ],
+          "comparisons": [
+            {
+              "slot": "map",
+              "max": [
+                79,
+                27,
+                86,
+                0
+              ],
+              "mean": [
+                3.5035228729248047,
+                1.6362810134887695,
+                3.8793601989746094,
+                0
+              ]
+            },
+            {
+              "slot": "normalMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "roughnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "metalnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ],
+          "bounds": {
+            "min": [
+              -0.5915760397911072,
+              0.0005392954887348887,
+              -0.13762086142471677
+            ],
+            "max": [
+              0.4493807852268219,
+              0.7228427698833563,
+              0.17114472840043818
+            ]
+          },
+          "cloneBounds": {
+            "min": [
+              0.2094137050714271,
+              1.7986056491494506,
+              2.7942725563895316
+            ],
+            "max": [
+              1.4545972162472107,
+              2.8369891450289035,
+              3.372327411196974
+            ]
+          },
+          "animations": 0,
+          "materials": [
+            {
+              "doubleSided": true,
+              "extensions": {
+                "KHR_materials_specular": {
+                  "specularColorFactor": [
+                    2,
+                    2,
+                    2
+                  ]
+                }
+              },
+              "name": "Material.001",
+              "normalTexture": {
+                "index": 0
+              },
+              "pbrMetallicRoughness": {
+                "baseColorTexture": {
+                  "index": 1
+                },
+                "metallicRoughnessTexture": {
+                  "index": 2
+                }
+              }
+            }
+          ],
+          "variant": "q95"
+        }
+      ],
+      "pass": true
+    },
+    {
+      "name": "fish_b",
+      "variants": [
+        {
+          "loadMs": 84.60000000149012,
+          "meshes": [
+            {
+              "name": "node_0",
+              "matrix": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "world": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "triangles": 20000,
+              "attributes": {
+                "position": {
+                  "count": 31355,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "normal": {
+                  "count": 31355,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "uv": {
+                  "count": 31355,
+                  "itemSize": 2,
+                  "normalized": false
+                }
+              },
+              "morph": null
+            }
+          ],
+          "textures": [
+            {
+              "slot": "map",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "srgb",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "normalMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "roughnessMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "metalnessMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            }
+          ],
+          "comparisons": [
+            {
+              "slot": "map",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "normalMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "roughnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "metalnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ],
+          "bounds": {
+            "min": [
+              -0.5987333655357361,
+              0.001840905639027372,
+              -0.24605420823955532
+            ],
+            "max": [
+              0.5206419825553894,
+              0.5710837198879338,
+              0.194225134912212
+            ]
+          },
+          "cloneBounds": {
+            "min": [
+              0.22512385319113482,
+              1.7953368291734988,
+              2.6773766363095537
+            ],
+            "max": [
+              1.5255269958474154,
+              2.7265356568068118,
+              3.3726358897663973
+            ]
+          },
+          "animations": 0,
+          "materials": [
+            {
+              "doubleSided": true,
+              "extensions": {
+                "KHR_materials_specular": {
+                  "specularColorFactor": [
+                    2,
+                    2,
+                    2
+                  ]
+                }
+              },
+              "name": "Material.001",
+              "normalTexture": {
+                "index": 0
+              },
+              "pbrMetallicRoughness": {
+                "baseColorTexture": {
+                  "index": 1
+                },
+                "metallicRoughnessTexture": {
+                  "index": 2
+                }
+              }
+            }
+          ],
+          "variant": "original"
+        },
+        {
+          "loadMs": 102.69999999552965,
+          "meshes": [
+            {
+              "name": "node_0",
+              "matrix": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "world": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "triangles": 20000,
+              "attributes": {
+                "position": {
+                  "count": 31355,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "normal": {
+                  "count": 31355,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "uv": {
+                  "count": 31355,
+                  "itemSize": 2,
+                  "normalized": false
+                }
+              },
+              "morph": null
+            }
+          ],
+          "textures": [
+            {
+              "slot": "map",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "srgb",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "normalMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "roughnessMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "metalnessMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            }
+          ],
+          "comparisons": [
+            {
+              "slot": "map",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "normalMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "roughnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "metalnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ],
+          "bounds": {
+            "min": [
+              -0.5987333655357361,
+              0.001840905639027372,
+              -0.24605420823955532
+            ],
+            "max": [
+              0.5206419825553894,
+              0.5710837198879338,
+              0.194225134912212
+            ]
+          },
+          "cloneBounds": {
+            "min": [
+              0.22512385319113482,
+              1.7953368291734988,
+              2.6773766363095537
+            ],
+            "max": [
+              1.5255269958474154,
+              2.7265356568068118,
+              3.3726358897663973
+            ]
+          },
+          "animations": 0,
+          "materials": [
+            {
+              "doubleSided": true,
+              "extensions": {
+                "KHR_materials_specular": {
+                  "specularColorFactor": [
+                    2,
+                    2,
+                    2
+                  ]
+                }
+              },
+              "name": "Material.001",
+              "normalTexture": {
+                "index": 0
+              },
+              "pbrMetallicRoughness": {
+                "baseColorTexture": {
+                  "index": 1
+                },
+                "metallicRoughnessTexture": {
+                  "index": 2
+                }
+              }
+            }
+          ],
+          "variant": "lossless"
+        },
+        {
+          "loadMs": 77.5,
+          "meshes": [
+            {
+              "name": "node_0",
+              "matrix": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "world": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "triangles": 20000,
+              "attributes": {
+                "position": {
+                  "count": 31355,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "normal": {
+                  "count": 31355,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "uv": {
+                  "count": 31355,
+                  "itemSize": 2,
+                  "normalized": false
+                }
+              },
+              "morph": null
+            }
+          ],
+          "textures": [
+            {
+              "slot": "map",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "srgb",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "normalMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "roughnessMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "metalnessMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            }
+          ],
+          "comparisons": [
+            {
+              "slot": "map",
+              "max": [
+                60,
+                22,
+                93,
+                0
+              ],
+              "mean": [
+                4.046079635620117,
+                1.678365707397461,
+                5.082517623901367,
+                0
+              ]
+            },
+            {
+              "slot": "normalMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "roughnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "metalnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ],
+          "bounds": {
+            "min": [
+              -0.5987333655357361,
+              0.001840905639027372,
+              -0.24605420823955532
+            ],
+            "max": [
+              0.5206419825553894,
+              0.5710837198879338,
+              0.194225134912212
+            ]
+          },
+          "cloneBounds": {
+            "min": [
+              0.22512385319113482,
+              1.7953368291734988,
+              2.6773766363095537
+            ],
+            "max": [
+              1.5255269958474154,
+              2.7265356568068118,
+              3.3726358897663973
+            ]
+          },
+          "animations": 0,
+          "materials": [
+            {
+              "doubleSided": true,
+              "extensions": {
+                "KHR_materials_specular": {
+                  "specularColorFactor": [
+                    2,
+                    2,
+                    2
+                  ]
+                }
+              },
+              "name": "Material.001",
+              "normalTexture": {
+                "index": 0
+              },
+              "pbrMetallicRoughness": {
+                "baseColorTexture": {
+                  "index": 1
+                },
+                "metallicRoughnessTexture": {
+                  "index": 2
+                }
+              }
+            }
+          ],
+          "variant": "q95"
+        }
+      ],
+      "pass": true
+    },
+    {
+      "name": "fish_c",
+      "variants": [
+        {
+          "loadMs": 79,
+          "meshes": [
+            {
+              "name": "node_0",
+              "matrix": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "world": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "triangles": 20000,
+              "attributes": {
+                "position": {
+                  "count": 28345,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "normal": {
+                  "count": 28345,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "uv": {
+                  "count": 28345,
+                  "itemSize": 2,
+                  "normalized": false
+                }
+              },
+              "morph": null
+            }
+          ],
+          "textures": [
+            {
+              "slot": "map",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "srgb",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "normalMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "roughnessMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "metalnessMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            }
+          ],
+          "comparisons": [
+            {
+              "slot": "map",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "normalMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "roughnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "metalnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ],
+          "bounds": {
+            "min": [
+              -0.6334660053253174,
+              0.00020213013441943513,
+              -0.16743479089863794
+            ],
+            "max": [
+              0.4695776104927063,
+              0.6963348061517458,
+              0.15959311709045274
+            ]
+          },
+          "cloneBounds": {
+            "min": [
+              0.17194678103740313,
+              1.7863061594990315,
+              2.7619287798228767
+            ],
+            "max": [
+              1.4713100734211317,
+              2.8211855438619997,
+              3.3636608689406065
+            ]
+          },
+          "animations": 0,
+          "materials": [
+            {
+              "doubleSided": true,
+              "extensions": {
+                "KHR_materials_specular": {
+                  "specularColorFactor": [
+                    2,
+                    2,
+                    2
+                  ]
+                }
+              },
+              "name": "Material.001",
+              "normalTexture": {
+                "index": 0
+              },
+              "pbrMetallicRoughness": {
+                "baseColorTexture": {
+                  "index": 1
+                },
+                "metallicRoughnessTexture": {
+                  "index": 2
+                }
+              }
+            }
+          ],
+          "variant": "original"
+        },
+        {
+          "loadMs": 77,
+          "meshes": [
+            {
+              "name": "node_0",
+              "matrix": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "world": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "triangles": 20000,
+              "attributes": {
+                "position": {
+                  "count": 28345,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "normal": {
+                  "count": 28345,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "uv": {
+                  "count": 28345,
+                  "itemSize": 2,
+                  "normalized": false
+                }
+              },
+              "morph": null
+            }
+          ],
+          "textures": [
+            {
+              "slot": "map",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "srgb",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "normalMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "roughnessMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "metalnessMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            }
+          ],
+          "comparisons": [
+            {
+              "slot": "map",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "normalMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "roughnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "metalnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ],
+          "bounds": {
+            "min": [
+              -0.6334660053253174,
+              0.00020213013441943513,
+              -0.16743479089863794
+            ],
+            "max": [
+              0.4695776104927063,
+              0.6963348061517458,
+              0.15959311709045274
+            ]
+          },
+          "cloneBounds": {
+            "min": [
+              0.17194678103740313,
+              1.7863061594990315,
+              2.7619287798228767
+            ],
+            "max": [
+              1.4713100734211317,
+              2.8211855438619997,
+              3.3636608689406065
+            ]
+          },
+          "animations": 0,
+          "materials": [
+            {
+              "doubleSided": true,
+              "extensions": {
+                "KHR_materials_specular": {
+                  "specularColorFactor": [
+                    2,
+                    2,
+                    2
+                  ]
+                }
+              },
+              "name": "Material.001",
+              "normalTexture": {
+                "index": 0
+              },
+              "pbrMetallicRoughness": {
+                "baseColorTexture": {
+                  "index": 1
+                },
+                "metallicRoughnessTexture": {
+                  "index": 2
+                }
+              }
+            }
+          ],
+          "variant": "lossless"
+        },
+        {
+          "loadMs": 80.69999999552965,
+          "meshes": [
+            {
+              "name": "node_0",
+              "matrix": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "world": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "triangles": 20000,
+              "attributes": {
+                "position": {
+                  "count": 28345,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "normal": {
+                  "count": 28345,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "uv": {
+                  "count": 28345,
+                  "itemSize": 2,
+                  "normalized": false
+                }
+              },
+              "morph": null
+            }
+          ],
+          "textures": [
+            {
+              "slot": "map",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "srgb",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "normalMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "roughnessMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "metalnessMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            }
+          ],
+          "comparisons": [
+            {
+              "slot": "map",
+              "max": [
+                26,
+                9,
+                47,
+                0
+              ],
+              "mean": [
+                1.1844005584716797,
+                0.9623079299926758,
+                1.4234733581542969,
+                0
+              ]
+            },
+            {
+              "slot": "normalMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "roughnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "metalnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ],
+          "bounds": {
+            "min": [
+              -0.6334660053253174,
+              0.00020213013441943513,
+              -0.16743479089863794
+            ],
+            "max": [
+              0.4695776104927063,
+              0.6963348061517458,
+              0.15959311709045274
+            ]
+          },
+          "cloneBounds": {
+            "min": [
+              0.17194678103740313,
+              1.7863061594990315,
+              2.7619287798228767
+            ],
+            "max": [
+              1.4713100734211317,
+              2.8211855438619997,
+              3.3636608689406065
+            ]
+          },
+          "animations": 0,
+          "materials": [
+            {
+              "doubleSided": true,
+              "extensions": {
+                "KHR_materials_specular": {
+                  "specularColorFactor": [
+                    2,
+                    2,
+                    2
+                  ]
+                }
+              },
+              "name": "Material.001",
+              "normalTexture": {
+                "index": 0
+              },
+              "pbrMetallicRoughness": {
+                "baseColorTexture": {
+                  "index": 1
+                },
+                "metallicRoughnessTexture": {
+                  "index": 2
+                }
+              }
+            }
+          ],
+          "variant": "q95"
+        }
+      ],
+      "pass": true
+    },
+    {
+      "name": "butterfly_koi_a",
+      "variants": [
+        {
+          "loadMs": 66.19999999552965,
+          "meshes": [
+            {
+              "name": "node_0",
+              "matrix": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "world": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "triangles": 35905,
+              "attributes": {
+                "position": {
+                  "count": 46394,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "normal": {
+                  "count": 46394,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "uv": {
+                  "count": 46394,
+                  "itemSize": 2,
+                  "normalized": false
+                }
+              },
+              "morph": null
+            }
+          ],
+          "textures": [
+            {
+              "slot": "map",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "srgb",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "normalMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "roughnessMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "metalnessMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            }
+          ],
+          "comparisons": [
+            {
+              "slot": "map",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "normalMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "roughnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "metalnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ],
+          "bounds": {
+            "min": [
+              -0.5127741694450378,
+              0.00036881904820062236,
+              -0.19938211939501657
+            ],
+            "max": [
+              0.5535776615142822,
+              0.569005113042693,
+              0.16683070637096192
+            ]
+          },
+          "cloneBounds": {
+            "min": [
+              0.3154812164657137,
+              1.823531034913806,
+              2.71741533549468
+            ],
+            "max": [
+              1.5513483804027866,
+              2.7303140344368817,
+              3.3319048113550465
+            ]
+          },
+          "animations": 0,
+          "materials": [
+            {
+              "doubleSided": true,
+              "extensions": {
+                "KHR_materials_specular": {
+                  "specularColorFactor": [
+                    2,
+                    2,
+                    2
+                  ]
+                }
+              },
+              "name": "Material.001",
+              "normalTexture": {
+                "index": 0
+              },
+              "pbrMetallicRoughness": {
+                "baseColorTexture": {
+                  "index": 1
+                },
+                "metallicRoughnessTexture": {
+                  "index": 2
+                }
+              }
+            }
+          ],
+          "variant": "original"
+        },
+        {
+          "loadMs": 59.19999999552965,
+          "meshes": [
+            {
+              "name": "node_0",
+              "matrix": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "world": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "triangles": 35905,
+              "attributes": {
+                "position": {
+                  "count": 46394,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "normal": {
+                  "count": 46394,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "uv": {
+                  "count": 46394,
+                  "itemSize": 2,
+                  "normalized": false
+                }
+              },
+              "morph": null
+            }
+          ],
+          "textures": [
+            {
+              "slot": "map",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "srgb",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "normalMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "roughnessMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "metalnessMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            }
+          ],
+          "comparisons": [
+            {
+              "slot": "map",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "normalMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "roughnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "metalnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ],
+          "bounds": {
+            "min": [
+              -0.5127741694450378,
+              0.00036881904820062236,
+              -0.19938211939501657
+            ],
+            "max": [
+              0.5535776615142822,
+              0.569005113042693,
+              0.16683070637096192
+            ]
+          },
+          "cloneBounds": {
+            "min": [
+              0.3154812164657137,
+              1.823531034913806,
+              2.71741533549468
+            ],
+            "max": [
+              1.5513483804027866,
+              2.7303140344368817,
+              3.3319048113550465
+            ]
+          },
+          "animations": 0,
+          "materials": [
+            {
+              "doubleSided": true,
+              "extensions": {
+                "KHR_materials_specular": {
+                  "specularColorFactor": [
+                    2,
+                    2,
+                    2
+                  ]
+                }
+              },
+              "name": "Material.001",
+              "normalTexture": {
+                "index": 0
+              },
+              "pbrMetallicRoughness": {
+                "baseColorTexture": {
+                  "index": 1
+                },
+                "metallicRoughnessTexture": {
+                  "index": 2
+                }
+              }
+            }
+          ],
+          "variant": "lossless"
+        },
+        {
+          "loadMs": 73.30000000447035,
+          "meshes": [
+            {
+              "name": "node_0",
+              "matrix": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "world": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "triangles": 35905,
+              "attributes": {
+                "position": {
+                  "count": 46394,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "normal": {
+                  "count": 46394,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "uv": {
+                  "count": 46394,
+                  "itemSize": 2,
+                  "normalized": false
+                }
+              },
+              "morph": null
+            }
+          ],
+          "textures": [
+            {
+              "slot": "map",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "srgb",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "normalMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "roughnessMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "metalnessMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            }
+          ],
+          "comparisons": [
+            {
+              "slot": "map",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "normalMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "roughnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "metalnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ],
+          "bounds": {
+            "min": [
+              -0.5127741694450378,
+              0.00036881904820062236,
+              -0.19938211939501657
+            ],
+            "max": [
+              0.5535776615142822,
+              0.569005113042693,
+              0.16683070637096192
+            ]
+          },
+          "cloneBounds": {
+            "min": [
+              0.3154812164657137,
+              1.823531034913806,
+              2.71741533549468
+            ],
+            "max": [
+              1.5513483804027866,
+              2.7303140344368817,
+              3.3319048113550465
+            ]
+          },
+          "animations": 0,
+          "materials": [
+            {
+              "doubleSided": true,
+              "extensions": {
+                "KHR_materials_specular": {
+                  "specularColorFactor": [
+                    2,
+                    2,
+                    2
+                  ]
+                }
+              },
+              "name": "Material.001",
+              "normalTexture": {
+                "index": 0
+              },
+              "pbrMetallicRoughness": {
+                "baseColorTexture": {
+                  "index": 1
+                },
+                "metallicRoughnessTexture": {
+                  "index": 2
+                }
+              }
+            }
+          ],
+          "variant": "q95"
+        }
+      ],
+      "pass": true
+    },
+    {
+      "name": "butterfly_koi_b",
+      "variants": [
+        {
+          "loadMs": 72.5,
+          "meshes": [
+            {
+              "name": "node_0",
+              "matrix": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "world": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "triangles": 36703,
+              "attributes": {
+                "position": {
+                  "count": 45832,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "normal": {
+                  "count": 45832,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "uv": {
+                  "count": 45832,
+                  "itemSize": 2,
+                  "normalized": false
+                }
+              },
+              "morph": null
+            }
+          ],
+          "textures": [
+            {
+              "slot": "map",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "srgb",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "normalMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "roughnessMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "metalnessMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            }
+          ],
+          "comparisons": [
+            {
+              "slot": "map",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "normalMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "roughnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "metalnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ],
+          "bounds": {
+            "min": [
+              -0.548239529132843,
+              -0.0002826079435904579,
+              -0.17717095611655184
+            ],
+            "max": [
+              0.5739489197731018,
+              0.5856419541941552,
+              0.1642147381471882
+            ]
+          },
+          "cloneBounds": {
+            "min": [
+              0.28186939392608523,
+              1.8120712182590843,
+              2.735728757678293
+            ],
+            "max": [
+              1.5700908130808098,
+              2.7502337208130734,
+              3.337563641516081
+            ]
+          },
+          "animations": 0,
+          "materials": [
+            {
+              "doubleSided": true,
+              "extensions": {
+                "KHR_materials_specular": {
+                  "specularColorFactor": [
+                    2,
+                    2,
+                    2
+                  ]
+                }
+              },
+              "name": "Material.001",
+              "normalTexture": {
+                "index": 0
+              },
+              "pbrMetallicRoughness": {
+                "baseColorTexture": {
+                  "index": 1
+                },
+                "metallicRoughnessTexture": {
+                  "index": 2
+                }
+              }
+            }
+          ],
+          "variant": "original"
+        },
+        {
+          "loadMs": 59.099999994039536,
+          "meshes": [
+            {
+              "name": "node_0",
+              "matrix": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "world": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "triangles": 36703,
+              "attributes": {
+                "position": {
+                  "count": 45832,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "normal": {
+                  "count": 45832,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "uv": {
+                  "count": 45832,
+                  "itemSize": 2,
+                  "normalized": false
+                }
+              },
+              "morph": null
+            }
+          ],
+          "textures": [
+            {
+              "slot": "map",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "srgb",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "normalMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "roughnessMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "metalnessMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            }
+          ],
+          "comparisons": [
+            {
+              "slot": "map",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "normalMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "roughnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "metalnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ],
+          "bounds": {
+            "min": [
+              -0.548239529132843,
+              -0.0002826079435904579,
+              -0.17717095611655184
+            ],
+            "max": [
+              0.5739489197731018,
+              0.5856419541941552,
+              0.1642147381471882
+            ]
+          },
+          "cloneBounds": {
+            "min": [
+              0.28186939392608523,
+              1.8120712182590843,
+              2.735728757678293
+            ],
+            "max": [
+              1.5700908130808098,
+              2.7502337208130734,
+              3.337563641516081
+            ]
+          },
+          "animations": 0,
+          "materials": [
+            {
+              "doubleSided": true,
+              "extensions": {
+                "KHR_materials_specular": {
+                  "specularColorFactor": [
+                    2,
+                    2,
+                    2
+                  ]
+                }
+              },
+              "name": "Material.001",
+              "normalTexture": {
+                "index": 0
+              },
+              "pbrMetallicRoughness": {
+                "baseColorTexture": {
+                  "index": 1
+                },
+                "metallicRoughnessTexture": {
+                  "index": 2
+                }
+              }
+            }
+          ],
+          "variant": "lossless"
+        },
+        {
+          "loadMs": 73.09999999403954,
+          "meshes": [
+            {
+              "name": "node_0",
+              "matrix": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "world": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "triangles": 36703,
+              "attributes": {
+                "position": {
+                  "count": 45832,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "normal": {
+                  "count": 45832,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "uv": {
+                  "count": 45832,
+                  "itemSize": 2,
+                  "normalized": false
+                }
+              },
+              "morph": null
+            }
+          ],
+          "textures": [
+            {
+              "slot": "map",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "srgb",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "normalMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "roughnessMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "metalnessMap",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            }
+          ],
+          "comparisons": [
+            {
+              "slot": "map",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "normalMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "roughnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "metalnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ],
+          "bounds": {
+            "min": [
+              -0.548239529132843,
+              -0.0002826079435904579,
+              -0.17717095611655184
+            ],
+            "max": [
+              0.5739489197731018,
+              0.5856419541941552,
+              0.1642147381471882
+            ]
+          },
+          "cloneBounds": {
+            "min": [
+              0.28186939392608523,
+              1.8120712182590843,
+              2.735728757678293
+            ],
+            "max": [
+              1.5700908130808098,
+              2.7502337208130734,
+              3.337563641516081
+            ]
+          },
+          "animations": 0,
+          "materials": [
+            {
+              "doubleSided": true,
+              "extensions": {
+                "KHR_materials_specular": {
+                  "specularColorFactor": [
+                    2,
+                    2,
+                    2
+                  ]
+                }
+              },
+              "name": "Material.001",
+              "normalTexture": {
+                "index": 0
+              },
+              "pbrMetallicRoughness": {
+                "baseColorTexture": {
+                  "index": 1
+                },
+                "metallicRoughnessTexture": {
+                  "index": 2
+                }
+              }
+            }
+          ],
+          "variant": "q95"
+        }
+      ],
+      "pass": true
+    },
+    {
+      "name": "shrimp_a",
+      "variants": [
+        {
+          "loadMs": 38.600000001490116,
+          "meshes": [
+            {
+              "name": "node_0",
+              "matrix": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "world": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "triangles": 21041,
+              "attributes": {
+                "position": {
+                  "count": 27205,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "normal": {
+                  "count": 27205,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "uv": {
+                  "count": 27205,
+                  "itemSize": 2,
+                  "normalized": false
+                }
+              },
+              "morph": null
+            }
+          ],
+          "textures": [
+            {
+              "slot": "map",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "srgb",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "normalMap",
+              "width": 512,
+              "height": 512,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "roughnessMap",
+              "width": 512,
+              "height": 512,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "metalnessMap",
+              "width": 512,
+              "height": 512,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            }
+          ],
+          "comparisons": [
+            {
+              "slot": "map",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "normalMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "roughnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "metalnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ],
+          "bounds": {
+            "min": [
+              -0.6183819770812988,
+              0.0002764569883239795,
+              -0.19044377739610222
+            ],
+            "max": [
+              0.469124972820282,
+              0.6781892525250676,
+              0.18674792884107527
+            ]
+          },
+          "cloneBounds": {
+            "min": [
+              0.18675416275020607,
+              1.788440634290461,
+              2.739574657729906
+            ],
+            "max": [
+              1.47625957389941,
+              2.806153000244261,
+              3.384947226639708
+            ]
+          },
+          "animations": 0,
+          "materials": [
+            {
+              "doubleSided": true,
+              "extensions": {
+                "KHR_materials_specular": {
+                  "specularColorFactor": [
+                    2,
+                    2,
+                    2
+                  ]
+                }
+              },
+              "name": "Material.001",
+              "normalTexture": {
+                "index": 0
+              },
+              "pbrMetallicRoughness": {
+                "baseColorTexture": {
+                  "index": 1
+                },
+                "metallicRoughnessTexture": {
+                  "index": 2
+                }
+              }
+            }
+          ],
+          "variant": "original"
+        },
+        {
+          "loadMs": 34.80000000447035,
+          "meshes": [
+            {
+              "name": "node_0",
+              "matrix": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "world": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "triangles": 21041,
+              "attributes": {
+                "position": {
+                  "count": 27205,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "normal": {
+                  "count": 27205,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "uv": {
+                  "count": 27205,
+                  "itemSize": 2,
+                  "normalized": false
+                }
+              },
+              "morph": null
+            }
+          ],
+          "textures": [
+            {
+              "slot": "map",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "srgb",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "normalMap",
+              "width": 512,
+              "height": 512,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "roughnessMap",
+              "width": 512,
+              "height": 512,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "metalnessMap",
+              "width": 512,
+              "height": 512,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            }
+          ],
+          "comparisons": [
+            {
+              "slot": "map",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "normalMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "roughnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "metalnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ],
+          "bounds": {
+            "min": [
+              -0.6183819770812988,
+              0.0002764569883239795,
+              -0.19044377739610222
+            ],
+            "max": [
+              0.469124972820282,
+              0.6781892525250676,
+              0.18674792884107527
+            ]
+          },
+          "cloneBounds": {
+            "min": [
+              0.18675416275020607,
+              1.788440634290461,
+              2.739574657729906
+            ],
+            "max": [
+              1.47625957389941,
+              2.806153000244261,
+              3.384947226639708
+            ]
+          },
+          "animations": 0,
+          "materials": [
+            {
+              "doubleSided": true,
+              "extensions": {
+                "KHR_materials_specular": {
+                  "specularColorFactor": [
+                    2,
+                    2,
+                    2
+                  ]
+                }
+              },
+              "name": "Material.001",
+              "normalTexture": {
+                "index": 0
+              },
+              "pbrMetallicRoughness": {
+                "baseColorTexture": {
+                  "index": 1
+                },
+                "metallicRoughnessTexture": {
+                  "index": 2
+                }
+              }
+            }
+          ],
+          "variant": "lossless"
+        },
+        {
+          "loadMs": 36,
+          "meshes": [
+            {
+              "name": "node_0",
+              "matrix": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "world": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "triangles": 21041,
+              "attributes": {
+                "position": {
+                  "count": 27205,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "normal": {
+                  "count": 27205,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "uv": {
+                  "count": 27205,
+                  "itemSize": 2,
+                  "normalized": false
+                }
+              },
+              "morph": null
+            }
+          ],
+          "textures": [
+            {
+              "slot": "map",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "srgb",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "normalMap",
+              "width": 512,
+              "height": 512,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "roughnessMap",
+              "width": 512,
+              "height": 512,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "metalnessMap",
+              "width": 512,
+              "height": 512,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            }
+          ],
+          "comparisons": [
+            {
+              "slot": "map",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "normalMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "roughnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "metalnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ],
+          "bounds": {
+            "min": [
+              -0.6183819770812988,
+              0.0002764569883239795,
+              -0.19044377739610222
+            ],
+            "max": [
+              0.469124972820282,
+              0.6781892525250676,
+              0.18674792884107527
+            ]
+          },
+          "cloneBounds": {
+            "min": [
+              0.18675416275020607,
+              1.788440634290461,
+              2.739574657729906
+            ],
+            "max": [
+              1.47625957389941,
+              2.806153000244261,
+              3.384947226639708
+            ]
+          },
+          "animations": 0,
+          "materials": [
+            {
+              "doubleSided": true,
+              "extensions": {
+                "KHR_materials_specular": {
+                  "specularColorFactor": [
+                    2,
+                    2,
+                    2
+                  ]
+                }
+              },
+              "name": "Material.001",
+              "normalTexture": {
+                "index": 0
+              },
+              "pbrMetallicRoughness": {
+                "baseColorTexture": {
+                  "index": 1
+                },
+                "metallicRoughnessTexture": {
+                  "index": 2
+                }
+              }
+            }
+          ],
+          "variant": "q95"
+        }
+      ],
+      "pass": true
+    },
+    {
+      "name": "shrimp_b",
+      "variants": [
+        {
+          "loadMs": 44.399999998509884,
+          "meshes": [
+            {
+              "name": "node_0",
+              "matrix": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "world": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "triangles": 20912,
+              "attributes": {
+                "position": {
+                  "count": 27341,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "normal": {
+                  "count": 27341,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "uv": {
+                  "count": 27341,
+                  "itemSize": 2,
+                  "normalized": false
+                }
+              },
+              "morph": null
+            }
+          ],
+          "textures": [
+            {
+              "slot": "map",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "srgb",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "normalMap",
+              "width": 512,
+              "height": 512,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "roughnessMap",
+              "width": 512,
+              "height": 512,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "metalnessMap",
+              "width": 512,
+              "height": 512,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            }
+          ],
+          "comparisons": [
+            {
+              "slot": "map",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "normalMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "roughnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "metalnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ],
+          "bounds": {
+            "min": [
+              -0.5728960037231445,
+              0.00013970216041821453,
+              -0.2534214171027988
+            ],
+            "max": [
+              0.4702170789241791,
+              0.6560389942706509,
+              0.24926675505854987
+            ]
+          },
+          "cloneBounds": {
+            "min": [
+              0.2232460186086187,
+              1.7964311246520683,
+              2.6779656845257422
+            ],
+            "max": [
+              1.489742288517816,
+              2.7917313632202516,
+              3.4352592265064317
+            ]
+          },
+          "animations": 0,
+          "materials": [
+            {
+              "doubleSided": true,
+              "extensions": {
+                "KHR_materials_specular": {
+                  "specularColorFactor": [
+                    2,
+                    2,
+                    2
+                  ]
+                }
+              },
+              "name": "Material.001",
+              "normalTexture": {
+                "index": 0
+              },
+              "pbrMetallicRoughness": {
+                "baseColorTexture": {
+                  "index": 1
+                },
+                "metallicRoughnessTexture": {
+                  "index": 2
+                }
+              }
+            }
+          ],
+          "variant": "original"
+        },
+        {
+          "loadMs": 37.899999998509884,
+          "meshes": [
+            {
+              "name": "node_0",
+              "matrix": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "world": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "triangles": 20912,
+              "attributes": {
+                "position": {
+                  "count": 27341,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "normal": {
+                  "count": 27341,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "uv": {
+                  "count": 27341,
+                  "itemSize": 2,
+                  "normalized": false
+                }
+              },
+              "morph": null
+            }
+          ],
+          "textures": [
+            {
+              "slot": "map",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "srgb",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "normalMap",
+              "width": 512,
+              "height": 512,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "roughnessMap",
+              "width": 512,
+              "height": 512,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "metalnessMap",
+              "width": 512,
+              "height": 512,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            }
+          ],
+          "comparisons": [
+            {
+              "slot": "map",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "normalMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "roughnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "metalnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ],
+          "bounds": {
+            "min": [
+              -0.5728960037231445,
+              0.00013970216041821453,
+              -0.2534214171027988
+            ],
+            "max": [
+              0.4702170789241791,
+              0.6560389942706509,
+              0.24926675505854987
+            ]
+          },
+          "cloneBounds": {
+            "min": [
+              0.2232460186086187,
+              1.7964311246520683,
+              2.6779656845257422
+            ],
+            "max": [
+              1.489742288517816,
+              2.7917313632202516,
+              3.4352592265064317
+            ]
+          },
+          "animations": 0,
+          "materials": [
+            {
+              "doubleSided": true,
+              "extensions": {
+                "KHR_materials_specular": {
+                  "specularColorFactor": [
+                    2,
+                    2,
+                    2
+                  ]
+                }
+              },
+              "name": "Material.001",
+              "normalTexture": {
+                "index": 0
+              },
+              "pbrMetallicRoughness": {
+                "baseColorTexture": {
+                  "index": 1
+                },
+                "metallicRoughnessTexture": {
+                  "index": 2
+                }
+              }
+            }
+          ],
+          "variant": "lossless"
+        },
+        {
+          "loadMs": 37,
+          "meshes": [
+            {
+              "name": "node_0",
+              "matrix": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "world": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                -3.029462689596585e-7,
+                0.9999999657714298,
+                0,
+                0,
+                -0.9999999657714298,
+                -3.029462689596585e-7,
+                0,
+                0,
+                0,
+                0,
+                1
+              ],
+              "triangles": 20912,
+              "attributes": {
+                "position": {
+                  "count": 27341,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "normal": {
+                  "count": 27341,
+                  "itemSize": 3,
+                  "normalized": false
+                },
+                "uv": {
+                  "count": 27341,
+                  "itemSize": 2,
+                  "normalized": false
+                }
+              },
+              "morph": null
+            }
+          ],
+          "textures": [
+            {
+              "slot": "map",
+              "width": 1024,
+              "height": 1024,
+              "colorSpace": "srgb",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "normalMap",
+              "width": 512,
+              "height": 512,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "roughnessMap",
+              "width": 512,
+              "height": 512,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            },
+            {
+              "slot": "metalnessMap",
+              "width": 512,
+              "height": 512,
+              "colorSpace": "",
+              "flipY": false,
+              "premultiplyAlpha": false,
+              "wrapS": 1000,
+              "wrapT": 1000,
+              "magFilter": 1006,
+              "minFilter": 1008,
+              "channel": 0,
+              "offset": [
+                0,
+                0
+              ],
+              "repeat": [
+                1,
+                1
+              ],
+              "rotation": 0
+            }
+          ],
+          "comparisons": [
+            {
+              "slot": "map",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "normalMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "roughnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "slot": "metalnessMap",
+              "max": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "mean": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ],
+          "bounds": {
+            "min": [
+              -0.5728960037231445,
+              0.00013970216041821453,
+              -0.2534214171027988
+            ],
+            "max": [
+              0.4702170789241791,
+              0.6560389942706509,
+              0.24926675505854987
+            ]
+          },
+          "cloneBounds": {
+            "min": [
+              0.2232460186086187,
+              1.7964311246520683,
+              2.6779656845257422
+            ],
+            "max": [
+              1.489742288517816,
+              2.7917313632202516,
+              3.4352592265064317
+            ]
+          },
+          "animations": 0,
+          "materials": [
+            {
+              "doubleSided": true,
+              "extensions": {
+                "KHR_materials_specular": {
+                  "specularColorFactor": [
+                    2,
+                    2,
+                    2
+                  ]
+                }
+              },
+              "name": "Material.001",
+              "normalTexture": {
+                "index": 0
+              },
+              "pbrMetallicRoughness": {
+                "baseColorTexture": {
+                  "index": 1
+                },
+                "metallicRoughnessTexture": {
+                  "index": 2
+                }
+              }
+            }
+          ],
+          "variant": "q95"
+        }
+      ],
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "warnings": []
+}

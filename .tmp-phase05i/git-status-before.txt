@@ -1,0 +1,87 @@
+ M .tmp-phase04l/1024x768-dark.json
+ M .tmp-phase04l/1024x768-dark.png
+ M .tmp-phase04l/1024x768-light.json
+ M .tmp-phase04l/1024x768-lite.json
+ M .tmp-phase04l/1024x768-reduced.json
+ M .tmp-phase04l/1440x540-dark.json
+ M .tmp-phase04l/1440x540-dark.png
+ M .tmp-phase04l/1440x540-light.json
+ M .tmp-phase04l/1440x540-light.png
+ M .tmp-phase04l/1440x540-lite.json
+ M .tmp-phase04l/1440x540-reduced.json
+ M .tmp-phase04l/1440x900-dark.json
+ M .tmp-phase04l/1440x900-dark.png
+ M .tmp-phase04l/1440x900-light.json
+ M .tmp-phase04l/1440x900-light.png
+ M .tmp-phase04l/1440x900-lite.json
+ M .tmp-phase04l/1440x900-reduced.json
+ M .tmp-phase04l/1920x1080-dark.json
+ M .tmp-phase04l/1920x1080-dark.png
+ M .tmp-phase04l/1920x1080-light.json
+ M .tmp-phase04l/1920x1080-lite.json
+ M .tmp-phase04l/1920x1080-reduced.json
+ M .tmp-phase04l/375x812-dark.json
+ M .tmp-phase04l/375x812-dark.png
+ M .tmp-phase04l/375x812-light.json
+ M .tmp-phase04l/375x812-lite.json
+ M .tmp-phase04l/375x812-reduced.json
+ M .tmp-phase04l/390x500-dark.json
+ M .tmp-phase04l/390x500-dark.png
+ M .tmp-phase04l/390x500-light.json
+ M .tmp-phase04l/390x500-lite.json
+ M .tmp-phase04l/390x500-lite.png
+ M .tmp-phase04l/390x500-reduced.json
+ M .tmp-phase04l/390x844-dark.json
+ M .tmp-phase04l/390x844-dark.png
+ M .tmp-phase04l/390x844-light.json
+ M .tmp-phase04l/390x844-lite.json
+ M .tmp-phase04l/390x844-lite.png
+ M .tmp-phase04l/390x844-reduced.json
+ M .tmp-phase04l/768x1024-dark.json
+ M .tmp-phase04l/768x1024-dark.png
+ M .tmp-phase04l/768x1024-light.json
+ M .tmp-phase04l/768x1024-lite.json
+ M .tmp-phase04l/768x1024-reduced.json
+ M .tmp-phase04l/desktop-landing.json
+ M .tmp-phase04l/matrix.json
+ M .tmp-phase04l/mobile-touch.json
+ M .tmp-phase04l/webgl-draws.json
+ M .tmp-phase04m/integration.json
+ M .tmp-phase04m/matrix.json
+ M .tmp-phase04m/preferences/1440-dark.jpg
+ M .tmp-phase04m/preferences/1440-light.jpg
+ M .tmp-phase04m/preferences/1440-lite-dark.jpg
+ M .tmp-phase04m/preferences/1440-lite-light.jpg
+ M .tmp-phase04m/preferences/1440-reduced-dark.jpg
+ M .tmp-phase04m/preferences/1440-reduced-light.jpg
+ M .tmp-phase04m/preferences/390-dark.jpg
+ M .tmp-phase04m/preferences/390-light.jpg
+ M .tmp-phase04m/preferences/390-lite-dark.jpg
+ M .tmp-phase04m/preferences/390-lite-light.jpg
+ M .tmp-phase04m/preferences/390-reduced-dark.jpg
+ M .tmp-phase04m/preferences/390-reduced-light.jpg
+ M .tmp-phase04m/regressions.log
+ D src/assets/project-banners/sinefolis/.gitkeep
+ M src/components/AquariumDivePrototype.jsx
+ M src/components/Projects.jsx
+ M src/data/content.js
+ M src/index.css
+?? .tmp-phase04m/after/
+?? .tmp-phase04m/motion/
+?? .tmp-phase05a/
+?? .tmp-phase05b/
+?? .tmp-phase05c/
+?? .tmp-phase05d/
+?? .tmp-phase05e/
+?? .tmp-phase05f/
+?? .tmp-phase05g/
+?? .tmp-phase05h/
+?? .tmp-phase05i/
+?? .tmp-sinefolis/
+?? public/aquarium/environment/tree-opt-150k-1024.glb
+?? public/aquarium/terrain/grass_ground/grass_ground_ao_1024.webp
+?? public/aquarium/terrain/grass_ground/grass_ground_diff_1024.webp
+?? public/aquarium/terrain/grass_ground/grass_ground_nor_gl_512.webp
+?? public/aquarium/terrain/grass_ground/grass_ground_rough_1024.webp
+?? public/projects/sinefolis-960.webp
+?? src/assets/project-banners/sinefolis/Sinefolis.png

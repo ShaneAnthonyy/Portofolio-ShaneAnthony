@@ -3,6 +3,7 @@ import EmotNLPBanner from "../assets/project-banners/emotion-classification/emot
 import footfitBanner from "../assets/project-banners/footfit/footfit.png";
 import DevPathBanner from "../assets/project-banners/devpath/devpath.png";
 import TixConzerBanner from "../assets/project-banners/tixconser/tixconzer.png";
+import SinefolisBanner from "../assets/project-banners/sinefolis/Sinefolis.png";
 
 export const profile = {
   name: 'Shane Anthony',
@@ -87,7 +88,7 @@ export const projects = [
     role: 'Individual Project',
     year: '2024',
     description: 'A responsive cinema UI prototype for browsing, schedules, and booking flows.',
-    banner: { type: 'figma', url: sinefolisPrototypeUrl },
+    banner: SinefolisBanner,
     detail: {
       overview:
         'User interface web prototype for Sinefolis Cinema, built for a Human-Computer Interaction project — responsive, interactive browsing, schedule, and booking flows prototyped in Figma then built client-side.',

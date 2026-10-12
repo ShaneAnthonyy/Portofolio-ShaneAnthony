@@ -1,0 +1,41 @@
+{
+  "banner": {
+    "index": "0",
+    "imgSrc": "/projects/sinefolis-960.webp",
+    "imgComplete": true,
+    "natural": [
+      960,
+      641
+    ],
+    "rect": {
+      "w": 546,
+      "h": 460
+    },
+    "fit": "cover 50% 50%",
+    "bannerIframe": false,
+    "stageIframes": 0
+  },
+  "modal": {
+    "topSrc": "/assets/Sinefolis-DXKGlaeU.png",
+    "topComplete": true,
+    "rect": {
+      "w": 864,
+      "h": 486
+    },
+    "embedSrc": "https://embed.figma.com/proto/P2vxSJILHFHnUkpAbvp4Dt/HCI?sca",
+    "embedLoading": "lazy",
+    "fallback": true,
+    "modalIframes": 1
+  },
+  "mobile": {
+    "imgSrc": "/projects/sinefolis-960.webp",
+    "ok": true,
+    "rect": {
+      "w": 350,
+      "h": 197
+    },
+    "fit": "cover 50% 50%",
+    "overflow": false
+  },
+  "errors": []
+}

@@ -1,0 +1,122 @@
+{
+  "name": "fish_b",
+  "variant": "lossless",
+  "file": ".tmp-phase05i/candidates/lossless/fish_b.glb",
+  "bytes": 3700500,
+  "sha256": "b86632dbec674051e5d1da899cc919e6861958591c0c5cb3be4105c60d76d3da",
+  "savedBytes": 1345848,
+  "reductionPercent": 26.66974215809136,
+  "embeddedTextureBytes": 2574992,
+  "images": [
+    {
+      "index": 0,
+      "strategy": "lossless WebP",
+      "originalBytes": 1016923,
+      "bytes": 596192,
+      "mime": "image/webp",
+      "sha256": "c20c8505dbf7a5ef655bef62a16b1178a76dc69ec700fd9f2f418f8a2567ed44",
+      "pixelDiff": {
+        "max": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "mean": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rms": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "slots": [
+        {
+          "slot": "normalTexture",
+          "path": "materials[0].normalTexture",
+          "texture": 0,
+          "texCoord": 0
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "strategy": "lossless WebP",
+      "originalBytes": 1944808,
+      "bytes": 1450960,
+      "mime": "image/webp",
+      "sha256": "53d0076b13acbbf72a5c9e4d1b5b91179acc4ce75fd7dc707ad8d7d70f1b32bc",
+      "pixelDiff": {
+        "max": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "mean": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rms": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "slots": [
+        {
+          "slot": "baseColorTexture",
+          "path": "materials[0].pbrMetallicRoughness.baseColorTexture",
+          "texture": 1,
+          "texCoord": 0
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "strategy": "lossless WebP",
+      "originalBytes": 959280,
+      "bytes": 527840,
+      "mime": "image/webp",
+      "sha256": "ad3bca901b2c110332eab2d226d37e74e0ad5afc512668b0bdf34eda02c17111",
+      "pixelDiff": {
+        "max": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "mean": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rms": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "slots": [
+        {
+          "slot": "metallicRoughnessTexture",
+          "path": "materials[0].pbrMetallicRoughness.metallicRoughnessTexture",
+          "texture": 2,
+          "texCoord": 0
+        }
+      ]
+    }
+  ],
+  "structuralPass": true,
+  "nonImageBufferBytesIdentical": true
+}

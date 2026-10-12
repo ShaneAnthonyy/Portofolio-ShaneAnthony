@@ -1,22 +1,22 @@
 {
   "before": {
-    "dive": 13369,
+    "dive": 14119,
     "hero": 12
   },
   "waiting": {
-    "dive": 17797,
+    "dive": 18383,
     "hero": 12
   },
   "landed": {
-    "dive": 19347,
-    "hero": 102
+    "dive": 19941,
+    "hero": 120
   },
   "after": {
-    "dive": 19347,
-    "hero": 228
+    "dive": 19941,
+    "hero": 222
   },
   "state": {
-    "time": 10604.70000000298,
+    "time": 9015.10000000149,
     "y": 0,
     "vh": 900,
     "vw": 1440,

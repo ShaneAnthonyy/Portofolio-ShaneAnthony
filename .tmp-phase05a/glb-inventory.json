@@ -1,0 +1,177 @@
+[
+  {
+    "file": "tree.glb",
+    "bytes": 34861800,
+    "magic": "glTF",
+    "meshes": 1,
+    "primitives": 1,
+    "accessors": 4,
+    "accessorTypes": {
+      "SCALAR": 1,
+      "VEC3": 2,
+      "VEC2": 1
+    },
+    "verts": 706582,
+    "tris": 957316,
+    "materials": 1,
+    "materialNames": [
+      "Material.001"
+    ],
+    "doubleSided": 1,
+    "alphaBlend": 0,
+    "alphaMask": 0,
+    "images": 3,
+    "imageTypes": [
+      "image/webp"
+    ],
+    "textures": 3,
+    "extensionsUsed": [
+      "EXT_texture_webp",
+      "KHR_materials_specular"
+    ]
+  },
+  {
+    "file": "tree-lite.glb",
+    "bytes": 7375276,
+    "magic": "glTF",
+    "meshes": 1,
+    "primitives": 1,
+    "accessors": 4,
+    "accessorTypes": {
+      "SCALAR": 1,
+      "VEC3": 2,
+      "VEC2": 1
+    },
+    "verts": 149845,
+    "tris": 119772,
+    "materials": 1,
+    "materialNames": [
+      "Material.001"
+    ],
+    "doubleSided": 1,
+    "alphaBlend": 0,
+    "alphaMask": 0,
+    "images": 3,
+    "imageTypes": [
+      "image/png"
+    ],
+    "textures": 3,
+    "extensionsUsed": [
+      "KHR_materials_specular"
+    ]
+  },
+  {
+    "file": "kelp.glb",
+    "bytes": 32216,
+    "magic": "glTF",
+    "meshes": 1,
+    "primitives": 2,
+    "accessors": 6,
+    "accessorTypes": {
+      "VEC3": 4,
+      "SCALAR": 2
+    },
+    "verts": 1122,
+    "tris": 576,
+    "materials": 2,
+    "materialNames": [
+      "Kelp_Dark",
+      "Kelp_Light"
+    ],
+    "doubleSided": 2,
+    "alphaBlend": 0,
+    "alphaMask": 0,
+    "images": 0,
+    "imageTypes": [],
+    "textures": 0,
+    "extensionsUsed": []
+  },
+  {
+    "file": "coral.glb",
+    "bytes": 7260,
+    "magic": "glTF",
+    "meshes": 1,
+    "primitives": 2,
+    "accessors": 8,
+    "accessorTypes": {
+      "VEC3": 4,
+      "VEC2": 2,
+      "SCALAR": 2
+    },
+    "verts": 144,
+    "tris": 72,
+    "materials": 2,
+    "materialNames": [
+      "Coral_Red",
+      "Coral_Light"
+    ],
+    "doubleSided": 2,
+    "alphaBlend": 0,
+    "alphaMask": 0,
+    "images": 0,
+    "imageTypes": [],
+    "textures": 0,
+    "extensionsUsed": []
+  },
+  {
+    "file": "floor.glb",
+    "bytes": 7915396,
+    "magic": "glTF",
+    "meshes": 3,
+    "primitives": 3,
+    "accessors": 12,
+    "accessorTypes": {
+      "VEC3": 6,
+      "VEC2": 3,
+      "SCALAR": 3
+    },
+    "verts": 58582,
+    "tris": 29212,
+    "materials": 3,
+    "materialNames": [
+      "Slab_Dark",
+      "Gravel_Light",
+      "Aquarium_Sand_HD"
+    ],
+    "doubleSided": 3,
+    "alphaBlend": 0,
+    "alphaMask": 0,
+    "images": 3,
+    "imageTypes": [
+      "image/png",
+      "image/jpeg"
+    ],
+    "textures": 3,
+    "extensionsUsed": []
+  },
+  {
+    "file": "fish_a.glb",
+    "bytes": 4933884,
+    "magic": "glTF",
+    "meshes": 1,
+    "primitives": 1,
+    "accessors": 4,
+    "accessorTypes": {
+      "VEC3": 2,
+      "VEC2": 1,
+      "SCALAR": 1
+    },
+    "verts": 29170,
+    "tris": 20000,
+    "materials": 1,
+    "materialNames": [
+      "Material.001"
+    ],
+    "doubleSided": 1,
+    "alphaBlend": 0,
+    "alphaMask": 0,
+    "images": 3,
+    "imageTypes": [
+      "image/png"
+    ],
+    "textures": 3,
+    "extensionsUsed": [
+      "KHR_materials_specular"
+    ]
+  }
+]

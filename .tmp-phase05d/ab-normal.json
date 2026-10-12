@@ -1,0 +1,21 @@
+{
+  "log": [
+    {
+      "candidate": "original",
+      "errors": []
+    },
+    {
+      "candidate": "n1",
+      "errors": []
+    },
+    {
+      "candidate": "n2",
+      "errors": []
+    },
+    {
+      "candidate": "n2b",
+      "errors": []
+    }
+  ],
+  "errors": []
+}

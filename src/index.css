@@ -3045,6 +3045,7 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
 }
 
 .tidal-card[data-project-index='4'] img { object-position: 65% 50%; }
+.tidal-card[data-project-index='0'] img { object-position: 50% 50%; }
 
 .tidal-card__body {
   display: none;

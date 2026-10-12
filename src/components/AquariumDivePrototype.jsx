@@ -2034,10 +2034,10 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       const hillTexLoader = new THREE.TextureLoader()
       const hillChannels = qState.runtime.waterHigh
         ? [
-            { key: 'map', suf: 'diff_2k.jpg', srgb: true, cap: 1024 },
-            { key: 'normalMap', suf: 'nor_gl_2k.png', srgb: false, cap: 512, normalScale: 0.6 },
-            { key: 'roughnessMap', suf: 'rough_2k.png', srgb: false, cap: 1024 },
-            { key: 'aoMap', suf: 'ao_2k.jpg', srgb: false, cap: 1024 },
+            { key: 'map', suf: 'diff_1024.webp', srgb: true, cap: 1024 },
+            { key: 'normalMap', suf: 'nor_gl_512.webp', srgb: false, cap: 512, normalScale: 0.6 },
+            { key: 'roughnessMap', suf: 'rough_1024.webp', srgb: false, cap: 1024 },
+            { key: 'aoMap', suf: 'ao_1024.webp', srgb: false, cap: 1024 },
           ]
         : [{ key: 'map', url: '/aquarium/lite/grass_ground_lite.jpg', srgb: true, cap: Math.min(1024, qState.runtime.texCap) }]
       hillChannels.forEach(({ key, suf, url, srgb, cap, normalScale }) => {
@@ -2704,7 +2704,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         { name: 'tree-right-far', x: 12.5, z: -27, s: 5.0, rotY: 3.6, ph: 5.1 },
       ]
       const treeCfgs = mount.clientWidth < 720 ? TREE_CFG.slice(0, 1) : TREE_CFG
-      const treeUrl = qState.mode === 'lite' ? '/aquarium/lite/tree-lite.glb' : '/aquarium/environment/tree.glb'
+      const treeUrl = qState.mode === 'lite' ? '/aquarium/lite/tree-lite.glb' : '/aquarium/environment/tree-opt-150k-1024.glb'
       const sstepT = (t) => {
         const c = Math.min(Math.max(t, 0), 1)
         return c * c * (3 - 2 * c)
