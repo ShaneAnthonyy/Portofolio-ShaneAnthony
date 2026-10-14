@@ -1,0 +1,358 @@
+{
+  "comparisons": [
+    {
+      "reference": "baseline-desktop-cold",
+      "position": "p0",
+      "cameraMaxDelta": 0,
+      "populationGeometryMaterialsScaleLightsRendererEqual": true
+    },
+    {
+      "reference": "baseline-desktop-cold",
+      "position": "p05",
+      "cameraMaxDelta": 0,
+      "populationGeometryMaterialsScaleLightsRendererEqual": true
+    },
+    {
+      "reference": "baseline-desktop-cold",
+      "position": "p091",
+      "cameraMaxDelta": 0,
+      "populationGeometryMaterialsScaleLightsRendererEqual": true
+    },
+    {
+      "reference": "baseline-desktop-cold",
+      "position": "fish-heavy",
+      "cameraMaxDelta": 0,
+      "populationGeometryMaterialsScaleLightsRendererEqual": true
+    },
+    {
+      "reference": "matched-desktop-q95",
+      "position": "p0",
+      "cameraMaxDelta": 0,
+      "populationGeometryMaterialsScaleLightsRendererEqual": true
+    },
+    {
+      "reference": "matched-desktop-q95",
+      "position": "p05",
+      "cameraMaxDelta": 0,
+      "populationGeometryMaterialsScaleLightsRendererEqual": true
+    },
+    {
+      "reference": "matched-desktop-q95",
+      "position": "p091",
+      "cameraMaxDelta": 0,
+      "populationGeometryMaterialsScaleLightsRendererEqual": true
+    },
+    {
+      "reference": "matched-desktop-q95",
+      "position": "fish-heavy",
+      "cameraMaxDelta": 0,
+      "populationGeometryMaterialsScaleLightsRendererEqual": true
+    }
+  ],
+  "motion": [
+    {
+      "scenario": "desktop-cold",
+      "model": "fish_b",
+      "samples": 301,
+      "maxRootStep": 0.0011208832677441895,
+      "maxEulerStepRadians": 0.0007951275067372698,
+      "scaleStable": true
+    },
+    {
+      "scenario": "desktop-cold",
+      "model": "fish_a",
+      "samples": 301,
+      "maxRootStep": 0.0018772184808614593,
+      "maxEulerStepRadians": 0.0008966827085573476,
+      "scaleStable": true
+    },
+    {
+      "scenario": "desktop-cold",
+      "model": "butterfly_koi_b",
+      "samples": 301,
+      "maxRootStep": 0.0006345341893276017,
+      "maxEulerStepRadians": 0.0003406797376041188,
+      "scaleStable": true
+    },
+    {
+      "scenario": "desktop-cold",
+      "model": "shrimp_b",
+      "samples": 301,
+      "maxRootStep": 0.0016777686413931396,
+      "maxEulerStepRadians": 0.02556671982298786,
+      "scaleStable": true
+    },
+    {
+      "scenario": "desktop-cold",
+      "model": "fish_c",
+      "samples": 301,
+      "maxRootStep": 0.0011167374236741834,
+      "maxEulerStepRadians": 0.0005823723940300285,
+      "scaleStable": true
+    },
+    {
+      "scenario": "desktop-cold",
+      "model": "shrimp_a",
+      "samples": 301,
+      "maxRootStep": 0.0019431472402966945,
+      "maxEulerStepRadians": 0.03682230433080935,
+      "scaleStable": true
+    },
+    {
+      "scenario": "desktop-cold",
+      "model": "butterfly_koi_a",
+      "samples": 301,
+      "maxRootStep": 0.0007214873829820156,
+      "maxEulerStepRadians": 0.0003947948378537373,
+      "scaleStable": true
+    },
+    {
+      "scenario": "desktop-warm",
+      "model": "shrimp_a",
+      "samples": 288,
+      "maxRootStep": 0.0043562957757767055,
+      "maxEulerStepRadians": 0.05595097297273682,
+      "scaleStable": true
+    },
+    {
+      "scenario": "desktop-warm",
+      "model": "butterfly_koi_a",
+      "samples": 288,
+      "maxRootStep": 0.002580825622147088,
+      "maxEulerStepRadians": 0.0006748825199344305,
+      "scaleStable": true
+    },
+    {
+      "scenario": "desktop-warm",
+      "model": "shrimp_b",
+      "samples": 288,
+      "maxRootStep": 0.0015026345258383421,
+      "maxEulerStepRadians": 0.051659995832757044,
+      "scaleStable": true
+    },
+    {
+      "scenario": "desktop-warm",
+      "model": "fish_a",
+      "samples": 288,
+      "maxRootStep": 0.0026493739875208602,
+      "maxEulerStepRadians": 0.002798286448743581,
+      "scaleStable": true
+    },
+    {
+      "scenario": "desktop-warm",
+      "model": "butterfly_koi_b",
+      "samples": 288,
+      "maxRootStep": 0.0021578165258098235,
+      "maxEulerStepRadians": 0.0012045843538537441,
+      "scaleStable": true
+    },
+    {
+      "scenario": "desktop-warm",
+      "model": "fish_c",
+      "samples": 288,
+      "maxRootStep": 0.003119594055123228,
+      "maxEulerStepRadians": 0.0007415089652126339,
+      "scaleStable": true
+    },
+    {
+      "scenario": "desktop-warm",
+      "model": "fish_b",
+      "samples": 288,
+      "maxRootStep": 0.0030108324891905324,
+      "maxEulerStepRadians": 0.0027294680893819034,
+      "scaleStable": true
+    },
+    {
+      "scenario": "mobile-normal",
+      "model": "fish_a",
+      "samples": 294,
+      "maxRootStep": 0.0022123581191506375,
+      "maxEulerStepRadians": 0.0018362223176519032,
+      "scaleStable": true
+    },
+    {
+      "scenario": "mobile-normal",
+      "model": "fish_b",
+      "samples": 294,
+      "maxRootStep": 0.0016652442403246295,
+      "maxEulerStepRadians": 0.0012396438423176726,
+      "scaleStable": true
+    },
+    {
+      "scenario": "mobile-normal",
+      "model": "shrimp_a",
+      "samples": 294,
+      "maxRootStep": 0.005191339982483956,
+      "maxEulerStepRadians": 0.08686596344623138,
+      "scaleStable": true
+    },
+    {
+      "scenario": "mobile-normal",
+      "model": "fish_c",
+      "samples": 294,
+      "maxRootStep": 0.0018750733992491532,
+      "maxEulerStepRadians": 0.0013660014110459806,
+      "scaleStable": true
+    },
+    {
+      "scenario": "mobile-normal",
+      "model": "butterfly_koi_a",
+      "samples": 294,
+      "maxRootStep": 0.0009350616267098646,
+      "maxEulerStepRadians": 0.0009368342264249718,
+      "scaleStable": true
+    },
+    {
+      "scenario": "desktop-lite",
+      "model": "fish_a",
+      "samples": 300,
+      "maxRootStep": 0.0036627841131979407,
+      "maxEulerStepRadians": 0.0015912630982401407,
+      "scaleStable": true
+    },
+    {
+      "scenario": "desktop-lite",
+      "model": "fish_c",
+      "samples": 300,
+      "maxRootStep": 0.001812043826310856,
+      "maxEulerStepRadians": 0.002268427479907187,
+      "scaleStable": true
+    },
+    {
+      "scenario": "desktop-lite",
+      "model": "shrimp_a",
+      "samples": 300,
+      "maxRootStep": 0.00204091929851778,
+      "maxEulerStepRadians": 0.03069522821401871,
+      "scaleStable": true
+    },
+    {
+      "scenario": "desktop-lite",
+      "model": "shrimp_b",
+      "samples": 300,
+      "maxRootStep": 0.0016557408482865865,
+      "maxEulerStepRadians": 0.014239657604167455,
+      "scaleStable": true
+    },
+    {
+      "scenario": "desktop-lite",
+      "model": "fish_b",
+      "samples": 300,
+      "maxRootStep": 0.003372240476200388,
+      "maxEulerStepRadians": 0.0018299600740792066,
+      "scaleStable": true
+    },
+    {
+      "scenario": "desktop-lite",
+      "model": "butterfly_koi_a",
+      "samples": 300,
+      "maxRootStep": 0.002056524341064935,
+      "maxEulerStepRadians": 0.0011207901784409113,
+      "scaleStable": true
+    },
+    {
+      "scenario": "desktop-lite",
+      "model": "butterfly_koi_b",
+      "samples": 300,
+      "maxRootStep": 0.000745980697551284,
+      "maxEulerStepRadians": 0.0006753019420152762,
+      "scaleStable": true
+    },
+    {
+      "scenario": "mobile-lite",
+      "model": "fish_a",
+      "samples": 301,
+      "maxRootStep": 0.0033712985297512914,
+      "maxEulerStepRadians": 0.001403037315149,
+      "scaleStable": true
+    },
+    {
+      "scenario": "mobile-lite",
+      "model": "fish_c",
+      "samples": 301,
+      "maxRootStep": 0.0019325055502755373,
+      "maxEulerStepRadians": 0.0010637199334259662,
+      "scaleStable": true
+    },
+    {
+      "scenario": "mobile-lite",
+      "model": "shrimp_a",
+      "samples": 301,
+      "maxRootStep": 0.001915270245133567,
+      "maxEulerStepRadians": 0.027011465765314602,
+      "scaleStable": true
+    },
+    {
+      "scenario": "mobile-lite",
+      "model": "fish_b",
+      "samples": 301,
+      "maxRootStep": 0.002258788927483978,
+      "maxEulerStepRadians": 0.0014857108163681687,
+      "scaleStable": true
+    },
+    {
+      "scenario": "mobile-lite",
+      "model": "butterfly_koi_a",
+      "samples": 301,
+      "maxRootStep": 0.0013559461005614548,
+      "maxEulerStepRadians": 0.001015591373891206,
+      "scaleStable": true
+    },
+    {
+      "scenario": "desktop-light",
+      "model": "butterfly_koi_a",
+      "samples": 301,
+      "maxRootStep": 0.0005917285133737387,
+      "maxEulerStepRadians": 0.00037878791698581216,
+      "scaleStable": true
+    },
+    {
+      "scenario": "desktop-light",
+      "model": "fish_b",
+      "samples": 301,
+      "maxRootStep": 0.000979304769867357,
+      "maxEulerStepRadians": 0.0006141913772905738,
+      "scaleStable": true
+    },
+    {
+      "scenario": "desktop-light",
+      "model": "fish_c",
+      "samples": 301,
+      "maxRootStep": 0.0007703704851356511,
+      "maxEulerStepRadians": 0.0006553711365260284,
+      "scaleStable": true
+    },
+    {
+      "scenario": "desktop-light",
+      "model": "fish_a",
+      "samples": 301,
+      "maxRootStep": 0.0012963179388311896,
+      "maxEulerStepRadians": 0.0008908909707165654,
+      "scaleStable": true
+    },
+    {
+      "scenario": "desktop-light",
+      "model": "shrimp_b",
+      "samples": 301,
+      "maxRootStep": 0.0012937042720247594,
+      "maxEulerStepRadians": 0.02415386281114218,
+      "scaleStable": true
+    },
+    {
+      "scenario": "desktop-light",
+      "model": "butterfly_koi_b",
+      "samples": 301,
+      "maxRootStep": 0.00045006605568501367,
+      "maxEulerStepRadians": 0.00045041365815112755,
+      "scaleStable": true
+    },
+    {
+      "scenario": "desktop-light",
+      "model": "shrimp_a",
+      "samples": 301,
+      "maxRootStep": 0.0016519159305262935,
+      "maxEulerStepRadians": 0.031035981764271914,
+      "scaleStable": true
+    }
+  ]
+}

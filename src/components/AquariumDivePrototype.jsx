@@ -2486,10 +2486,11 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
     })
 
     const fishBase = qState.mode === 'lite' ? '/aquarium/lite' : '/aquarium'
+    const fishSuffix = qState.mode === 'lite' ? '' : '-opt'
     const FISH_SOURCES = [
-      { name: 'fish-a', url: `${fishBase}/fish_a.glb`, cfg: FISH_CFG[0] },
-      { name: 'fish-b', url: `${fishBase}/fish_b.glb`, cfg: FISH_CFG[1] },
-      { name: 'fish-c', url: `${fishBase}/fish_c.glb`, cfg: FISH_CFG[2] },
+      { name: 'fish-a', url: `${fishBase}/fish_a${fishSuffix}.glb`, cfg: FISH_CFG[0] },
+      { name: 'fish-b', url: `${fishBase}/fish_b${fishSuffix}.glb`, cfg: FISH_CFG[1] },
+      { name: 'fish-c', url: `${fishBase}/fish_c${fishSuffix}.glb`, cfg: FISH_CFG[2] },
     ]
     const FISH_OLD_FINALS = [
       [0.744, 0.5, 0.299],
@@ -2575,8 +2576,8 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
 
     if (!backdropRef.current) {
       const KOI_SOURCES = [
-        { name: 'butterfly-koi-a', url: '/aquarium/butterfly_koi_a.glb', cfg: KOI_CFG[0], glow: 0.1 },
-        { name: 'butterfly-koi-b', url: '/aquarium/butterfly_koi_b.glb', cfg: KOI_CFG[1], glow: 0.04 },
+        { name: 'butterfly-koi-a', url: `/aquarium/butterfly_koi_a${fishSuffix}.glb`, cfg: KOI_CFG[0], glow: 0.1 },
+        { name: 'butterfly-koi-b', url: `/aquarium/butterfly_koi_b${fishSuffix}.glb`, cfg: KOI_CFG[1], glow: 0.04 },
       ]
       const koiSources = mount.clientWidth < 720 ? KOI_SOURCES.slice(0, 1) : KOI_SOURCES
       koiSources.forEach(({ name, url, cfg, glow }) => {
@@ -2639,8 +2640,8 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
 
     if (!backdropRef.current) {
       const SHRIMP_SOURCES = [
-        { name: 'shrimp-a', url: '/aquarium/shrimp_a.glb', cfg: SHRIMP_CFG[0] },
-        { name: 'shrimp-b', url: '/aquarium/shrimp_b.glb', cfg: SHRIMP_CFG[1] },
+        { name: 'shrimp-a', url: `/aquarium/shrimp_a${fishSuffix}.glb`, cfg: SHRIMP_CFG[0] },
+        { name: 'shrimp-b', url: `/aquarium/shrimp_b${fishSuffix}.glb`, cfg: SHRIMP_CFG[1] },
       ]
       const shrimpSources = mount.clientWidth < 720 ? SHRIMP_SOURCES.slice(0, 1) : SHRIMP_SOURCES
       shrimpSources.forEach(({ name, url, cfg }) => {

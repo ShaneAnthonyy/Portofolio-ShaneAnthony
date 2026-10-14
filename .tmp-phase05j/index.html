@@ -1,0 +1,47 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Phase 05J production verification</title><style>body{background:#10292e;color:#edf8f4;font:16px system-ui;max-width:1440px;margin:30px auto;padding:20px}img{max-width:100%;height:auto}figure{margin:20px 0}a{color:#8fe0cb}button,select{font:inherit;padding:8px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}figcaption{padding:8px}h2{margin-top:50px}@media(max-width:650px){.grid{grid-template-columns:1fr}}</style><h1>Phase 05J — integrated fish batch</h1><p>Real production URLs; no asset interception. Left: original baseline. Center: approved Phase 05I prototype. Right: integrated production. Live fish poses and effects are not synchronized.</p><p><a href="report.md">Full report</a> · <a href="measurements/scene-production.json">Network and motion evidence</a> · <a href="files.json">Output manifest</a></p>
+<h2>p0</h2><div class="grid">
+<figure><a href="comparisons/baseline-desktop-cold-p0.png"><img loading="lazy" src="comparisons/baseline-desktop-cold-p0.png"></a><figcaption>Original</figcaption></figure>
+<figure><a href="../.tmp-phase05i/comparisons/matched-desktop-q95-p0.png"><img loading="lazy" src="../.tmp-phase05i/comparisons/matched-desktop-q95-p0.png"></a><figcaption>Approved 05I</figcaption></figure>
+<figure><a href="comparisons/desktop-cold-p0.png"><img loading="lazy" src="comparisons/desktop-cold-p0.png"></a><figcaption>Integrated</figcaption></figure>
+</div>
+<h2>p05</h2><div class="grid">
+<figure><a href="comparisons/baseline-desktop-cold-p05.png"><img loading="lazy" src="comparisons/baseline-desktop-cold-p05.png"></a><figcaption>Original</figcaption></figure>
+<figure><a href="../.tmp-phase05i/comparisons/matched-desktop-q95-p05.png"><img loading="lazy" src="../.tmp-phase05i/comparisons/matched-desktop-q95-p05.png"></a><figcaption>Approved 05I</figcaption></figure>
+<figure><a href="comparisons/desktop-cold-p05.png"><img loading="lazy" src="comparisons/desktop-cold-p05.png"></a><figcaption>Integrated</figcaption></figure>
+</div>
+<h2>p091</h2><div class="grid">
+<figure><a href="comparisons/baseline-desktop-cold-p091.png"><img loading="lazy" src="comparisons/baseline-desktop-cold-p091.png"></a><figcaption>Original</figcaption></figure>
+<figure><a href="../.tmp-phase05i/comparisons/matched-desktop-q95-p091.png"><img loading="lazy" src="../.tmp-phase05i/comparisons/matched-desktop-q95-p091.png"></a><figcaption>Approved 05I</figcaption></figure>
+<figure><a href="comparisons/desktop-cold-p091.png"><img loading="lazy" src="comparisons/desktop-cold-p091.png"></a><figcaption>Integrated</figcaption></figure>
+</div>
+<h2>fish-heavy</h2><div class="grid">
+<figure><a href="comparisons/baseline-desktop-cold-fish-heavy.png"><img loading="lazy" src="comparisons/baseline-desktop-cold-fish-heavy.png"></a><figcaption>Original</figcaption></figure>
+<figure><a href="../.tmp-phase05i/comparisons/matched-desktop-q95-fish-heavy.png"><img loading="lazy" src="../.tmp-phase05i/comparisons/matched-desktop-q95-fish-heavy.png"></a><figcaption>Approved 05I</figcaption></figure>
+<figure><a href="comparisons/desktop-cold-fish-heavy.png"><img loading="lazy" src="comparisons/desktop-cold-fish-heavy.png"></a><figcaption>Integrated</figcaption></figure>
+</div>
+<h2>All seven models in the actual scene</h2><p>Nearest-neighbor enlarged crops: approved Phase 05I / integrated production. The live poses differ.</p><img loading="lazy" src="comparisons/seven-model-detail.png"><h2>Mobile comparison</h2><div class="grid">
+<figure><img loading="lazy" src="../.tmp-phase05i/comparisons/mobile-selected-fish-heavy.png"><figcaption>Approved mobile</figcaption></figure>
+<figure><img loading="lazy" src="comparisons/mobile-normal-fish-heavy.png"><figcaption>Integrated mobile</figcaption></figure>
+<figure><img loading="lazy" src="comparisons/mobile-lite-fish-heavy.png"><figcaption>Integrated Lite</figcaption></figure>
+</div><h2>Live motion</h2><p>Six captured frames per sequence, with continuous per-rAF transforms in the JSON. This player is a frame sequence, not encoded video.</p><select id="sequence"><option>baseline-desktop-cold</option><option>desktop-cold</option><option>desktop-warm</option><option>mobile-normal</option><option>desktop-lite</option><option>mobile-lite</option><option>desktop-light</option></select> <button id="play">Play / pause</button><figure><img id="frame" style="max-height:750px"><figcaption id="label"></figcaption></figure>
+<details><summary>baseline-desktop-cold motion strip</summary><img loading="lazy" src="motion/baseline-desktop-cold-strip.jpg"></details>
+<details><summary>desktop-cold motion strip</summary><img loading="lazy" src="motion/desktop-cold-strip.jpg"></details>
+<details><summary>desktop-warm motion strip</summary><img loading="lazy" src="motion/desktop-warm-strip.jpg"></details>
+<details><summary>mobile-normal motion strip</summary><img loading="lazy" src="motion/mobile-normal-strip.jpg"></details>
+<details><summary>desktop-lite motion strip</summary><img loading="lazy" src="motion/desktop-lite-strip.jpg"></details>
+<details><summary>mobile-lite motion strip</summary><img loading="lazy" src="motion/mobile-lite-strip.jpg"></details>
+<details><summary>desktop-light motion strip</summary><img loading="lazy" src="motion/desktop-light-strip.jpg"></details>
+<h2>Handoff, replay and preferences</h2><div class="grid">
+<figure><img loading="lazy" src="comparisons/desktop-cold-fish-heavy.png"><figcaption>desktop-cold: fish-heavy</figcaption></figure>
+<figure><img loading="lazy" src="comparisons/desktop-cold-landed.png"><figcaption>desktop-cold: landed</figcaption></figure>
+<figure><img loading="lazy" src="comparisons/desktop-cold-replay.png"><figcaption>desktop-cold: replay</figcaption></figure>
+<figure><img loading="lazy" src="comparisons/desktop-warm-fish-heavy.png"><figcaption>desktop-warm: fish-heavy</figcaption></figure>
+<figure><img loading="lazy" src="comparisons/mobile-normal-fish-heavy.png"><figcaption>mobile-normal: fish-heavy</figcaption></figure>
+<figure><img loading="lazy" src="comparisons/mobile-normal-landed.png"><figcaption>mobile-normal: landed</figcaption></figure>
+<figure><img loading="lazy" src="comparisons/mobile-normal-replay.png"><figcaption>mobile-normal: replay</figcaption></figure>
+<figure><img loading="lazy" src="comparisons/desktop-lite-fish-heavy.png"><figcaption>desktop-lite: fish-heavy</figcaption></figure>
+<figure><img loading="lazy" src="comparisons/desktop-lite-landed.png"><figcaption>desktop-lite: landed</figcaption></figure>
+<figure><img loading="lazy" src="comparisons/desktop-lite-replay.png"><figcaption>desktop-lite: replay</figcaption></figure>
+<figure><img loading="lazy" src="comparisons/mobile-lite-fish-heavy.png"><figcaption>mobile-lite: fish-heavy</figcaption></figure>
+<figure><img loading="lazy" src="comparisons/desktop-light-fish-heavy.png"><figcaption>desktop-light: fish-heavy</figcaption></figure>
+</div><script>let index=0,playing=false;const seq=document.querySelector("#sequence"),frame=document.querySelector("#frame"),label=document.querySelector("#label");function show(){frame.src="motion/"+seq.value+"-"+index+".png";label.textContent=seq.value+" frame "+(index+1)+" / 6"}seq.onchange=()=>{index=0;show()};document.querySelector("#play").onclick=()=>playing=!playing;setInterval(()=>{if(playing){index=(index+1)%6;show()}},650);show();</script></html>

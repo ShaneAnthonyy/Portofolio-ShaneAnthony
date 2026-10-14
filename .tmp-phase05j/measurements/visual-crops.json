@@ -1,0 +1,142 @@
+[
+  {
+    "label": "approved",
+    "name": "fish_c",
+    "rect": [
+      632,
+      464,
+      707,
+      527
+    ]
+  },
+  {
+    "label": "approved",
+    "name": "fish_a",
+    "rect": [
+      828,
+      229,
+      951,
+      318
+    ]
+  },
+  {
+    "label": "approved",
+    "name": "fish_b",
+    "rect": [
+      502,
+      194,
+      597,
+      252
+    ]
+  },
+  {
+    "label": "approved",
+    "name": "shrimp_a",
+    "rect": [
+      511,
+      593,
+      623,
+      680
+    ]
+  },
+  {
+    "label": "approved",
+    "name": "shrimp_b",
+    "rect": [
+      822,
+      577,
+      940,
+      677
+    ]
+  },
+  {
+    "label": "approved",
+    "name": "butterfly_koi_a",
+    "rect": [
+      382,
+      209,
+      657,
+      364
+    ]
+  },
+  {
+    "label": "approved",
+    "name": "butterfly_koi_b",
+    "rect": [
+      829,
+      243,
+      1054,
+      371
+    ]
+  },
+  {
+    "label": "integrated",
+    "name": "fish_b",
+    "rect": [
+      489,
+      197,
+      583,
+      256
+    ]
+  },
+  {
+    "label": "integrated",
+    "name": "fish_a",
+    "rect": [
+      822,
+      242,
+      941,
+      330
+    ]
+  },
+  {
+    "label": "integrated",
+    "name": "butterfly_koi_b",
+    "rect": [
+      835,
+      250,
+      1054,
+      374
+    ]
+  },
+  {
+    "label": "integrated",
+    "name": "shrimp_b",
+    "rect": [
+      821,
+      580,
+      939,
+      677
+    ]
+  },
+  {
+    "label": "integrated",
+    "name": "fish_c",
+    "rect": [
+      624,
+      459,
+      699,
+      523
+    ]
+  },
+  {
+    "label": "integrated",
+    "name": "shrimp_a",
+    "rect": [
+      512,
+      584,
+      625,
+      683
+    ]
+  },
+  {
+    "label": "integrated",
+    "name": "butterfly_koi_a",
+    "rect": [
+      379,
+      197,
+      657,
+      354
+    ]
+  }
+]
