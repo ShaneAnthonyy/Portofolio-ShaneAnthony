@@ -1,0 +1,10 @@
+PASS complete initial sequence at P0 without recurring reset
+PASS forward / reverse / minor P0 movement does not restart encounter
+PASS parked actors and clocks stay unchanged (1)
+PASS Dive Again 1 restores position, yaw, idle, visibility and same two mixers
+PASS hidden / frozen page pauses clocks and resumes without a catch-up step
+PASS resize retains actor identity, timeline and finite pose
+PASS parked actors and clocks stay unchanged (2)
+PASS Dive Again 2 restores position, yaw, idle, visibility and same two mixers
+PASS two replays leave one Dive context; retired Hero contexts are lost
+PASS Reduced Motion unmount stops and uncaches both mixers and disposes the Dive renderer

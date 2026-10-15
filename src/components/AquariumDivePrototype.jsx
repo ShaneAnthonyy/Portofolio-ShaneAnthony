@@ -613,7 +613,7 @@ function buildScene({ hideFarRocks, liteWater = false } = {}) {
   return { scene, water, waterMat, waterVolMat, disposables, temp, rockDefs, kelpDefs, trackLoaded, retireTemp, lightsBase }
 }
 
-export default function AquariumDivePrototype({ backdrop = false, integrated = false, onHealthy, onFail, onReturnComplete, onProgress, onBackdropPaused, onArrivalProgress, pauseBackdrop = false, probeRef = null, children, diveProgress, introComplete = false, magneticLanding = false, landingRef, returningToP0 = false, qualityMode = 'normal' } = {}) {
+export default function AquariumDivePrototype({ backdrop = false, integrated = false, onHealthy, onFail, onReturnComplete, onProgress, onBackdropPaused, onArrivalProgress, pauseBackdrop = false, presentationReady = true, probeRef = null, children, diveProgress, introComplete = false, magneticLanding = false, landingRef, returningToP0 = false, qualityMode = 'normal' } = {}) {
   const mountRef = useRef(null)
   const heroRevealRef = useRef(null)
   const [debug, setDebug] = useState({ p: 0, phase: 'FRONT' })
@@ -634,6 +634,8 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
   const runtimeApplyRef = useRef(null)
   const pauseRef = useRef(pauseBackdrop)
   pauseRef.current = pauseBackdrop
+  const presentationRef = useRef(presentationReady)
+  presentationRef.current = presentationReady
   const loopControlRef = useRef(null)
   const cbRef = useRef({ onHealthy, onFail, onReturnComplete, onProgress, onBackdropPaused, onArrivalProgress })
   cbRef.current = { onHealthy, onFail, onReturnComplete, onProgress, onBackdropPaused, onArrivalProgress }
@@ -758,6 +760,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         }
       }
       onFrame(mount.clientWidth, mount.clientHeight, true)
+      if (nextMode === 'normal' && !reduced && !backdropRef.current) track(prepareTransition(), 'transition')
       if (reduced) rerender()
     }
     renderer.outputColorSpace = THREE.SRGBColorSpace
@@ -901,6 +904,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
 
     let lastP = 0
     let trans = null
+    let preparingTransition = null
     const MASK_DEBUG =
       import.meta.env.DEV &&
       typeof window !== 'undefined' &&
@@ -1121,6 +1125,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       return trans
     }
     const renderFrame = (p, tSec) => {
+      if (preparingTransition) return
       if (qState.mode === 'lite') {
         setInstallVisible(p < 0.94)
         renderer.render(scene, camera)
@@ -1154,6 +1159,34 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       setInstallVisible(true)
       renderer.setRenderTarget(null)
       renderer.render(tr.quadScene, tr.quadCam)
+    }
+
+    const prepareTransition = () => {
+      if (cancelled || reduced || backdropRef.current || qState.mode === 'lite') return Promise.resolve()
+      const tr = ensureTransition()
+      if (tr.preparation) return tr.preparation
+      tr.preparation = (async () => {
+        preparingTransition = tr
+        const target = renderer.getRenderTarget()
+        try {
+          setInstallVisible(true)
+          renderer.initRenderTarget(tr.skyRT)
+          renderer.setRenderTarget(tr.sceneRT)
+          const sceneReady = renderer.compileAsync(scene, camera)
+          renderer.setRenderTarget(target)
+          setInstallVisible(lastP < 0.94)
+          await Promise.all([sceneReady, renderer.compileAsync(tr.quadScene, tr.quadCam)])
+          if (cancelled || trans !== tr || qState.mode === 'lite') return
+          preparingTransition = null
+          const time = performance.now() / 1000
+          renderFrame(0.62, time)
+          renderFrame(lastP, time)
+        } finally {
+          if (preparingTransition === tr) preparingTransition = null
+          if (!cancelled) renderer.setRenderTarget(target)
+        }
+      })()
+      return tr.preparation
     }
 
     const applyProgress = (p) => {
@@ -1196,6 +1229,8 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       scene.fog.color.copy(tmpBg)
     }
 
+    const compactTrees = (w) => w < 720 || (w < 1100 && mount.clientHeight < 500 && navigator.maxTouchPoints > 0)
+    let layoutTrees = null
     const applyCompact = (w) => {
       const compact = w < 720
       if (temp.kelp[2]) temp.kelp[2].visible = !compact
@@ -1207,6 +1242,16 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       if (coral) coral.children.forEach((c, i) => {
         c.visible = compact ? i < 2 : true
       })
+      const mobileTrees = compactTrees(w)
+      const treeCount = mobileTrees ? 2 : w < 1100 ? (qState.mode === 'lite' ? 3 : 6) : qState.mode === 'lite' ? 4 : 10
+      const greenCount = mobileTrees ? (qState.mode === 'lite' ? 0 : 1) : w < 1100 ? (qState.mode === 'lite' ? 1 : 2) : qState.mode === 'lite' ? 2 : 4
+      let treeIndex = 0
+      let greenIndex = 0
+      Object.entries(loadedGroups).forEach(([name, group]) => {
+        if (name.startsWith('tree-green-')) group.visible = greenIndex++ < greenCount
+        else if (name.startsWith('tree-')) group.visible = treeIndex++ < treeCount
+      })
+      layoutTrees?.(mobileTrees)
     }
 
     const loader = new GLTFLoader()
@@ -1323,6 +1368,36 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
     const shrimpList = [] // { node, cfg, heading, walk, floorY }
     const kelpSway = [] // { pivot, phase } — kelp GLB clones, base-pivot sway
     const treeSway = [] // { root, phase, amp } — tree clone inner roots
+    const charRigs = [] // { root, mixer, clips, state, t, waypoints, groundY } — ambient characters
+    let characterReturning = false
+    let charactersPresented = false
+    const layoutCharacters = (w, h) => {
+      const lane = Math.min(1, w / Math.max(h, 1) / 1.25)
+      charRigs.forEach((c) => {
+        const mobileGolem = c.kind === 'golem' && w < 720 && w < h
+        const offsetX = mobileGolem ? 14 * lane + 3 : 0
+        if (c.lane === lane && c.offsetX === offsetX) return
+        const ratio = lane / c.lane
+        const fitPoint = (point) => {
+          point[0] = (point[0] - c.offsetX) * ratio + offsetX
+          point[1] = c.heightAt(point[0], point[2]) + c.groundOffset
+        }
+        c.seq.forEach((step) => {
+          if (!step.move) return
+          fitPoint(step.from)
+          fitPoint(step.to)
+          step.yaw = Math.atan2(step.to[0] - step.from[0], step.to[2] - step.from[2]) + (c.kind === 'chicken' ? Math.PI : 0)
+        })
+        fitPoint(c.home.pos)
+        c.home.yaw = c.seq.find((step) => step.move).yaw
+        const position = c.root.position.toArray()
+        fitPoint(position)
+        c.root.position.fromArray(position)
+        if (c.t === 0) c.root.rotation.y = c.home.yaw
+        c.lane = lane
+        c.offsetX = offsetX
+      })
+    }
     let motionLogged = false
     const _pocC = new THREE.Color()
     const _pocD = new THREE.Color()
@@ -1834,7 +1909,30 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
           t.root.rotation.x = 0
           t.root.rotation.z = 0
         })
-      } else if (Number.isFinite(tSec) && (qState.runtime.animationFull || doMotion)) {
+      }
+      if (snap || characterReturning && !returningRef.current) {
+        charRigs.forEach((c) => {
+          c.t = 0
+          c.curClip = null
+          c.active = true
+          if (c.group) c.group.visible = true
+          if (c.home) {
+            c.root.position.set(c.home.pos[0], c.home.pos[1], c.home.pos[2])
+            c.root.rotation.y = c.home.yaw
+          }
+          if (c.clips && c.clips.idle) {
+            c.mixer.stopAllAction()
+            c.mixer.time = 0
+            c.mixer.clipAction(c.clips.idle).reset().play()
+            c.curClip = 'idle'
+          }
+        })
+      }
+      characterReturning = returningRef.current
+      const charactersVisible = readiness.healthy && presentationRef.current && !preparingTransition && !document.hidden && !returningRef.current && p < 0.94 && (camera.aspect >= 1 || p >= 0.4) && qState.mode !== 'lite'
+      const characterDt = charactersVisible && charactersPresented ? dt : 0
+      charactersPresented = charactersVisible
+      if (!snap && Number.isFinite(tSec) && (qState.runtime.animationFull || doMotion)) {
         kelpSway.forEach((k) => {
           k.pivot.rotation.x = 0.02 * Math.sin(tSec * 0.42 + k.phase)
           k.pivot.rotation.z = 0.016 * Math.sin(tSec * 0.53 + k.phase * 1.3)
@@ -1842,6 +1940,44 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         treeSway.forEach((t) => {
           t.root.rotation.x = 0.009 * t.amp * Math.sin(tSec * 0.63 + t.phase)
           t.root.rotation.z = 0.006 * t.amp * Math.sin(tSec * 0.82 + t.phase * 1.3)
+        })
+        charRigs.forEach((c) => {
+          c.group.visible = qState.mode !== 'lite' && (!c.exitHide || c.active)
+          if (!c.group.visible || !charactersVisible || snap) return
+          if (!c.active) { c.mixer.update(characterDt); return }
+          c.t += characterDt
+          const seq = c.seq
+          let acc = 0
+          let cur = seq[seq.length - 1]
+          let curStart = 0
+          for (let i = 0; i < seq.length; i++) {
+            if (c.t < acc + seq[i].dur) { cur = seq[i]; curStart = acc; break }
+            acc += seq[i].dur
+          }
+          if (cur.clip !== c.curClip && c.clips[cur.clip]) {
+            const previous = c.mixer.clipAction(c.clips[c.curClip])
+            const next = c.mixer.clipAction(c.clips[cur.clip]).reset().play()
+            previous.crossFadeTo(next, 0.16, false)
+            c.curClip = cur.clip
+          }
+          c.mixer.update(characterDt)
+          if (cur.move) {
+            const k = Math.min((c.t - curStart) / cur.dur, 1)
+            const e = k * k * (3 - 2 * k)
+            const x = cur.from[0] + (cur.to[0] - cur.from[0]) * e
+            const z = cur.from[2] + (cur.to[2] - cur.from[2]) * e
+            c.root.position.set(x, c.heightAt(x, z) + c.groundOffset, z)
+            const angle = cur.yaw - c.root.rotation.y
+            c.root.rotation.y += Math.atan2(Math.sin(angle), Math.cos(angle)) * (1 - Math.exp(-characterDt / 0.12))
+          }
+          if (c.t >= seq.reduce((s, s2) => s + s2.dur, 0)) {
+            if (c.exitHide && c.group) c.group.visible = false
+            c.active = false
+            if (!c.exitHide) {
+              c.mixer.clipAction(c.clips[c.curClip]).crossFadeTo(c.mixer.clipAction(c.clips.idle).reset().play(), 0.16, false)
+              c.curClip = 'idle'
+            }
+          }
         })
       }
       if (MOTION_DEBUG && !motionLogged) {
@@ -1978,7 +2114,10 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
               + 0.25 * Math.sin((wx * 0.6 + wz) * 0.023 + 1.3))
               * gate * (1 - 0.85 * sstep((r - 40) / 20))
           }
-          const y = (h + fw) * blend
+          const rearHills = 1.5 * Math.exp(-(((x + 24) / 11) ** 2 + ((z + 31) / 9) ** 2))
+            + 1.3 * Math.exp(-(((x - 21) / 12) ** 2 + ((z + 36) / 10) ** 2))
+            + 0.9 * Math.exp(-(((x + 1) / 14) ** 2 + ((z + 47) / 9) ** 2))
+          const y = (h + fw) * blend + rearHills * sstep((-z - 12) / 10)
           pos.setY(i, y)
           if (y < hillMin) hillMin = y
           if (y > hillMax) hillMax = y
@@ -2699,40 +2838,81 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
 
     if (!backdropRef.current && poc.ground) {
       const TREE_CFG = [
-        { name: 'tree-left-near', x: -20, z: -18, s: 8.0, rotY: 0.4, ph: 0 },
-        { name: 'tree-left-far', x: -12.5, z: -27, s: 5.5, rotY: 1.7, ph: 1.9 },
-        { name: 'tree-right-near', x: 19, z: -18, s: 7.0, rotY: 2.5, ph: 3.8 },
-        { name: 'tree-right-far', x: 12.5, z: -27, s: 5.0, rotY: 3.6, ph: 5.1 },
+        { name: 'tree-left-near', x: -18, z: -19, s: 4.8, rotY: 0.2, ph: 0 },
+        { name: 'tree-right-near', x: 18, z: -23, s: 4.5, rotY: 2.5, ph: 3.8 },
+        { name: 'tree-left-mid', x: -29, z: -32, s: 5.4, rotY: 1.4, ph: 1.9 },
+        { name: 'tree-right-mid', x: 12, z: -40, s: 4.4, rotY: 3.6, ph: 5.1 },
+        { name: 'tree-left-far', x: -9, z: -38, s: 3.6, rotY: 0.7, ph: 2.8 },
+        { name: 'tree-right-far', x: 31, z: -43, s: 4.8, rotY: 2.0, ph: 4.4 },
+        { name: 'tree-left-hill-far', x: -35, z: -46, s: 4.1, rotY: 2.9, ph: 6.2 },
+        { name: 'tree-right-hill-far', x: 25, z: -56, s: 3.7, rotY: 1.1, ph: 7.3 },
+        { name: 'tree-left-background-far', x: -19, z: -54, s: 3.4, rotY: 4.4, ph: 8.6 },
+        { name: 'tree-right-inner', x: 6, z: -29, s: 2.7, rotY: 5.4, ph: 9.9 },
       ]
-      const treeCfgs = mount.clientWidth < 720 ? TREE_CFG.slice(0, 1) : TREE_CFG
-      const treeUrl = qState.mode === 'lite' ? '/aquarium/lite/tree-lite.glb' : '/aquarium/environment/tree-opt-150k-1024.glb'
-      const sstepT = (t) => {
-        const c = Math.min(Math.max(t, 0), 1)
-        return c * c * (3 - 2 * c)
-      }
+      const MOBILE_TREE_CFG = [{ ...TREE_CFG[0], x: -5, z: -12, s: 3.6 }, { ...TREE_CFG[1], x: 5, z: -24, s: 3.4 }]
+      const GREEN_TREE_CFG = [
+        { name: 'tree-green-left-open', x: -24, z: -26, s: 4.2, rotY: 1.1, ph: 2.2 },
+        { name: 'tree-green-right-open', x: 23, z: -30, s: 4.0, rotY: 2.2, ph: 3.3 },
+        { name: 'tree-green-left-rear', x: -14, z: -45, s: 3.8, rotY: 4.0, ph: 5.5 },
+        { name: 'tree-green-right-rear', x: 16, z: -50, s: 3.5, rotY: 5.0, ph: 7.7 },
+      ]
+      const GREEN_MOBILE_CFG = [{ ...GREEN_TREE_CFG[2], x: 0, z: -30, s: 3.0 }]
+      let mobileLayout = compactTrees(mount.clientWidth)
+      const treeCfgs = mobileLayout
+        ? MOBILE_TREE_CFG
+        : TREE_CFG.slice(0, mount.clientWidth < 1100 ? (qState.mode === 'lite' ? 3 : 6) : qState.mode === 'lite' ? 4 : 10)
+      const greenCfgs = mobileLayout
+        ? (qState.mode === 'lite' ? [] : GREEN_MOBILE_CFG)
+        : GREEN_TREE_CFG.slice(0, mount.clientWidth < 1100 ? (qState.mode === 'lite' ? 1 : 2) : qState.mode === 'lite' ? 2 : 4)
+      const treeRoots = []
+      const greenRoots = []
+      const treeUrl = '/aquarium/environment/cherry_blossom-opt.glb'
+      const greenTreeUrl = '/aquarium/environment/green_tree-opt.glb'
+      const terrainGeometry = poc.ground.children[0].geometry
+      const terrainPositions = terrainGeometry.attributes.position
+      const terrainSegments = terrainGeometry.parameters.widthSegments
       const terrainHeightAt = (x, z) => {
-        const dx = Math.max(Math.abs(x) - 8, 0)
-        const dz = Math.max(Math.abs(z) - 6, 0)
-        const blend = sstepT(Math.hypot(dx, dz) / 10)
-        const xw = x + 1.5 * Math.sin(z * 0.06)
-        const zw = z + 1.5 * Math.sin(x * 0.05)
-        let h = 2.2 * Math.sin(xw * 0.045 + 1.7) * Math.sin(zw * 0.05 + 0.6)
-          + 1.2 * Math.sin(xw * 0.09 + zw * 0.07 + 2.0)
-        h *= 0.35 + 0.65 * sstepT(z / 16 + 0.5)
-        if (z > 0) h -= 0.6 * sstepT(z / 20)
-        const r = Math.hypot(x, z)
-        h *= 1 - 0.85 * sstepT((r - 40) / 20)
-        let fw = 0
-        if (r > 15) {
-          const gate = sstepT((r - 15) / 10)
-          const wx = x + 1.5 * Math.sin(z * 0.025)
-          const wz = z + 1.2 * Math.sin(x * 0.03)
-          fw = (0.8 * Math.sin(wx * 0.037 + 0.7)
-            + 0.55 * Math.sin(wz * 0.043 + 2.1)
-            + 0.25 * Math.sin((wx * 0.6 + wz) * 0.023 + 1.3))
-            * gate * (1 - 0.85 * sstepT((r - 40) / 20))
-        }
-        return (h + fw) * blend
+        const gx = Math.min(terrainSegments, Math.max(0, (x / 120 + 0.5) * terrainSegments))
+        const gz = Math.min(terrainSegments, Math.max(0, (z / 120 + 0.5) * terrainSegments))
+        const ix = Math.min(terrainSegments - 1, Math.floor(gx)), iz = Math.min(terrainSegments - 1, Math.floor(gz))
+        const fx = gx - ix, fz = gz - iz, i = iz * (terrainSegments + 1) + ix
+        const a = terrainPositions.getY(i), b = terrainPositions.getY(i + terrainSegments + 1)
+        const c = terrainPositions.getY(i + terrainSegments + 2), d = terrainPositions.getY(i + 1)
+        return fx + fz <= 1 ? a + (b - a) * fz + (d - a) * fx : c + (d - c) * (1 - fz) + (b - c) * (1 - fx)
+      }
+      const positionTree = (root, cfg, scale, rotation) => {
+        root.position.set(0, 0, 0)
+        root.scale.setScalar(scale * cfg.s)
+        root.rotation.set(0, rotation + cfg.rotY, 0)
+        root.updateMatrixWorld(true)
+        const nb = new THREE.Box3().setFromObject(root)
+        const nc = new THREE.Vector3()
+        nb.getCenter(nc)
+        root.position.x += cfg.x - nc.x
+        root.position.z += cfg.z - nc.z
+        root.updateMatrixWorld(true)
+        let gy = terrainHeightAt(root.position.x, root.position.z)
+        const foot = new THREE.Vector3()
+        root.traverse((n) => {
+          if (!n.isMesh) return
+          const vertices = n.geometry.attributes.position
+          for (let i = 0; i < vertices.count; i++) {
+            foot.fromBufferAttribute(vertices, i).applyMatrix4(n.matrixWorld)
+            if (foot.y <= nb.min.y + 0.0001) gy = Math.min(gy, terrainHeightAt(foot.x, foot.z))
+          }
+        })
+        root.position.y += gy - 0.04 - nb.min.y + (root.parent ? poc.ground.position.y : 0)
+        root.updateMatrixWorld(true)
+      }
+      layoutTrees = (mobile) => {
+        if (mobile === mobileLayout || (!treeRoots.length && !greenRoots.length)) return
+        mobileLayout = mobile
+        treeRoots.slice(0, 2).forEach(({ root, scale, rotation }, i) => {
+          positionTree(root, mobile ? MOBILE_TREE_CFG[i] : TREE_CFG[i], scale, rotation)
+        })
+        greenRoots.slice(0, 1).forEach(({ root, scale, rotation }) => {
+          positionTree(root, mobile ? GREEN_MOBILE_CFG[0] : GREEN_TREE_CFG[2], scale, rotation)
+        })
       }
       const placeTreeClone = (src, cfg) => {
         const root = src.clone(true)
@@ -2759,9 +2939,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
           flog(cfg.name + ` rejected (unit guard maxDim=${maxDim.toFixed(3)} vs ~5.6)`)
           return false
         }
-            root.scale.setScalar(f.s * cfg.s)
-            root.rotation.y += cfg.rotY
-            root.updateMatrixWorld(true)
+        const rotation = root.rotation.y
             root.traverse((n) => {
               if (!n.isMesh || !n.material) return
               const mats = Array.isArray(n.material) ? n.material : [n.material]
@@ -2773,14 +2951,9 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
                 if (mt.emissive) mt.emissive.setRGB(0, 0, 0)
               })
             })
-        const nb = new THREE.Box3().setFromObject(root)
-        const nc = new THREE.Vector3()
-        nb.getCenter(nc)
-        const gy = terrainHeightAt(cfg.x, cfg.z) - 0.06
-        root.position.x += cfg.x - nc.x
-        root.position.z += cfg.z - nc.z
-        root.position.y += gy - nb.min.y
-        root.updateMatrixWorld(true)
+        positionTree(root, cfg, f.s, rotation)
+        if (cfg.name.indexOf('green') >= 0) greenRoots.push({ root, scale: f.s, rotation })
+        else treeRoots.push({ root, scale: f.s, rotation })
         const group = new THREE.Group()
         group.add(root)
         poc.ground.add(group)
@@ -2788,7 +2961,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         treeSway.push({ root, phase: cfg.ph, amp: cfg.name.indexOf('far') >= 0 ? 0.6 : 1.0 })
         loadedGroups[cfg.name] = group
         if (lastP >= 0.94) group.visible = false
-        flog(cfg.name + ' scale=' + (f.s * cfg.s).toFixed(4) + ' pos=(' + cfg.x.toFixed(1) + ', ' + gy.toFixed(3) + ', ' + cfg.z.toFixed(1) + ')')
+        flog(cfg.name + ' scale=' + (f.s * cfg.s).toFixed(4) + ' pos=(' + cfg.x.toFixed(1) + ', ' + root.position.y.toFixed(3) + ', ' + cfg.z.toFixed(1) + ')')
         if (TREE_DEBUG) {
           const db = new THREE.Box3().setFromObject(root)
           const ds = new THREE.Vector3()
@@ -2864,6 +3037,129 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         }),
         'tree'
       )
+      track(
+        loader
+          .loadAsync(greenTreeUrl)
+          .then((gltf) => {
+          if (cancelled) return
+          const src = gltf.scene
+          const junk = []
+          src.traverse((n) => {
+            if (n.isCamera || n.isLight) junk.push(n)
+          })
+          junk.forEach((n) => {
+            if (n.parent) n.parent.remove(n)
+          })
+          src.updateMatrixWorld(true)
+          const sb = new THREE.Box3().setFromObject(src)
+          const sd = new THREE.Vector3()
+          sb.getSize(sd)
+          if (![sd.x, sd.y, sd.z].every((v) => Number.isFinite(v) && v > 0)) {
+            flog('green_tree.glb rejected (non-finite source bounds)')
+            return
+          }
+          let okCount = 0
+          greenCfgs.forEach((cfg) => {
+            if (placeTreeClone(src, cfg)) okCount++
+          })
+          flog('green trees active ' + okCount + '/' + greenCfgs.length)
+          applyCompact(mount.clientWidth)
+          if (reduced) rerender()
+        }, () => {
+          flog('green_tree.glb missing/unreadable')
+        }),
+        'green-tree'
+      )
+      if (!reduced && qState.mode !== 'lite') {
+        const groundChar = (root, x, z) => {
+          root.position.set(x, 0, z)
+          root.updateWorldMatrix(true, true)
+          const nb = new THREE.Box3().setFromObject(root)
+          return terrainHeightAt(x, z) - 0.04 - nb.min.y + (root.parent ? poc.ground.position.y : 0)
+        }
+        const fitChar = (root, target) => {
+          const m = measureRoot(root)
+          if (!m) return 0
+          const f = fitScale(m.size, target)
+          if (!f.ok) return 0
+          root.scale.setScalar(f.s)
+          root.updateMatrixWorld(true)
+          return f.s
+        }
+        const placeChar = (gltf, url, kind) => {
+          if (cancelled) return
+          const yawFor = (fx, fz, tx, tz) => Math.atan2(tx - fx, tz - fz) + (kind === 'chicken' ? Math.PI : 0)
+          const root = gltf.scene
+          root.traverse((n) => {
+            if (n.isCamera || n.isLight) n.removeFromParent()
+          })
+          const clips = {}
+          gltf.animations.forEach((a) => {
+            const clip = a.clone()
+            clip.tracks.forEach((track) => {
+              if (!track.name.endsWith('.position')) return
+              const node = root.getObjectByName(track.name.slice(0, -9))
+              if (!node) return
+              for (let i = 0; i < track.values.length; i++) track.values[i] += node.position.getComponent(i % 3)
+            })
+            clips[a.name] = clip
+          })
+          const need = kind === 'chicken' ? ['idle', 'walk', 'run'] : ['idle', 'walk']
+          if (!need.every((k) => clips[k])) {
+            flog(kind + ' missing clips')
+            return
+          }
+          const s = fitChar(root, kind === 'chicken' ? [1.4, 1.6, 1.4] : [2.6, 4.4, 2.6])
+          if (!s) return
+          const group = new THREE.Group()
+          group.add(root)
+          poc.ground.add(group)
+          trackLoaded(group)
+          const mixer = new THREE.AnimationMixer(root)
+          mixer.clipAction(clips.idle).play()
+          const rig = { root, group, mixer, clips, t: 0, curClip: 'idle', active: true, seq: [], exitHide: false }
+          if (kind === 'chicken') {
+            const A = [14, -18], B = [11, -20], C = [-30, -22]
+            const yA = groundChar(root, A[0], A[1])
+            const yB = groundChar(root, B[0], B[1])
+            const yC = groundChar(root, C[0], C[1])
+            root.position.set(A[0], yA, A[1])
+            rig.seq = [
+              { clip: 'idle', dur: 2.0 },
+              { clip: 'walk', dur: 2.5, move: true, from: [A[0], yA, A[1]], to: [B[0], yB, B[1]], yaw: yawFor(A[0], A[1], B[0], B[1]) },
+              { clip: 'run', dur: 4.0, move: true, from: [B[0], yB, B[1]], to: [C[0], yC, C[1]], yaw: yawFor(B[0], B[1], C[0], C[1]) },
+            ]
+            rig.exitHide = true
+            root.rotation.y = yawFor(A[0], A[1], B[0], B[1])
+            rig.home = { pos: [A[0], yA, A[1]], yaw: root.rotation.y }
+          } else {
+            const A = [-14, -16], B = [-12, -16], C = [-10, -17]
+            const yA = groundChar(root, A[0], A[1])
+            const yB = groundChar(root, B[0], B[1])
+            const yC = groundChar(root, C[0], C[1])
+            root.position.set(A[0], yA, A[1])
+            rig.seq = [
+              { clip: 'idle', dur: 2.0 },
+              { clip: 'walk', dur: 3.0, move: true, from: [A[0], yA, A[1]], to: [B[0], yB, B[1]], yaw: yawFor(A[0], A[1], B[0], B[1]) },
+              { clip: 'idle', dur: 6.0 },
+              { clip: 'walk', dur: 3.5, move: true, from: [B[0], yB, B[1]], to: [C[0], yC, C[1]], yaw: yawFor(B[0], B[1], C[0], C[1]) },
+            ]
+            root.rotation.y = yawFor(A[0], A[1], B[0], B[1])
+            rig.home = { pos: [A[0], yA, A[1]], yaw: root.rotation.y }
+          }
+          rig.heightAt = terrainHeightAt
+          rig.groundOffset = rig.home.pos[1] - terrainHeightAt(rig.home.pos[0], rig.home.pos[2])
+          rig.lane = 1
+          rig.offsetX = 0
+          if (lastP >= 0.94) group.visible = false
+          rig.kind = kind
+          charRigs.push(rig)
+          layoutCharacters(mount.clientWidth, mount.clientHeight)
+          flog(kind + ' placed clips=' + Object.keys(clips).join(','))
+        }
+        track(loader.loadAsync('/aquarium/environment/chicken_jockey_animated-05n.glb').then((g) => placeChar(g, 0, 'chicken'), () => flog('chicken missing')), 'chicken')
+        track(loader.loadAsync('/aquarium/environment/golem_animated-05nB.glb').then((g) => placeChar(g, 0, 'golem'), () => flog('golem missing')), 'golem')
+      }
 
       {
         const thinCompact = mount.clientWidth < 720 ? 0.5 : 1
@@ -3156,6 +3452,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         trans.skyRT.setSize(s.x, s.y)
       }
       applyCompact(w)
+      layoutCharacters(w, h)
     }
     const rerender = () => {
       onFrame(mount.clientWidth, mount.clientHeight)
@@ -3186,6 +3483,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       cancelAnimationFrame(raf)
       raf = 0
       const paused = parked()
+      if (paused || document.hidden) charactersPresented = false
       cbRef.current.onBackdropPaused?.(paused)
       mount.dataset.renderState = paused ? 'paused' : document.hidden ? 'hidden' : reduced ? 'static' : 'running'
       if (!cancelled && !paused && !document.hidden && renderLoop) raf = requestAnimationFrame(renderLoop)
@@ -3361,6 +3659,9 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       renderLoop = tick
     }
 
+    if (!backdropRef.current && !reduced && qState.mode === 'normal') {
+      track(Promise.allSettled([...pendingStarts.keys()]).then(prepareTransition), 'transition')
+    }
     document.addEventListener('visibilitychange', syncLoop)
     syncLoop()
 
@@ -3379,6 +3680,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       document.removeEventListener('visibilitychange', syncLoop)
       cbRef.current.onBackdropPaused?.(false)
       ro.disconnect()
+      charRigs.forEach((c) => { c.mixer.stopAllAction(); c.mixer.uncacheRoot(c.root) })
       if (themeObs) themeObs.disconnect()
       disposables.forEach((d) => d.dispose && d.dispose())
       waterMat.dispose()

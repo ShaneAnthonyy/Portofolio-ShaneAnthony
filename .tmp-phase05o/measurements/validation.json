@@ -1,0 +1,128 @@
+[
+  {
+    "name": "startup",
+    "command": [
+      "node",
+      "C:\\CODE\\ReactWeb\\Portfolio-Shane\\.tmp-phase05o\\startup.mjs"
+    ],
+    "exitCode": 0
+  },
+  {
+    "name": "lifecycle",
+    "command": [
+      "node",
+      "C:\\CODE\\ReactWeb\\Portfolio-Shane\\.tmp-phase05o\\lifecycle.mjs"
+    ],
+    "exitCode": 0
+  },
+  {
+    "name": "cinematic-dark",
+    "command": [
+      "node",
+      "C:\\CODE\\ReactWeb\\Portfolio-Shane\\.tmp-phase05o\\cinematic.mjs"
+    ],
+    "exitCode": 0
+  },
+  {
+    "name": "cinematic-light",
+    "command": [
+      "node",
+      "C:\\CODE\\ReactWeb\\Portfolio-Shane\\.tmp-phase05o\\cinematic.mjs",
+      "--light"
+    ],
+    "exitCode": 0
+  },
+  {
+    "name": "cinematic-mobile",
+    "command": [
+      "node",
+      "C:\\CODE\\ReactWeb\\Portfolio-Shane\\.tmp-phase05o\\cinematic.mjs",
+      "--mobile"
+    ],
+    "exitCode": 0
+  },
+  {
+    "name": "responsive",
+    "command": [
+      "node",
+      "C:\\CODE\\ReactWeb\\Portfolio-Shane\\.tmp-phase05o\\responsive.mjs"
+    ],
+    "exitCode": 0
+  },
+  {
+    "name": "perf-desktop",
+    "command": [
+      "node",
+      "C:\\CODE\\ReactWeb\\Portfolio-Shane\\.tmp-phase05o\\profile.mjs",
+      "perf-desktop",
+      "1440",
+      "900"
+    ],
+    "exitCode": 0
+  },
+  {
+    "name": "perf-inactive",
+    "command": [
+      "node",
+      "C:\\CODE\\ReactWeb\\Portfolio-Shane\\.tmp-phase05o\\profile.mjs",
+      "perf-inactive",
+      "1440",
+      "900",
+      "--quick",
+      "--inactive"
+    ],
+    "exitCode": 0
+  },
+  {
+    "name": "perf-mobile",
+    "command": [
+      "node",
+      "C:\\CODE\\ReactWeb\\Portfolio-Shane\\.tmp-phase05o\\profile.mjs",
+      "perf-mobile",
+      "390",
+      "844"
+    ],
+    "exitCode": 0
+  },
+  {
+    "name": "forest-lifecycle",
+    "command": [
+      "node",
+      "C:\\CODE\\ReactWeb\\Portfolio-Shane\\.tmp-phase05o\\check-forest-lifecycle.mjs"
+    ],
+    "exitCode": 0
+  },
+  {
+    "name": "arrival",
+    "command": [
+      "node",
+      "scripts/check-arrival.mjs"
+    ],
+    "exitCode": 0
+  },
+  {
+    "name": "hero",
+    "command": [
+      "node",
+      "scripts/check-hero.mjs"
+    ],
+    "exitCode": 0
+  },
+  {
+    "name": "regressions",
+    "command": [
+      "python",
+      "C:\\CODE\\ReactWeb\\Portfolio-Shane\\.tmp-phase05o\\run-regressions.py"
+    ],
+    "exitCode": 1
+  },
+  {
+    "name": "diff-check",
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exitCode": 0
+  }
+]

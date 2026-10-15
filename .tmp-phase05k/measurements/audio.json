@@ -1,0 +1,50 @@
+{
+  "results": [
+    {
+      "playing": {
+        "src": "http://127.0.0.1:4173/audio/song.mp3",
+        "paused": false,
+        "time": 0.239091,
+        "loop": true,
+        "volume": 0.3,
+        "ready": 4,
+        "error": null,
+        "count": 1
+      },
+      "advanced": {
+        "src": "http://127.0.0.1:4173/audio/song.mp3",
+        "paused": false,
+        "time": 1.249502,
+        "loop": true,
+        "volume": 0.3,
+        "ready": 4,
+        "error": null,
+        "count": 1
+      },
+      "paused": {
+        "src": "http://127.0.0.1:4173/audio/song.mp3",
+        "paused": true,
+        "time": 1.254563,
+        "loop": true,
+        "volume": 0.3,
+        "ready": 4,
+        "error": null,
+        "count": 1
+      },
+      "resumeReusesElement": true
+    }
+  ],
+  "errors": [
+    {
+      "source": "network",
+      "level": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": 1792055049113.508,
+      "url": "http://127.0.0.1:4173/favicon.ico",
+      "networkRequestId": "8648.152"
+    }
+  ],
+  "warnings": [
+    "THREE.WebGLShadowMap: PCFSoftShadowMap has been removed. Using PCFShadowMap instead."
+  ]
+}

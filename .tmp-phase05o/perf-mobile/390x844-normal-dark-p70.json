@@ -1,0 +1,213 @@
+{
+  "camera": {
+    "position": [
+      0,
+      9.153522569908912,
+      11.192970910462885
+    ],
+    "matrix": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      0.8696439070952384,
+      -0.49367952646644003,
+      0,
+      0,
+      0.49367952646644003,
+      0.8696439070952384,
+      0,
+      0,
+      9.153522569908912,
+      11.192970910462885,
+      1
+    ],
+    "projection": [
+      3.6016714951380444,
+      0,
+      0,
+      0,
+      0,
+      1.664279482350518,
+      0,
+      0,
+      0,
+      0,
+      -1.0006668889629877,
+      -1,
+      0,
+      0,
+      -0.20006668889629878,
+      0
+    ],
+    "fov": 62,
+    "aspect": 0.46208530805687204
+  },
+  "renderer": {
+    "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 2060 (0x00001F11) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "pixelRatio": 1.5,
+    "width": 585,
+    "height": 1266,
+    "memory": {
+      "geometries": 106,
+      "textures": 43
+    },
+    "programs": 45,
+    "gpuTimerSupported": true
+  },
+  "assets": [
+    {
+      "name": "http://127.0.0.1:4173/aquarium/fonts/BoldsPixels.typeface.json",
+      "duration": 19.299999997019768,
+      "responseEnd": 649.6999999955297
+    },
+    {
+      "name": "http://127.0.0.1:4173/aquarium/room/props/side_table/side_table_01_4k.gltf",
+      "duration": 15,
+      "responseEnd": 646.6000000014901
+    },
+    {
+      "name": "http://127.0.0.1:4173/aquarium/tank.glb",
+      "duration": 13.199999995529652,
+      "responseEnd": 646.7999999970198
+    },
+    {
+      "name": "http://127.0.0.1:4173/aquarium/floor.glb",
+      "duration": 951.5,
+      "responseEnd": 1586
+    },
+    {
+      "name": "http://127.0.0.1:4173/aquarium/rocks.glb",
+      "duration": 13.299999997019768,
+      "responseEnd": 648.3999999985099
+    },
+    {
+      "name": "http://127.0.0.1:4173/aquarium/kelp.glb",
+      "duration": 14.299999997019768,
+      "responseEnd": 649.8999999985099
+    },
+    {
+      "name": "http://127.0.0.1:4173/aquarium/coral.glb",
+      "duration": 27.200000002980232,
+      "responseEnd": 663.3999999985099
+    },
+    {
+      "name": "http://127.0.0.1:4173/aquarium/fish_a-opt.glb",
+      "duration": 410.3999999985099,
+      "responseEnd": 1047.8999999985099
+    },
+    {
+      "name": "http://127.0.0.1:4173/aquarium/fish_b-opt.glb",
+      "duration": 413.8999999985099,
+      "responseEnd": 1052
+    },
+    {
+      "name": "http://127.0.0.1:4173/aquarium/fish_c-opt.glb",
+      "duration": 416.1000000014901,
+      "responseEnd": 1054.8999999985099
+    },
+    {
+      "name": "http://127.0.0.1:4173/aquarium/butterfly_koi_a-opt.glb",
+      "duration": 420.5,
+      "responseEnd": 1060.5
+    },
+    {
+      "name": "http://127.0.0.1:4173/aquarium/shrimp_a-opt.glb",
+      "duration": 82.79999999701977,
+      "responseEnd": 723.7999999970198
+    },
+    {
+      "name": "http://127.0.0.1:4173/aquarium/environment/cherry_blossom-opt.glb",
+      "duration": 99.70000000298023,
+      "responseEnd": 741.6000000014901
+    },
+    {
+      "name": "http://127.0.0.1:4173/aquarium/environment/green_tree-opt.glb",
+      "duration": 104.20000000298023,
+      "responseEnd": 746.6000000014901
+    },
+    {
+      "name": "http://127.0.0.1:4173/aquarium/environment/chicken_jockey_animated-05n.glb",
+      "duration": 106.39999999850988,
+      "responseEnd": 750
+    },
+    {
+      "name": "http://127.0.0.1:4173/aquarium/environment/golem_animated-05nB.glb",
+      "duration": 119.20000000298023,
+      "responseEnd": 763.6000000014901
+    },
+    {
+      "name": "http://127.0.0.1:4173/aquarium/sky/sky-morning.png",
+      "duration": 79.39999999850988,
+      "responseEnd": 776.6999999955297
+    },
+    {
+      "name": "http://127.0.0.1:4173/aquarium/sky/sky-night.png",
+      "duration": 93.39999999850988,
+      "responseEnd": 790.8999999985099
+    },
+    {
+      "name": "http://127.0.0.1:4173/aquarium/terrain/grass_ground/grass_ground_diff_1024.webp",
+      "duration": 104.59999999403954,
+      "responseEnd": 802.1999999955297
+    },
+    {
+      "name": "http://127.0.0.1:4173/aquarium/terrain/grass_ground/grass_ground_nor_gl_512.webp",
+      "duration": 116.70000000298023,
+      "responseEnd": 814.3999999985099
+    },
+    {
+      "name": "http://127.0.0.1:4173/aquarium/terrain/grass_ground/grass_ground_rough_1024.webp",
+      "duration": 127.30000000447035,
+      "responseEnd": 825.1000000014901
+    },
+    {
+      "name": "http://127.0.0.1:4173/aquarium/terrain/grass_ground/grass_ground_ao_1024.webp",
+      "duration": 133.39999999850988,
+      "responseEnd": 831.2999999970198
+    },
+    {
+      "name": "http://127.0.0.1:4173/aquarium/room/props/side_table/side_table_01.bin",
+      "duration": 22.30000000447035,
+      "responseEnd": 1291
+    },
+    {
+      "name": "http://127.0.0.1:4173/aquarium/room/props/side_table/textures/side_table_01_diff_4k.jpg",
+      "duration": 340,
+      "responseEnd": 1609.3999999985099
+    },
+    {
+      "name": "http://127.0.0.1:4173/aquarium/room/props/side_table/textures/side_table_01_arm_4k.jpg",
+      "duration": 43.5,
+      "responseEnd": 1313.1000000014901
+    },
+    {
+      "name": "http://127.0.0.1:4173/aquarium/room/props/side_table/textures/side_table_01_nor_gl_4k.jpg",
+      "duration": 31.19999999552965,
+      "responseEnd": 1303.2999999970198
+    },
+    {
+      "name": "http://127.0.0.1:4173/aquarium/hero/surface-dark-mobile.webp",
+      "duration": 4.5999999940395355,
+      "responseEnd": 3446.6999999955297
+    }
+  ],
+  "observers": [
+    "element",
+    "event",
+    "first-input",
+    "interaction-contentful-paint",
+    "largest-contentful-paint",
+    "layout-shift",
+    "long-animation-frame",
+    "longtask",
+    "mark",
+    "measure",
+    "navigation",
+    "paint",
+    "resource",
+    "soft-navigation",
+    "visibility-state"
+  ]
+}

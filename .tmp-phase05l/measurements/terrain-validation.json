@@ -1,0 +1,24 @@
+[
+  {
+    "mode": "normal",
+    "vertices": 4225,
+    "triangles": 8192,
+    "rearVerticesChanged": 1645,
+    "peakAddedHeight": 1.487451821565628,
+    "maxAddedNeighborSlope": 0.14010149637858074,
+    "foregroundUnchanged": true,
+    "topologyAndUvsUnchanged": true,
+    "allVertexAndTriangleCentroidSamplesPass": true
+  },
+  {
+    "mode": "lite",
+    "vertices": 625,
+    "triangles": 1152,
+    "rearVerticesChanged": 240,
+    "peakAddedHeight": 1.470745712518692,
+    "maxAddedNeighborSlope": 0.1311516582965851,
+    "foregroundUnchanged": true,
+    "topologyAndUvsUnchanged": true,
+    "allVertexAndTriangleCentroidSamplesPass": true
+  }
+]

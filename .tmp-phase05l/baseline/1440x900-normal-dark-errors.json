@@ -1,0 +1,15 @@
+{
+  "errors": [
+    {
+      "source": "network",
+      "level": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": 1792056159059.424,
+      "url": "http://127.0.0.1:4173/favicon.ico",
+      "networkRequestId": "12096.78"
+    }
+  ],
+  "warnings": [
+    "THREE.WebGLShadowMap: PCFSoftShadowMap has been removed. Using PCFShadowMap instead."
+  ]
+}

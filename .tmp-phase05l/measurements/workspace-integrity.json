@@ -1,0 +1,13 @@
+{
+  "preexistingFilesChecked": 2585,
+  "changed": [
+    "src/App.jsx",
+    "src/components/AquariumDivePrototype.jsx"
+  ],
+  "missing": [],
+  "allOtherPreexistingBytesPreserved": true,
+  "treeAssets": {
+    "public/aquarium/environment/cherry_blossom.glb": "7f0d41c9034b9daa9cfdb77317b1f3e5f0ec8088b95f14478c1a5d1b529ae28c",
+    "public/aquarium/environment/cherry_blossom-opt.glb": "33ba013518320765a7de6152ad541b7f0c67fc5c199595c0318d62e79d8634a2"
+  }
+}

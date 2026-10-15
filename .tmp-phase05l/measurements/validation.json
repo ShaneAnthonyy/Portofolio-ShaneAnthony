@@ -1,0 +1,65 @@
+[
+  {
+    "name": "after-mobile",
+    "command": "node .tmp-phase05l/profile.mjs after-mobile 390 844 --gpu",
+    "url": "http://127.0.0.1:4173/",
+    "exitCode": 0,
+    "log": "logs/after-mobile.log"
+  },
+  {
+    "name": "baseline-untraced",
+    "command": "node .tmp-phase05l/profile.mjs baseline-untraced 1440 900 --quick --gpu --no-trace",
+    "url": "http://127.0.0.1:4176/",
+    "exitCode": 0,
+    "log": "logs/baseline-untraced.log"
+  },
+  {
+    "name": "after-untraced",
+    "command": "node .tmp-phase05l/profile.mjs after-untraced 1440 900 --quick --gpu --no-trace",
+    "url": "http://127.0.0.1:4173/",
+    "exitCode": 0,
+    "log": "logs/after-untraced.log"
+  },
+  {
+    "name": "critical",
+    "command": "node .tmp-phase05l/check-critical.mjs",
+    "url": "http://127.0.0.1:4173/",
+    "exitCode": 0,
+    "log": "logs/critical.log"
+  },
+  {
+    "name": "scene-desktop",
+    "command": "node .tmp-phase05l/scene.mjs final 1440",
+    "url": "http://127.0.0.1:4173/",
+    "exitCode": 0,
+    "log": "logs/scene-desktop.log"
+  },
+  {
+    "name": "scene-mobile",
+    "command": "node .tmp-phase05l/scene.mjs final 390",
+    "url": "http://127.0.0.1:4173/",
+    "exitCode": 0,
+    "log": "logs/scene-mobile.log"
+  },
+  {
+    "name": "scene-light",
+    "command": "node .tmp-phase05l/scene.mjs final 1440 --light",
+    "url": "http://127.0.0.1:4173/",
+    "exitCode": 0,
+    "log": "logs/scene-light.log"
+  },
+  {
+    "name": "scene-lite",
+    "command": "node .tmp-phase05l/scene.mjs final 390 --lite",
+    "url": "http://127.0.0.1:4173/",
+    "exitCode": 0,
+    "log": "logs/scene-lite.log"
+  },
+  {
+    "name": "regressions",
+    "command": "python .tmp-phase05l/run-regressions.py",
+    "url": "http://127.0.0.1:4173/",
+    "exitCode": 1,
+    "log": "logs/regressions.log"
+  }
+]

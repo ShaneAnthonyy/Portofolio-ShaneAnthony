@@ -1,0 +1,4 @@
+PASS forest stops drawing under parked Hero
+PASS Lite replay resumes four resident cherry clones without reload
+PASS normal replay restores ten trees using the same clone identities
+PASS live resize limits visible forest to 2 / 6 / 10 without rebuilding resources

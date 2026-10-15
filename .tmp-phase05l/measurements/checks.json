@@ -1,0 +1,36 @@
+[
+  {
+    "command": "npm run build",
+    "exitCode": 0,
+    "note": "Final production build completed in 8.00 seconds; existing large-chunk warning."
+  },
+  {
+    "command": "git diff --check",
+    "exitCode": 0
+  },
+  {
+    "command": "node scripts/check-arrival.mjs",
+    "exitCode": 0
+  },
+  {
+    "command": "node scripts/check-hero.mjs",
+    "exitCode": 0
+  },
+  {
+    "command": "node .tmp-phase05l/check-terrain.mjs",
+    "exitCode": 0
+  },
+  {
+    "command": "python .tmp-phase05l/compare-visual-state.py",
+    "exitCode": 0
+  },
+  {
+    "command": "python .tmp-phase05l/verify-preservation.py",
+    "exitCode": 0
+  },
+  {
+    "command": "node .tmp-phase05l/profile.mjs after-cold 1440 900 --quick --gpu",
+    "exitCode": 0,
+    "note": "CDP_PORT=9224, fresh Chrome profile."
+  }
+]

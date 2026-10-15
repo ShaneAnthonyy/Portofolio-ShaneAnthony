@@ -1,0 +1,7 @@
+approach: {"y":3276,"unlocked":false,"tO":"1","tY":"none","heroCanvas":true,"heroState":"prewarmed","dockT":"matrix(1, 0, 0, 1, 195.844, 0)"}
+PASS Pre-warm initializes hero canvas early; no premature entrance
+PASS Magnetic assist engages and advances scroll on its own
+PASS Reverse wheel cancels magnetic assist safely
+PASS Forward resume completes landing at 0 with dock settled
+PASS Dive Again resets and recompletes twice with clean landing
+{"checks":["Pre-warm initializes hero canvas early; no premature entrance","Magnetic assist engages and advances scroll on its own","Reverse wheel cancels magnetic assist safely","Forward resume completes landing at 0 with dock settled","Dive Again resets and recompletes twice with clean landing"]}

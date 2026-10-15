@@ -1,0 +1,2070 @@
+[
+  {
+    "label": "1024x768-normal-dark-visibility.json",
+    "p": 0,
+    "trees": 6,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 26416.96729435084,
+        "projectedCanopy": {
+          "left": -337.86235674289264,
+          "top": 101.96727129598546,
+          "right": 207.51565891684163,
+          "bottom": 332.6424939809426
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 141,
+          "right": 207.03270564915758,
+          "bottom": 473
+        }
+      },
+      {
+        "cssCanopyPixelArea": 26370.283448959366,
+        "projectedCanopy": {
+          "left": 810.9807450848158,
+          "top": 115.39414291960223,
+          "right": 1245.815404835404,
+          "bottom": 307.24372155858777
+        },
+        "actualPixelBounds": {
+          "left": 810.8780971258672,
+          "top": 115,
+          "right": 1022.9851337958374,
+          "bottom": 423
+        }
+      },
+      {
+        "cssCanopyPixelArea": 17705.355797819622,
+        "projectedCanopy": {
+          "left": 590.1238074935898,
+          "top": 216.56429312774185,
+          "right": 858.2416213622043,
+          "bottom": 334.67246132783913
+        },
+        "actualPixelBounds": {
+          "left": 589.6372646184341,
+          "top": 216,
+          "right": 857.5619425173439,
+          "bottom": 412
+        }
+      },
+      {
+        "cssCanopyPixelArea": 14568.40436075322,
+        "projectedCanopy": {
+          "left": 231.62236259685562,
+          "top": 279.21654830919886,
+          "right": 457.9852398133525,
+          "bottom": 374.404790042996
+        },
+        "actualPixelBounds": {
+          "left": 231.38949454905847,
+          "top": 280,
+          "right": 457.70465807730426,
+          "bottom": 442
+        }
+      }
+    ]
+  },
+  {
+    "label": "1024x768-normal-dark-visibility.json",
+    "p": 0.5,
+    "trees": 6,
+    "meaningfulCanopies": []
+  },
+  {
+    "label": "1024x768-normal-dark-visibility.json",
+    "p": 0.91,
+    "trees": 6,
+    "meaningfulCanopies": []
+  },
+  {
+    "label": "1440x900-lite-dark-visibility.json",
+    "p": 0,
+    "trees": 4,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 66475.50561797753,
+        "projectedCanopy": {
+          "left": -275.4400526020699,
+          "top": 118.78058649755064,
+          "right": 363.1750055061129,
+          "bottom": 388.43818107303264
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 124,
+          "right": 362.69662921348316,
+          "bottom": 562.6666666666666
+        }
+      },
+      {
+        "cssCanopyPixelArea": 59899.32584269663,
+        "projectedCanopy": {
+          "left": 1069.6915852387885,
+          "top": 134.35085612127827,
+          "right": 1577.2651626802751,
+          "bottom": 360.43583102988146
+        },
+        "actualPixelBounds": {
+          "left": 1070.561797752809,
+          "top": 134.66666666666669,
+          "right": 1438.6516853932585,
+          "bottom": 494.66666666666663
+        }
+      },
+      {
+        "cssCanopyPixelArea": 23356.404494382023,
+        "projectedCanopy": {
+          "left": 811.4094275928735,
+          "top": 254.13570612030674,
+          "right": 1124.4427091885432,
+          "bottom": 391.9429998744011
+        },
+        "actualPixelBounds": {
+          "left": 811.685393258427,
+          "top": 254.66666666666669,
+          "right": 1124.4943820224719,
+          "bottom": 481.33333333333337
+        }
+      }
+    ]
+  },
+  {
+    "label": "1440x900-lite-dark-visibility.json",
+    "p": 0.5,
+    "trees": 4,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 3068.76404494382,
+        "projectedCanopy": {
+          "left": -518.6667333506105,
+          "top": -351.0660445971105,
+          "right": 291.36609959354774,
+          "bottom": 45.12584616919482
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 0,
+          "right": 113.25842696629213,
+          "bottom": 194.66666666666666
+        }
+      }
+    ]
+  },
+  {
+    "label": "1440x900-lite-dark-visibility.json",
+    "p": 0.91,
+    "trees": 4,
+    "meaningfulCanopies": []
+  },
+  {
+    "label": "1440x900-normal-dark-visibility.json",
+    "p": 0,
+    "trees": 10,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 67137.34736842105,
+        "projectedCanopy": {
+          "left": -272.1984167075608,
+          "top": 119.61837638198949,
+          "right": 364.55774947443615,
+          "bottom": 389.78565987216376
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 124,
+          "right": 363.7894736842105,
+          "bottom": 564
+        }
+      },
+      {
+        "cssCanopyPixelArea": 59708.96842105263,
+        "projectedCanopy": {
+          "left": 1069.1028827269747,
+          "top": 135.15728656356848,
+          "right": 1576.6400401294836,
+          "bottom": 360.1310509178243
+        },
+        "actualPixelBounds": {
+          "left": 1069.136842105263,
+          "top": 135,
+          "right": 1438.9894736842107,
+          "bottom": 496
+        }
+      },
+      {
+        "cssCanopyPixelArea": 20470.23157894737,
+        "projectedCanopy": {
+          "left": 811.1118121052934,
+          "top": 253.88923502456126,
+          "right": 1124.0456990267808,
+          "bottom": 392.02251545591486
+        },
+        "actualPixelBounds": {
+          "left": 810.4421052631579,
+          "top": 254,
+          "right": 1123.7052631578947,
+          "bottom": 482.99999999999994
+        }
+      },
+      {
+        "cssCanopyPixelArea": 17818.610526315788,
+        "projectedCanopy": {
+          "left": 392.8279833910774,
+          "top": 327.14103469491795,
+          "right": 656.9428435356588,
+          "bottom": 438.6431393546071
+        },
+        "actualPixelBounds": {
+          "left": 393.09473684210525,
+          "top": 328,
+          "right": 655.8315789473685,
+          "bottom": 518
+        }
+      },
+      {
+        "cssCanopyPixelArea": 6608.8421052631575,
+        "projectedCanopy": {
+          "left": 1206.8452659110587,
+          "top": 258.1194032194342,
+          "right": 1526.1213230139124,
+          "bottom": 393.15291407194354
+        },
+        "actualPixelBounds": {
+          "left": 1206.5684210526315,
+          "top": 313,
+          "right": 1438.9894736842107,
+          "bottom": 463.00000000000006
+        }
+      },
+      {
+        "cssCanopyPixelArea": 1719.915789473684,
+        "projectedCanopy": {
+          "left": -70.96320729171379,
+          "top": 313.3433984271203,
+          "right": 181.4212966509138,
+          "bottom": 422.19608974286416
+        },
+        "actualPixelBounds": {
+          "left": 32.33684210526316,
+          "top": 381,
+          "right": 180.88421052631577,
+          "bottom": 496.99999999999994
+        }
+      },
+      {
+        "cssCanopyPixelArea": 8427.78947368421,
+        "projectedCanopy": {
+          "left": 1022.343116039434,
+          "top": 344.9845859748258,
+          "right": 1227.0721763487209,
+          "bottom": 426.8573500956672
+        },
+        "actualPixelBounds": {
+          "left": 1030.7368421052631,
+          "top": 345,
+          "right": 1226.778947368421,
+          "bottom": 464
+        }
+      },
+      {
+        "cssCanopyPixelArea": 5451.78947368421,
+        "projectedCanopy": {
+          "left": 299.20355341329457,
+          "top": 357.8538503640215,
+          "right": 497.9836903607714,
+          "bottom": 434.25737837559825
+        },
+        "actualPixelBounds": {
+          "left": 314.2736842105263,
+          "top": 358,
+          "right": 426.4421052631579,
+          "bottom": 491
+        }
+      },
+      {
+        "cssCanopyPixelArea": 11264.336842105262,
+        "projectedCanopy": {
+          "left": 775.0383187264439,
+          "top": 336.31244088297984,
+          "right": 972.3820777871234,
+          "bottom": 436.54572577897557
+        },
+        "actualPixelBounds": {
+          "left": 775.0736842105264,
+          "top": 338,
+          "right": 972.1263157894737,
+          "bottom": 507
+        }
+      }
+    ]
+  },
+  {
+    "label": "1440x900-normal-dark-visibility.json",
+    "p": 0.5,
+    "trees": 10,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 3319.578947368421,
+        "projectedCanopy": {
+          "left": -520.5241713135216,
+          "top": -346.4514723225193,
+          "right": 288.1389392209794,
+          "bottom": 49.007222795783235
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 0,
+          "right": 113.17894736842106,
+          "bottom": 196
+        }
+      }
+    ]
+  },
+  {
+    "label": "1440x900-normal-dark-visibility.json",
+    "p": 0.91,
+    "trees": 10,
+    "meaningfulCanopies": []
+  },
+  {
+    "label": "1920x1080-normal-dark-visibility.json",
+    "p": 0,
+    "trees": 10,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 127505.13385826771,
+        "projectedCanopy": {
+          "left": -227.67596428030672,
+          "top": 143.57989217841768,
+          "right": 534.5329472256489,
+          "bottom": 467.7358648308559
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 144,
+          "right": 534.1732283464568,
+          "bottom": 677
+        }
+      },
+      {
+        "cssCanopyPixelArea": 99729.13385826771,
+        "projectedCanopy": {
+          "left": 1377.880848702535,
+          "top": 162.16938394363686,
+          "right": 1985.356149655488,
+          "bottom": 432.1855582489531
+        },
+        "actualPixelBounds": {
+          "left": 1377.763779527559,
+          "top": 162,
+          "right": 1918.992125984252,
+          "bottom": 596
+        }
+      },
+      {
+        "cssCanopyPixelArea": 29282.771653543306,
+        "projectedCanopy": {
+          "left": 1069.0439892162633,
+          "top": 304.6881881124159,
+          "right": 1443.5955242669338,
+          "bottom": 470.3903241458253
+        },
+        "actualPixelBounds": {
+          "left": 1068.3464566929135,
+          "top": 304,
+          "right": 1443.275590551181,
+          "bottom": 580.0000000000001
+        }
+      },
+      {
+        "cssCanopyPixelArea": 25513.32283464567,
+        "projectedCanopy": {
+          "left": 568.4267892987468,
+          "top": 392.55147305012287,
+          "right": 884.5259304851133,
+          "bottom": 526.342323256029
+        },
+        "actualPixelBounds": {
+          "left": 568.4409448818898,
+          "top": 394,
+          "right": 883.9055118110236,
+          "bottom": 621
+        }
+      },
+      {
+        "cssCanopyPixelArea": 13493.417322834646,
+        "projectedCanopy": {
+          "left": 1542.6964479107985,
+          "top": 309.7410114326045,
+          "right": 1924.8405319337626,
+          "bottom": 471.7788498986301
+        },
+        "actualPixelBounds": {
+          "left": 1542.0472440944882,
+          "top": 376,
+          "right": 1918.992125984252,
+          "bottom": 556
+        }
+      },
+      {
+        "cssCanopyPixelArea": 3034.7086614173227,
+        "projectedCanopy": {
+          "left": 13.282717458579043,
+          "top": 376.02377148421834,
+          "right": 315.36601837913344,
+          "bottom": 506.6122892936493
+        },
+        "actualPixelBounds": {
+          "left": 13.10236220472441,
+          "top": 457,
+          "right": 314.45669291338584,
+          "bottom": 597
+        }
+      },
+      {
+        "cssCanopyPixelArea": 12004.787401574804,
+        "projectedCanopy": {
+          "left": 1321.8615758013464,
+          "top": 413.9836271709057,
+          "right": 1566.893340367968,
+          "bottom": 512.230037483094
+        },
+        "actualPixelBounds": {
+          "left": 1332.4094488188978,
+          "top": 414,
+          "right": 1566.236220472441,
+          "bottom": 557
+        }
+      },
+      {
+        "cssCanopyPixelArea": 7787.842519685039,
+        "projectedCanopy": {
+          "left": 456.39208038289723,
+          "top": 429.41178366809976,
+          "right": 694.2925591704457,
+          "bottom": 521.1042179208747
+        },
+        "actualPixelBounds": {
+          "left": 473.7007874015748,
+          "top": 430,
+          "right": 608.755905511811,
+          "bottom": 590
+        }
+      },
+      {
+        "cssCanopyPixelArea": 16081.63779527559,
+        "projectedCanopy": {
+          "left": 1025.8733098621824,
+          "top": 403.55868392499264,
+          "right": 1262.0579579278299,
+          "bottom": 523.8262457789809
+        },
+        "actualPixelBounds": {
+          "left": 1025.007874015748,
+          "top": 406,
+          "right": 1261.8582677165355,
+          "bottom": 608
+        }
+      }
+    ]
+  },
+  {
+    "label": "1920x1080-normal-dark-visibility.json",
+    "p": 0.5,
+    "trees": 10,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 11038.236220472441,
+        "projectedCanopy": {
+          "left": -526.9500094895828,
+          "top": -413.5557415990578,
+          "right": 442.228947131694,
+          "bottom": 62.085932626819506
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 0,
+          "right": 235.84251968503938,
+          "bottom": 236
+        }
+      }
+    ]
+  },
+  {
+    "label": "1920x1080-normal-dark-visibility.json",
+    "p": 0.91,
+    "trees": 10,
+    "meaningfulCanopies": []
+  },
+  {
+    "label": "375x812-lite-dark-visibility.json",
+    "p": 0,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 14950.17793594306,
+        "projectedCanopy": {
+          "left": -84.51474580748778,
+          "top": 272.66119956241766,
+          "right": 216.92735420848504,
+          "bottom": 404.1986791256039
+        },
+        "actualPixelBounds": {
+          "left": 10.676156583629894,
+          "top": 273.3333333333333,
+          "right": 216.19217081850536,
+          "bottom": 467.99999999999994
+        }
+      },
+      {
+        "cssCanopyPixelArea": 8670.818505338078,
+        "projectedCanopy": {
+          "left": 202.11545286696517,
+          "top": 304.23154544517496,
+          "right": 367.441863488921,
+          "bottom": 385.9589967768083
+        },
+        "actualPixelBounds": {
+          "left": 202.84697508896798,
+          "top": 310.66666666666663,
+          "right": 362.98932384341634,
+          "bottom": 440
+        }
+      }
+    ]
+  },
+  {
+    "label": "375x812-lite-dark-visibility.json",
+    "p": 0.5,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 29375.444839857653,
+        "projectedCanopy": {
+          "left": -124.42414450086991,
+          "top": 89.81550434972307,
+          "right": 221.90773603020006,
+          "bottom": 287.52548323956233
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 89.33333333333334,
+          "right": 220.19572953736656,
+          "bottom": 328
+        }
+      },
+      {
+        "cssCanopyPixelArea": 16779.35943060498,
+        "projectedCanopy": {
+          "left": 203.6523313944034,
+          "top": 50.065503533778006,
+          "right": 397.16429865757004,
+          "bottom": 167.3142370842415
+        },
+        "actualPixelBounds": {
+          "left": 204.1814946619217,
+          "top": 50.666666666666664,
+          "right": 373.66548042704625,
+          "bottom": 221.33333333333334
+        }
+      }
+    ]
+  },
+  {
+    "label": "375x812-lite-dark-visibility.json",
+    "p": 0.91,
+    "trees": 2,
+    "meaningfulCanopies": []
+  },
+  {
+    "label": "375x812-lite-light-visibility.json",
+    "p": 0,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 14884.341637010677,
+        "projectedCanopy": {
+          "left": -84.27484794952666,
+          "top": 272.5492095901524,
+          "right": 217.0705481364835,
+          "bottom": 403.9821113415768
+        },
+        "actualPixelBounds": {
+          "left": 10.676156583629894,
+          "top": 272,
+          "right": 216.19217081850536,
+          "bottom": 467.99999999999994
+        }
+      },
+      {
+        "cssCanopyPixelArea": 8644.128113879004,
+        "projectedCanopy": {
+          "left": 202.07122446655197,
+          "top": 304.2687471231518,
+          "right": 367.3997994425403,
+          "bottom": 385.9396485157741
+        },
+        "actualPixelBounds": {
+          "left": 202.84697508896798,
+          "top": 310.66666666666663,
+          "right": 362.98932384341634,
+          "bottom": 444
+        }
+      }
+    ]
+  },
+  {
+    "label": "375x812-lite-light-visibility.json",
+    "p": 0.5,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 29380.78291814947,
+        "projectedCanopy": {
+          "left": -124.53025837413998,
+          "top": 89.8209640411766,
+          "right": 221.73596071796555,
+          "bottom": 287.42373473300336
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 89.33333333333334,
+          "right": 220.19572953736656,
+          "bottom": 328
+        }
+      },
+      {
+        "cssCanopyPixelArea": 16779.35943060498,
+        "projectedCanopy": {
+          "left": 203.60450126388972,
+          "top": 50.08856870567612,
+          "right": 397.09177369315034,
+          "bottom": 167.23848947950677
+        },
+        "actualPixelBounds": {
+          "left": 204.1814946619217,
+          "top": 50.666666666666664,
+          "right": 373.66548042704625,
+          "bottom": 221.33333333333334
+        }
+      }
+    ]
+  },
+  {
+    "label": "375x812-lite-light-visibility.json",
+    "p": 0.91,
+    "trees": 2,
+    "meaningfulCanopies": []
+  },
+  {
+    "label": "375x812-normal-dark-visibility.json",
+    "p": 0,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 15491.103202846976,
+        "projectedCanopy": {
+          "left": -83.48265972600643,
+          "top": 271.21071073002537,
+          "right": 217.42097929550187,
+          "bottom": 402.2292803399519
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 270.66666666666663,
+          "right": 216.8594306049822,
+          "bottom": 467.99999999999994
+        }
+      },
+      {
+        "cssCanopyPixelArea": 8754.893238434164,
+        "projectedCanopy": {
+          "left": 201.780703885661,
+          "top": 302.90048427527023,
+          "right": 367.04476592481507,
+          "bottom": 384.3041314043037
+        },
+        "actualPixelBounds": {
+          "left": 202.84697508896798,
+          "top": 302.6666666666667,
+          "right": 363.65658362989325,
+          "bottom": 442.6666666666667
+        }
+      }
+    ]
+  },
+  {
+    "label": "375x812-normal-dark-visibility.json",
+    "p": 0.5,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 29593.416370106763,
+        "projectedCanopy": {
+          "left": -125.76180343927258,
+          "top": 88.61718686660538,
+          "right": 220.61791903018567,
+          "bottom": 286.7865336845284
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 88.66666666666667,
+          "right": 220.19572953736656,
+          "bottom": 327.3333333333333
+        }
+      },
+      {
+        "cssCanopyPixelArea": 16823.398576512456,
+        "projectedCanopy": {
+          "left": 203.6746363726435,
+          "top": 48.57801093070211,
+          "right": 397.342555757232,
+          "bottom": 164.83605867855738
+        },
+        "actualPixelBounds": {
+          "left": 203.51423487544483,
+          "top": 48,
+          "right": 374.3327402135231,
+          "bottom": 220
+        }
+      }
+    ]
+  },
+  {
+    "label": "375x812-normal-dark-visibility.json",
+    "p": 0.91,
+    "trees": 2,
+    "meaningfulCanopies": []
+  },
+  {
+    "label": "375x812-normal-light-visibility.json",
+    "p": 0,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 15524.911032028469,
+        "projectedCanopy": {
+          "left": -83.86322805666626,
+          "top": 271.4506075628599,
+          "right": 217.29426728231903,
+          "bottom": 402.675867465932
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 271.3333333333333,
+          "right": 216.8594306049822,
+          "bottom": 468.6666666666667
+        }
+      },
+      {
+        "cssCanopyPixelArea": 8773.131672597865,
+        "projectedCanopy": {
+          "left": 201.96065411470138,
+          "top": 302.8342492345499,
+          "right": 367.281985123161,
+          "bottom": 384.41317971757957
+        },
+        "actualPixelBounds": {
+          "left": 202.84697508896798,
+          "top": 302.6666666666667,
+          "right": 363.65658362989325,
+          "bottom": 442.6666666666667
+        }
+      }
+    ]
+  },
+  {
+    "label": "375x812-normal-light-visibility.json",
+    "p": 0.5,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 29614.32384341637,
+        "projectedCanopy": {
+          "left": -125.27898433103708,
+          "top": 88.80176461957396,
+          "right": 221.11890900875264,
+          "bottom": 286.48363175492864
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 88.66666666666667,
+          "right": 220.86298932384344,
+          "bottom": 328.6666666666667
+        }
+      },
+      {
+        "cssCanopyPixelArea": 16836.743772241993,
+        "projectedCanopy": {
+          "left": 203.5905432985658,
+          "top": 48.44665842229083,
+          "right": 397.283523690656,
+          "bottom": 165.09761072124084
+        },
+        "actualPixelBounds": {
+          "left": 203.51423487544483,
+          "top": 48,
+          "right": 374.3327402135231,
+          "bottom": 220
+        }
+      }
+    ]
+  },
+  {
+    "label": "375x812-normal-light-visibility.json",
+    "p": 0.91,
+    "trees": 2,
+    "meaningfulCanopies": []
+  },
+  {
+    "label": "390x500-lite-dark-visibility.json",
+    "p": 0,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 10700.958904109588,
+        "projectedCanopy": {
+          "left": -5.130240658080508,
+          "top": 150.9912789666393,
+          "right": 216.44565504596275,
+          "bottom": 248.71323855304354
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 150.66666666666666,
+          "right": 216.36986301369862,
+          "bottom": 284
+        }
+      },
+      {
+        "cssCanopyPixelArea": 4261.506849315068,
+        "projectedCanopy": {
+          "left": 204.97343251020442,
+          "top": 179.34840374224714,
+          "right": 319.68955529346977,
+          "bottom": 236.31662542032157
+        },
+        "actualPixelBounds": {
+          "left": 205.68493150684932,
+          "top": 180,
+          "right": 319.2123287671233,
+          "bottom": 272
+        }
+      }
+    ]
+  },
+  {
+    "label": "390x500-lite-dark-visibility.json",
+    "p": 0.5,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 20837.39726027397,
+        "projectedCanopy": {
+          "left": -42.417631920915525,
+          "top": 17.08319254776111,
+          "right": 221.07551543641065,
+          "bottom": 158.82172525889553
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 17.333333333333332,
+          "right": 220.37671232876713,
+          "bottom": 194.66666666666666
+        }
+      },
+      {
+        "cssCanopyPixelArea": 8542.602739726028,
+        "projectedCanopy": {
+          "left": 206.32054750848917,
+          "top": 0.7146801787648316,
+          "right": 343.98629316816323,
+          "bottom": 80.42452692834937
+        },
+        "actualPixelBounds": {
+          "left": 207.0205479452055,
+          "top": 1.3333333333333333,
+          "right": 343.25342465753425,
+          "bottom": 120
+        }
+      }
+    ]
+  },
+  {
+    "label": "390x500-lite-dark-visibility.json",
+    "p": 0.91,
+    "trees": 2,
+    "meaningfulCanopies": []
+  },
+  {
+    "label": "390x500-lite-light-visibility.json",
+    "p": 0,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 10702.739726027397,
+        "projectedCanopy": {
+          "left": -5.113892734353095,
+          "top": 150.98511540366982,
+          "right": 216.45509641536944,
+          "bottom": 248.70004544550684
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 150.66666666666666,
+          "right": 216.36986301369862,
+          "bottom": 285.3333333333333
+        }
+      },
+      {
+        "cssCanopyPixelArea": 4256.164383561644,
+        "projectedCanopy": {
+          "left": 204.97140942826346,
+          "top": 179.35050707109284,
+          "right": 319.6881806870961,
+          "bottom": 236.31240975059322
+        },
+        "actualPixelBounds": {
+          "left": 205.68493150684932,
+          "top": 180,
+          "right": 319.2123287671233,
+          "bottom": 276
+        }
+      }
+    ]
+  },
+  {
+    "label": "390x500-lite-light-visibility.json",
+    "p": 0.5,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 20856.986301369863,
+        "projectedCanopy": {
+          "left": -42.41831060256054,
+          "top": 17.083916153047884,
+          "right": 221.07338240073923,
+          "bottom": 158.81917480104357
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 17.333333333333332,
+          "right": 220.37671232876713,
+          "bottom": 194.66666666666666
+        }
+      },
+      {
+        "cssCanopyPixelArea": 8542.602739726028,
+        "projectedCanopy": {
+          "left": 206.31958079892615,
+          "top": 0.7149434299025259,
+          "right": 343.9849391248562,
+          "bottom": 80.42313074961032
+        },
+        "actualPixelBounds": {
+          "left": 207.0205479452055,
+          "top": 1.3333333333333333,
+          "right": 343.25342465753425,
+          "bottom": 120
+        }
+      }
+    ]
+  },
+  {
+    "label": "390x500-lite-light-visibility.json",
+    "p": 0.91,
+    "trees": 2,
+    "meaningfulCanopies": []
+  },
+  {
+    "label": "390x500-normal-dark-visibility.json",
+    "p": 0,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 10930.666666666666,
+        "projectedCanopy": {
+          "left": -4.321671236900166,
+          "top": 149.99303030483279,
+          "right": 216.8300865659027,
+          "bottom": 247.31223156536115
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 150,
+          "right": 216.66666666666669,
+          "bottom": 286
+        }
+      },
+      {
+        "cssCanopyPixelArea": 4373.333333333333,
+        "projectedCanopy": {
+          "left": 204.78554167418918,
+          "top": 178.41444208903863,
+          "right": 319.4836269551207,
+          "bottom": 235.23820312533098
+        },
+        "actualPixelBounds": {
+          "left": 204.66666666666669,
+          "top": 178,
+          "right": 319.3333333333333,
+          "bottom": 273.3333333333333
+        }
+      }
+    ]
+  },
+  {
+    "label": "390x500-normal-dark-visibility.json",
+    "p": 0.5,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 21040.444444444445,
+        "projectedCanopy": {
+          "left": -43.17453691773535,
+          "top": 16.295644943411514,
+          "right": 220.3413346388535,
+          "bottom": 157.9744751608145
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 16,
+          "right": 220,
+          "bottom": 194
+        }
+      },
+      {
+        "cssCanopyPixelArea": 8563.555555555557,
+        "projectedCanopy": {
+          "left": 206.2590624486776,
+          "top": -0.4064942544116379,
+          "right": 344.0625632138579,
+          "bottom": 78.85089889858656
+        },
+        "actualPixelBounds": {
+          "left": 206,
+          "top": 0,
+          "right": 343.3333333333333,
+          "bottom": 120
+        }
+      }
+    ]
+  },
+  {
+    "label": "390x500-normal-dark-visibility.json",
+    "p": 0.91,
+    "trees": 2,
+    "meaningfulCanopies": []
+  },
+  {
+    "label": "390x500-normal-light-visibility.json",
+    "p": 0,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 10993.77777777778,
+        "projectedCanopy": {
+          "left": -4.590403494356041,
+          "top": 150.115273257617,
+          "right": 216.73154924066964,
+          "bottom": 247.55638336510944
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 150,
+          "right": 216,
+          "bottom": 286
+        }
+      },
+      {
+        "cssCanopyPixelArea": 4374.222222222222,
+        "projectedCanopy": {
+          "left": 204.87299228709318,
+          "top": 178.37726072460651,
+          "right": 319.5956248911778,
+          "bottom": 235.30062617652078
+        },
+        "actualPixelBounds": {
+          "left": 204.66666666666669,
+          "top": 178,
+          "right": 319.3333333333333,
+          "bottom": 275.3333333333333
+        }
+      }
+    ]
+  },
+  {
+    "label": "390x500-normal-light-visibility.json",
+    "p": 0.5,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 21081.777777777777,
+        "projectedCanopy": {
+          "left": -42.915908877848295,
+          "top": 16.383097285086272,
+          "right": 220.64723109023848,
+          "bottom": 157.89192704410556
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 16,
+          "right": 220,
+          "bottom": 195.33333333333334
+        }
+      },
+      {
+        "cssCanopyPixelArea": 8566.222222222223,
+        "projectedCanopy": {
+          "left": 206.24858677036062,
+          "top": -0.4807466264621918,
+          "right": 344.07651256019284,
+          "bottom": 78.93434924223955
+        },
+        "actualPixelBounds": {
+          "left": 206,
+          "top": 0,
+          "right": 343.3333333333333,
+          "bottom": 120
+        }
+      }
+    ]
+  },
+  {
+    "label": "390x500-normal-light-visibility.json",
+    "p": 0.91,
+    "trees": 2,
+    "meaningfulCanopies": []
+  },
+  {
+    "label": "390x844-lite-dark-visibility.json",
+    "p": 0,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 16246.438356164384,
+        "projectedCanopy": {
+          "left": -88.04077661038446,
+          "top": 283.54303742683385,
+          "right": 225.39296736287403,
+          "bottom": 420.3818083114485
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 284,
+          "right": 224.3835616438356,
+          "bottom": 485.3333333333333
+        }
+      },
+      {
+        "cssCanopyPixelArea": 9454.383561643835,
+        "projectedCanopy": {
+          "left": 210.23216973700806,
+          "top": 316.173348643714,
+          "right": 382.06135592370026,
+          "bottom": 401.2003888647249
+        },
+        "actualPixelBounds": {
+          "left": 212.3630136986301,
+          "top": 322.6666666666667,
+          "right": 377.97945205479454,
+          "bottom": 457.3333333333333
+        }
+      }
+    ]
+  },
+  {
+    "label": "390x844-lite-dark-visibility.json",
+    "p": 0.5,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 31958.630136986303,
+        "projectedCanopy": {
+          "left": -129.15566175141333,
+          "top": 93.32677787651589,
+          "right": 230.896936839126,
+          "bottom": 299.0065988159628
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 93.33333333333333,
+          "right": 229.72602739726028,
+          "bottom": 341.3333333333333
+        }
+      },
+      {
+        "cssCanopyPixelArea": 18194.657534246577,
+        "projectedCanopy": {
+          "left": 211.8510458076061,
+          "top": 52.02605017143352,
+          "right": 413.0140487456436,
+          "bottom": 173.9659993231414
+        },
+        "actualPixelBounds": {
+          "left": 212.3630136986301,
+          "top": 52,
+          "right": 388.66438356164383,
+          "bottom": 229.33333333333334
+        }
+      }
+    ]
+  },
+  {
+    "label": "390x844-lite-dark-visibility.json",
+    "p": 0.91,
+    "trees": 2,
+    "meaningfulCanopies": []
+  },
+  {
+    "label": "390x844-lite-light-visibility.json",
+    "p": 0,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 16317.671232876712,
+        "projectedCanopy": {
+          "left": -87.92976840410414,
+          "top": 283.4942465738329,
+          "right": 225.46460884882273,
+          "bottom": 420.2922133639393
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 284,
+          "right": 224.3835616438356,
+          "bottom": 485.3333333333333
+        }
+      },
+      {
+        "cssCanopyPixelArea": 9463.287671232876,
+        "projectedCanopy": {
+          "left": 210.21931023334477,
+          "top": 316.1906612813056,
+          "right": 382.0542596995897,
+          "bottom": 401.1751500584975
+        },
+        "actualPixelBounds": {
+          "left": 212.3630136986301,
+          "top": 322.6666666666667,
+          "right": 377.97945205479454,
+          "bottom": 461.33333333333337
+        }
+      }
+    ]
+  },
+  {
+    "label": "390x844-lite-light-visibility.json",
+    "p": 0.5,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 31931.91780821918,
+        "projectedCanopy": {
+          "left": -129.18967569820484,
+          "top": 93.34746629188453,
+          "right": 230.81592873201268,
+          "bottom": 298.9049709816953
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 93.33333333333333,
+          "right": 229.72602739726028,
+          "bottom": 341.3333333333333
+        }
+      },
+      {
+        "cssCanopyPixelArea": 18192.876712328765,
+        "projectedCanopy": {
+          "left": 211.80963831734746,
+          "top": 52.03286203245683,
+          "right": 412.95664135681056,
+          "bottom": 173.9307574691898
+        },
+        "actualPixelBounds": {
+          "left": 212.3630136986301,
+          "top": 52,
+          "right": 388.66438356164383,
+          "bottom": 229.33333333333334
+        }
+      }
+    ]
+  },
+  {
+    "label": "390x844-lite-light-visibility.json",
+    "p": 0.91,
+    "trees": 2,
+    "meaningfulCanopies": []
+  },
+  {
+    "label": "390x844-normal-dark-visibility.json",
+    "p": 0,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 16734.222222222223,
+        "projectedCanopy": {
+          "left": -86.72751535453034,
+          "top": 281.94881898985386,
+          "right": 226.09129189216128,
+          "bottom": 418.18702082346726
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 282,
+          "right": 225.33333333333331,
+          "bottom": 486.6666666666667
+        }
+      },
+      {
+        "cssCanopyPixelArea": 9472.444444444443,
+        "projectedCanopy": {
+          "left": 209.8883028887114,
+          "top": 314.8247251925844,
+          "right": 381.680839427461,
+          "bottom": 399.455021714517
+        },
+        "actualPixelBounds": {
+          "left": 211.33333333333331,
+          "top": 322,
+          "right": 378,
+          "bottom": 459.99999999999994
+        }
+      }
+    ]
+  },
+  {
+    "label": "390x844-normal-dark-visibility.json",
+    "p": 0.5,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 32022.222222222223,
+        "projectedCanopy": {
+          "left": -130.5978247508646,
+          "top": 92.11360805194768,
+          "right": 229.431920252069,
+          "bottom": 298.0805341476955
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 92,
+          "right": 229.33333333333334,
+          "bottom": 340
+        }
+      },
+      {
+        "cssCanopyPixelArea": 18188.888888888887,
+        "projectedCanopy": {
+          "left": 211.80963763415588,
+          "top": 50.489684183803014,
+          "right": 413.1100942947407,
+          "bottom": 171.3371758767898
+        },
+        "actualPixelBounds": {
+          "left": 211.33333333333331,
+          "top": 50,
+          "right": 389.3333333333333,
+          "bottom": 228.66666666666666
+        }
+      }
+    ]
+  },
+  {
+    "label": "390x844-normal-dark-visibility.json",
+    "p": 0.91,
+    "trees": 2,
+    "meaningfulCanopies": []
+  },
+  {
+    "label": "390x844-normal-light-visibility.json",
+    "p": 0,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 16670.666666666668,
+        "projectedCanopy": {
+          "left": -86.61334633436847,
+          "top": 281.85473653671863,
+          "right": 226.09576243226738,
+          "bottom": 417.9778736584976
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 281.3333333333333,
+          "right": 225.33333333333331,
+          "bottom": 486.6666666666667
+        }
+      },
+      {
+        "cssCanopyPixelArea": 9459.111111111111,
+        "projectedCanopy": {
+          "left": 209.79247951698486,
+          "top": 314.8479315228659,
+          "right": 381.56042421469385,
+          "bottom": 399.44800913960665
+        },
+        "actualPixelBounds": {
+          "left": 210.66666666666666,
+          "top": 322,
+          "right": 378,
+          "bottom": 459.99999999999994
+        }
+      }
+    ]
+  },
+  {
+    "label": "390x844-normal-light-visibility.json",
+    "p": 0.5,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 32053.333333333332,
+        "projectedCanopy": {
+          "left": -130.85128178428755,
+          "top": 91.9921845491516,
+          "right": 229.2015024721772,
+          "bottom": 298.32997101626967
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 92,
+          "right": 228.66666666666669,
+          "bottom": 341.3333333333333
+        }
+      },
+      {
+        "cssCanopyPixelArea": 18137.777777777777,
+        "projectedCanopy": {
+          "left": 211.88762099887867,
+          "top": 50.5684004572353,
+          "right": 413.1818920115085,
+          "bottom": 171.19378625124136
+        },
+        "actualPixelBounds": {
+          "left": 211.33333333333331,
+          "top": 50.666666666666664,
+          "right": 389.3333333333333,
+          "bottom": 228.66666666666666
+        }
+      }
+    ]
+  },
+  {
+    "label": "390x844-normal-light-visibility.json",
+    "p": 0.91,
+    "trees": 2,
+    "meaningfulCanopies": []
+  },
+  {
+    "label": "430x932-lite-dark-visibility.json",
+    "p": 0,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 19938.467908902694,
+        "projectedCanopy": {
+          "left": -97.55736535345935,
+          "top": 313.10904571327063,
+          "right": 248.55849429922762,
+          "bottom": 464.21724049666363
+        },
+        "actualPixelBounds": {
+          "left": 12.01863354037267,
+          "top": 313.3333333333333,
+          "right": 248.38509316770185,
+          "bottom": 537.3333333333334
+        }
+      },
+      {
+        "cssCanopyPixelArea": 11569.937888198758,
+        "projectedCanopy": {
+          "left": 231.8209111364504,
+          "top": 349.1384727199749,
+          "right": 421.56563126097967,
+          "bottom": 443.03321563663445
+        },
+        "actualPixelBounds": {
+          "left": 233.69565217391303,
+          "top": 356,
+          "right": 417.98136645962734,
+          "bottom": 504.00000000000006
+        }
+      }
+    ]
+  },
+  {
+    "label": "430x932-lite-dark-visibility.json",
+    "p": 0.5,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 38895.85921325052,
+        "projectedCanopy": {
+          "left": -142.96299570649134,
+          "top": 103.06546403688034,
+          "right": 254.61476040964345,
+          "bottom": 330.146707989457
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 102.66666666666666,
+          "right": 253.72670807453417,
+          "bottom": 377.3333333333333
+        }
+      },
+      {
+        "cssCanopyPixelArea": 22123.188405797104,
+        "projectedCanopy": {
+          "left": 233.59367581056568,
+          "top": 57.45232804465817,
+          "right": 455.72572289815804,
+          "bottom": 192.09380187170544
+        },
+        "actualPixelBounds": {
+          "left": 233.69565217391303,
+          "top": 57.333333333333336,
+          "right": 428.6645962732919,
+          "bottom": 253.33333333333331
+        }
+      }
+    ]
+  },
+  {
+    "label": "430x932-lite-dark-visibility.json",
+    "p": 0.91,
+    "trees": 2,
+    "meaningfulCanopies": []
+  },
+  {
+    "label": "430x932-lite-light-visibility.json",
+    "p": 0,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 19922.443064182196,
+        "projectedCanopy": {
+          "left": -97.66332328360176,
+          "top": 313.1549218656482,
+          "right": 248.48884284771603,
+          "bottom": 464.30029396950084
+        },
+        "actualPixelBounds": {
+          "left": 12.01863354037267,
+          "top": 313.3333333333333,
+          "right": 248.38509316770185,
+          "bottom": 537.3333333333334
+        }
+      },
+      {
+        "cssCanopyPixelArea": 11571.718426501036,
+        "projectedCanopy": {
+          "left": 231.83119363494598,
+          "top": 349.12185930272943,
+          "right": 421.5691197550888,
+          "bottom": 443.0635813136682
+        },
+        "actualPixelBounds": {
+          "left": 233.69565217391303,
+          "top": 356,
+          "right": 417.98136645962734,
+          "bottom": 509.3333333333333
+        }
+      }
+    ]
+  },
+  {
+    "label": "430x932-lite-light-visibility.json",
+    "p": 0.5,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 38945.71428571428,
+        "projectedCanopy": {
+          "left": -142.95726377472212,
+          "top": 103.06078148665637,
+          "right": 254.6300540837682,
+          "bottom": 330.16819272389984
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 102.66666666666666,
+          "right": 253.72670807453417,
+          "bottom": 377.3333333333333
+        }
+      },
+      {
+        "cssCanopyPixelArea": 22121.407867494825,
+        "projectedCanopy": {
+          "left": 233.602285393054,
+          "top": 57.45121248783575,
+          "right": 455.7375350511409,
+          "bottom": 192.10043682639122
+        },
+        "actualPixelBounds": {
+          "left": 233.69565217391303,
+          "top": 57.333333333333336,
+          "right": 428.6645962732919,
+          "bottom": 253.33333333333331
+        }
+      }
+    ]
+  },
+  {
+    "label": "430x932-lite-light-visibility.json",
+    "p": 0.91,
+    "trees": 2,
+    "meaningfulCanopies": []
+  },
+  {
+    "label": "430x932-normal-dark-visibility.json",
+    "p": 0,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 20231.555555555555,
+        "projectedCanopy": {
+          "left": -96.25703864467987,
+          "top": 311.4471920664205,
+          "right": 249.28625616223397,
+          "bottom": 461.9822237427738
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 311.33333333333337,
+          "right": 248.66666666666666,
+          "bottom": 537.3333333333334
+        }
+      },
+      {
+        "cssCanopyPixelArea": 11486.22222222222,
+        "projectedCanopy": {
+          "left": 231.51841195594673,
+          "top": 347.6226241177004,
+          "right": 421.2496828077666,
+          "bottom": 441.15895544891765
+        },
+        "actualPixelBounds": {
+          "left": 232.66666666666666,
+          "top": 356,
+          "right": 417.3333333333333,
+          "bottom": 508
+        }
+      }
+    ]
+  },
+  {
+    "label": "430x932-normal-dark-visibility.json",
+    "p": 0.5,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 38920.0,
+        "projectedCanopy": {
+          "left": -144.29101418582746,
+          "top": 101.82349600205588,
+          "right": 253.27645687650084,
+          "bottom": 328.97036009795045
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 101.33333333333333,
+          "right": 252.66666666666666,
+          "bottom": 376
+        }
+      },
+      {
+        "cssCanopyPixelArea": 22168.0,
+        "projectedCanopy": {
+          "left": 233.50639349603503,
+          "top": 55.68189413158791,
+          "right": 455.8061349419706,
+          "bottom": 189.34068386729425
+        },
+        "actualPixelBounds": {
+          "left": 233.33333333333331,
+          "top": 55.333333333333336,
+          "right": 429.33333333333337,
+          "bottom": 252.00000000000003
+        }
+      }
+    ]
+  },
+  {
+    "label": "430x932-normal-dark-visibility.json",
+    "p": 0.91,
+    "trees": 2,
+    "meaningfulCanopies": []
+  },
+  {
+    "label": "430x932-normal-light-visibility.json",
+    "p": 0,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 20270.222222222223,
+        "projectedCanopy": {
+          "left": -96.06810993910281,
+          "top": 311.3215894796526,
+          "right": 249.3390991248155,
+          "bottom": 461.73811231355063
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 311.33333333333337,
+          "right": 248.66666666666666,
+          "bottom": 538
+        }
+      },
+      {
+        "cssCanopyPixelArea": 11492.444444444445,
+        "projectedCanopy": {
+          "left": 231.419718684701,
+          "top": 347.6564487688411,
+          "right": 421.11627022332937,
+          "bottom": 441.0983451903173
+        },
+        "actualPixelBounds": {
+          "left": 232.66666666666666,
+          "top": 356,
+          "right": 417.3333333333333,
+          "bottom": 508
+        }
+      }
+    ]
+  },
+  {
+    "label": "430x932-normal-light-visibility.json",
+    "p": 0.5,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 38950.666666666664,
+        "projectedCanopy": {
+          "left": -144.759823432621,
+          "top": 101.61758822069028,
+          "right": 252.8253382607306,
+          "bottom": 329.36283573142146
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 101.33333333333333,
+          "right": 252.66666666666666,
+          "bottom": 377.3333333333333
+        }
+      },
+      {
+        "cssCanopyPixelArea": 22094.222222222223,
+        "projectedCanopy": {
+          "left": 233.62540936726984,
+          "top": 55.819352482008,
+          "right": 455.90889449499014,
+          "bottom": 189.08187917262015
+        },
+        "actualPixelBounds": {
+          "left": 233.33333333333331,
+          "top": 55.333333333333336,
+          "right": 429.33333333333337,
+          "bottom": 252.66666666666666
+        }
+      }
+    ]
+  },
+  {
+    "label": "430x932-normal-light-visibility.json",
+    "p": 0.91,
+    "trees": 2,
+    "meaningfulCanopies": []
+  },
+  {
+    "label": "768x1024-lite-dark-visibility.json",
+    "p": 0,
+    "trees": 3,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 7278.751773049645,
+        "projectedCanopy": {
+          "left": -404.74016242564966,
+          "top": 252.36446628436522,
+          "right": 101.17534002882168,
+          "bottom": 463.8099962073395
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 296,
+          "right": 99.40425531914893,
+          "bottom": 432
+        }
+      },
+      {
+        "cssCanopyPixelArea": 7483.914893617021,
+        "projectedCanopy": {
+          "left": 660.852374070522,
+          "top": 264.371019204027,
+          "right": 1062.5610241384873,
+          "bottom": 441.93566888127265
+        },
+        "actualPixelBounds": {
+          "left": 661.7872340425531,
+          "top": 274.6666666666667,
+          "right": 766.6382978723404,
+          "bottom": 434.6666666666667
+        }
+      }
+    ]
+  },
+  {
+    "label": "768x1024-lite-dark-visibility.json",
+    "p": 0.5,
+    "trees": 3,
+    "meaningfulCanopies": []
+  },
+  {
+    "label": "768x1024-lite-dark-visibility.json",
+    "p": 0.91,
+    "trees": 3,
+    "meaningfulCanopies": []
+  },
+  {
+    "label": "768x1024-normal-dark-visibility.json",
+    "p": 0,
+    "trees": 6,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 7694.278884462152,
+        "projectedCanopy": {
+          "left": -402.0481832759694,
+          "top": 252.9990456960353,
+          "right": 102.40142617719049,
+          "bottom": 464.75050696683303
+        },
+        "actualPixelBounds": {
+          "left": 0,
+          "top": 298,
+          "right": 101.99203187250995,
+          "bottom": 458
+        }
+      },
+      {
+        "cssCanopyPixelArea": 7562.709163346613,
+        "projectedCanopy": {
+          "left": 660.5391802724237,
+          "top": 264.98988223273784,
+          "right": 1062.401051079446,
+          "bottom": 441.6188186435679
+        },
+        "actualPixelBounds": {
+          "left": 660.9083665338645,
+          "top": 275,
+          "right": 766.9800796812749,
+          "bottom": 435
+        }
+      },
+      {
+        "cssCanopyPixelArea": 14998.948207171316,
+        "projectedCanopy": {
+          "left": 456.13677854966886,
+          "top": 358.23715264626514,
+          "right": 703.9135410905978,
+          "bottom": 466.42403105452297
+        },
+        "actualPixelBounds": {
+          "left": 455.9043824701196,
+          "top": 358,
+          "right": 702.7250996015936,
+          "bottom": 538
+        }
+      },
+      {
+        "cssCanopyPixelArea": 12486.884462151394,
+        "projectedCanopy": {
+          "left": 125.0183967289187,
+          "top": 415.57740431938555,
+          "right": 334.07580897289563,
+          "bottom": 502.99704071719924
+        },
+        "actualPixelBounds": {
+          "left": 124.43027888446215,
+          "top": 416,
+          "right": 333.51394422310756,
+          "bottom": 565
+        }
+      }
+    ]
+  },
+  {
+    "label": "768x1024-normal-dark-visibility.json",
+    "p": 0.5,
+    "trees": 6,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 16942.916334661353,
+        "projectedCanopy": {
+          "left": 471.6594637992745,
+          "top": -72.89958392637436,
+          "right": 778.4747137220802,
+          "bottom": 68.85340107281877
+        },
+        "actualPixelBounds": {
+          "left": 471.20318725099605,
+          "top": 0,
+          "right": 765.9601593625498,
+          "bottom": 160
+        }
+      },
+      {
+        "cssCanopyPixelArea": 23696.828685258963,
+        "projectedCanopy": {
+          "left": 78.55461611675247,
+          "top": 10.581808924841027,
+          "right": 326.136742237488,
+          "bottom": 135.01721813182508
+        },
+        "actualPixelBounds": {
+          "left": 78.53386454183267,
+          "top": 10,
+          "right": 325.35458167330677,
+          "bottom": 199
+        }
+      }
+    ]
+  },
+  {
+    "label": "768x1024-normal-dark-visibility.json",
+    "p": 0.91,
+    "trees": 6,
+    "meaningfulCanopies": []
+  },
+  {
+    "label": "844x390-lite-dark-visibility.json",
+    "p": 0,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 13897.534246575344,
+        "projectedCanopy": {
+          "left": 195.8265758092469,
+          "top": 82.8712543688406,
+          "right": 446.41478441552607,
+          "bottom": 193.31815619458862
+        },
+        "actualPixelBounds": {
+          "left": 196,
+          "top": 81.47260273972603,
+          "right": 445.33333333333337,
+          "bottom": 233.73287671232876
+        }
+      },
+      {
+        "cssCanopyPixelArea": 4619.45205479452,
+        "projectedCanopy": {
+          "left": 433.245221126446,
+          "top": 115.09422836544438,
+          "right": 563.0497515930068,
+          "bottom": 179.44699687329583
+        },
+        "actualPixelBounds": {
+          "left": 433.3333333333333,
+          "top": 114.86301369863014,
+          "right": 561.3333333333334,
+          "bottom": 220.37671232876713
+        }
+      }
+    ]
+  },
+  {
+    "label": "844x390-lite-dark-visibility.json",
+    "p": 0.5,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 16080.82191780822,
+        "projectedCanopy": {
+          "left": 153.28296685040235,
+          "top": -68.50919244103113,
+          "right": 451.3211456136481,
+          "bottom": 91.69106682790922
+        },
+        "actualPixelBounds": {
+          "left": 153.33333333333334,
+          "top": 0,
+          "right": 449.3333333333333,
+          "bottom": 132.22602739726028
+        }
+      }
+    ]
+  },
+  {
+    "label": "844x390-lite-dark-visibility.json",
+    "p": 0.91,
+    "trees": 2,
+    "meaningfulCanopies": []
+  },
+  {
+    "label": "844x390-normal-dark-visibility.json",
+    "p": 0,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 14160.0,
+        "projectedCanopy": {
+          "left": 196.258792183586,
+          "top": 81.94444958787268,
+          "right": 446.6269272512962,
+          "bottom": 192.1638883137689
+        },
+        "actualPixelBounds": {
+          "left": 196,
+          "top": 82,
+          "right": 445.99999999999994,
+          "bottom": 235.33333333333331
+        }
+      },
+      {
+        "cssCanopyPixelArea": 4848.444444444444,
+        "projectedCanopy": {
+          "left": 433.14625324024337,
+          "top": 113.97287893567442,
+          "right": 562.9463494546349,
+          "bottom": 178.34682705968635
+        },
+        "actualPixelBounds": {
+          "left": 432.66666666666663,
+          "top": 114,
+          "right": 562.6666666666666,
+          "bottom": 223.33333333333331
+        }
+      }
+    ]
+  },
+  {
+    "label": "844x390-normal-dark-visibility.json",
+    "p": 0.5,
+    "trees": 2,
+    "meaningfulCanopies": [
+      {
+        "cssCanopyPixelArea": 16967.555555555555,
+        "projectedCanopy": {
+          "left": 152.576973854303,
+          "top": -69.40466726815416,
+          "right": 450.74515684893106,
+          "bottom": 90.844886547372
+        },
+        "actualPixelBounds": {
+          "left": 152.66666666666666,
+          "top": 0,
+          "right": 450,
+          "bottom": 132
+        }
+      }
+    ]
+  },
+  {
+    "label": "844x390-normal-dark-visibility.json",
+    "p": 0.91,
+    "trees": 2,
+    "meaningfulCanopies": []
+  }
+]

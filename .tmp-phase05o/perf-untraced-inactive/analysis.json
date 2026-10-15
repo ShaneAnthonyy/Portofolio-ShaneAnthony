@@ -1,0 +1,244 @@
+[
+  {
+    "label": "1440x900-normal-dark-untraced",
+    "pass": "natural-1-forward",
+    "metrics": {
+      "frames": 394,
+      "medianMs": 13.399999998509884,
+      "p95Ms": 15.899999998509884,
+      "maxMs": 29,
+      "over50": 0,
+      "over100": 0,
+      "scriptMs": 2591.9649999999997,
+      "layoutMs": 0,
+      "styleMs": 193.19199999999998,
+      "heapDeltaBytes": 9679928
+    },
+    "range": {
+      "targetMin": 0.0,
+      "targetMax": 0.88,
+      "actualMin": 0.0,
+      "actualMax": 0.88
+    },
+    "bins": {
+      "0.0": {
+        "samples": 55,
+        "medianMs": 13.399999998509884,
+        "p95Ms": 14.800000004470348,
+        "maxMs": 16.0,
+        "meanRenderCpuMs": 4.236363635957241,
+        "meanDraws": 184.0,
+        "meanTransparentCallbacks": 31.0
+      },
+      "0.1": {
+        "samples": 38,
+        "medianMs": 13.299999997019768,
+        "p95Ms": 14.899999998509884,
+        "maxMs": 16.30000000447035,
+        "meanRenderCpuMs": 4.010526314965989,
+        "meanDraws": 184.0,
+        "meanTransparentCallbacks": 31.0
+      },
+      "0.2": {
+        "samples": 39,
+        "medianMs": 13.399999998509884,
+        "p95Ms": 15.0,
+        "maxMs": 15.799999997019768,
+        "meanRenderCpuMs": 4.00256410241127,
+        "meanDraws": 184.0,
+        "meanTransparentCallbacks": 31.0
+      },
+      "0.3": {
+        "samples": 38,
+        "medianMs": 13.5,
+        "p95Ms": 14.700000002980232,
+        "maxMs": 15.200000002980232,
+        "meanRenderCpuMs": 3.9447368424581852,
+        "meanDraws": 184.0,
+        "meanTransparentCallbacks": 31.0
+      },
+      "0.4": {
+        "samples": 39,
+        "medianMs": 13.399999998509884,
+        "p95Ms": 14.899999998509884,
+        "maxMs": 15.899999998509884,
+        "meanRenderCpuMs": 3.8435897435515356,
+        "meanDraws": 184.0,
+        "meanTransparentCallbacks": 31.0
+      },
+      "0.5": {
+        "samples": 38,
+        "medianMs": 13.399999998509884,
+        "p95Ms": 15.200000002980232,
+        "maxMs": 15.899999998509884,
+        "meanRenderCpuMs": 3.9473684212486995,
+        "meanDraws": 184.0,
+        "meanTransparentCallbacks": 31.0
+      },
+      "0.6": {
+        "samples": 33,
+        "medianMs": 14.0,
+        "p95Ms": 24.700000002980232,
+        "maxMs": 29.0,
+        "meanRenderCpuMs": 7.136363636815187,
+        "meanDraws": 186.36363636363637,
+        "meanTransparentCallbacks": 32.57575757575758
+      },
+      "0.7": {
+        "samples": 38,
+        "medianMs": 13.5,
+        "p95Ms": 17.200000002980232,
+        "maxMs": 22.69999999552965,
+        "meanRenderCpuMs": 6.181578946544936,
+        "meanDraws": 184.71052631578948,
+        "meanTransparentCallbacks": 30.710526315789473
+      },
+      "0.8": {
+        "samples": 75,
+        "medianMs": 13.399999998509884,
+        "p95Ms": 15.600000001490116,
+        "maxMs": 23.399999998509884,
+        "meanRenderCpuMs": 4.854666666885217,
+        "meanDraws": 165.8,
+        "meanTransparentCallbacks": 17.013333333333332
+      }
+    },
+    "slowFrames": [],
+    "slowGlCalls": [],
+    "longTasks": [],
+    "longAnimationFrames": [],
+    "timeline": {},
+    "longTimelineEvents": [],
+    "affectedRange": {
+      "actualPMin": 0.1,
+      "actualPMax": 0.65,
+      "samples": 209,
+      "medianMs": 13.399999998509884,
+      "p95Ms": 15.899999998509884,
+      "maxMs": 29.0,
+      "over50": 0,
+      "over100": 0
+    }
+  },
+  {
+    "label": "1440x900-normal-dark-untraced",
+    "pass": "natural-1-reverse",
+    "metrics": {
+      "frames": 394,
+      "medianMs": 13.300000004470348,
+      "p95Ms": 15.100000001490116,
+      "maxMs": 38,
+      "over50": 0,
+      "over100": 0,
+      "scriptMs": 2012.5460000000003,
+      "layoutMs": 0,
+      "styleMs": 168.40099999999995,
+      "heapDeltaBytes": -5184984
+    },
+    "range": {
+      "targetMin": 0.0,
+      "targetMax": 0.88,
+      "actualMin": 0.0,
+      "actualMax": 0.88
+    },
+    "bins": {
+      "0.0": {
+        "samples": 84,
+        "medianMs": 13.300000004470348,
+        "p95Ms": 14.600000001490116,
+        "maxMs": 16.399999998509884,
+        "meanRenderCpuMs": 2.933333333581686,
+        "meanDraws": 133.0,
+        "meanTransparentCallbacks": 31.0
+      },
+      "0.1": {
+        "samples": 39,
+        "medianMs": 13.399999998509884,
+        "p95Ms": 14.5,
+        "maxMs": 17.299999997019768,
+        "meanRenderCpuMs": 2.848717948756157,
+        "meanDraws": 133.0,
+        "meanTransparentCallbacks": 31.0
+      },
+      "0.2": {
+        "samples": 38,
+        "medianMs": 13.100000001490116,
+        "p95Ms": 14.800000004470348,
+        "maxMs": 15.5,
+        "meanRenderCpuMs": 2.894736842301331,
+        "meanDraws": 133.0,
+        "meanTransparentCallbacks": 31.0
+      },
+      "0.3": {
+        "samples": 38,
+        "medianMs": 13.300000004470348,
+        "p95Ms": 14.199999995529652,
+        "maxMs": 14.600000001490116,
+        "meanRenderCpuMs": 2.7842105270216337,
+        "meanDraws": 133.0,
+        "meanTransparentCallbacks": 31.0
+      },
+      "0.4": {
+        "samples": 37,
+        "medianMs": 13.200000002980232,
+        "p95Ms": 14.399999998509884,
+        "maxMs": 14.700000002980232,
+        "meanRenderCpuMs": 2.9594594592580923,
+        "meanDraws": 133.0,
+        "meanTransparentCallbacks": 31.0
+      },
+      "0.5": {
+        "samples": 37,
+        "medianMs": 13.600000001490116,
+        "p95Ms": 15.300000004470348,
+        "maxMs": 38.0,
+        "meanRenderCpuMs": 4.113513513392693,
+        "meanDraws": 133.0,
+        "meanTransparentCallbacks": 31.0
+      },
+      "0.6": {
+        "samples": 39,
+        "medianMs": 13.599999994039536,
+        "p95Ms": 15.600000001490116,
+        "maxMs": 17.100000001490116,
+        "meanRenderCpuMs": 4.707692307157394,
+        "meanDraws": 137.4102564102564,
+        "meanTransparentCallbacks": 32.53846153846154
+      },
+      "0.7": {
+        "samples": 38,
+        "medianMs": 13.399999998509884,
+        "p95Ms": 14.799999997019768,
+        "maxMs": 16.600000001490116,
+        "meanRenderCpuMs": 5.344736841556273,
+        "meanDraws": 184.68421052631578,
+        "meanTransparentCallbacks": 31.394736842105264
+      },
+      "0.8": {
+        "samples": 43,
+        "medianMs": 13.200000002980232,
+        "p95Ms": 15.200000002980232,
+        "maxMs": 16.30000000447035,
+        "meanRenderCpuMs": 4.681395348767902,
+        "meanDraws": 170.1860465116279,
+        "meanTransparentCallbacks": 19.27906976744186
+      }
+    },
+    "slowFrames": [],
+    "slowGlCalls": [],
+    "longTasks": [],
+    "longAnimationFrames": [],
+    "timeline": {},
+    "longTimelineEvents": [],
+    "affectedRange": {
+      "actualPMin": 0.1,
+      "actualPMax": 0.65,
+      "samples": 208,
+      "medianMs": 13.399999998509884,
+      "p95Ms": 14.800000004470348,
+      "maxMs": 38.0,
+      "over50": 0,
+      "over100": 0
+    }
+  }
+]

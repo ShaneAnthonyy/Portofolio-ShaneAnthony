@@ -1,0 +1,132 @@
+[
+  {
+    "name": "untraced-active",
+    "command": [
+      "node",
+      "C:\\CODE\\ReactWeb\\Portfolio-Shane\\.tmp-phase05o\\profile.mjs",
+      "perf-untraced-active",
+      "1440",
+      "900",
+      "--quick",
+      "--no-trace",
+      "--metrics-only"
+    ],
+    "exitCode": 0
+  },
+  {
+    "name": "untraced-inactive",
+    "command": [
+      "node",
+      "C:\\CODE\\ReactWeb\\Portfolio-Shane\\.tmp-phase05o\\profile.mjs",
+      "perf-untraced-inactive",
+      "1440",
+      "900",
+      "--quick",
+      "--no-trace",
+      "--metrics-only"
+    ],
+    "exitCode": 0,
+    "note": "Initial command omitted --inactive; excluded as a control and retained as an extra active run."
+  },
+  {
+    "name": "perf-desktop-analysis",
+    "command": [
+      "python",
+      "C:\\CODE\\ReactWeb\\Portfolio-Shane\\.tmp-phase05o\\analyze.py",
+      "perf-desktop"
+    ],
+    "exitCode": 0
+  },
+  {
+    "name": "perf-inactive-analysis",
+    "command": [
+      "python",
+      "C:\\CODE\\ReactWeb\\Portfolio-Shane\\.tmp-phase05o\\analyze.py",
+      "perf-inactive"
+    ],
+    "exitCode": 0
+  },
+  {
+    "name": "perf-mobile-analysis",
+    "command": [
+      "python",
+      "C:\\CODE\\ReactWeb\\Portfolio-Shane\\.tmp-phase05o\\analyze.py",
+      "perf-mobile"
+    ],
+    "exitCode": 0
+  },
+  {
+    "name": "perf-untraced-active-analysis",
+    "command": [
+      "python",
+      "C:\\CODE\\ReactWeb\\Portfolio-Shane\\.tmp-phase05o\\analyze.py",
+      "perf-untraced-active"
+    ],
+    "exitCode": 0
+  },
+  {
+    "name": "perf-untraced-inactive-analysis",
+    "command": [
+      "python",
+      "C:\\CODE\\ReactWeb\\Portfolio-Shane\\.tmp-phase05o\\analyze.py",
+      "perf-untraced-inactive"
+    ],
+    "exitCode": 0
+  },
+  {
+    "name": "animation-analysis",
+    "command": [
+      "python",
+      "C:\\CODE\\ReactWeb\\Portfolio-Shane\\.tmp-phase05o\\analyze-character.py"
+    ],
+    "exitCode": 0
+  },
+  {
+    "name": "facing",
+    "command": [
+      "python",
+      "C:\\CODE\\ReactWeb\\Portfolio-Shane\\.tmp-phase05o\\analyze-facing.py"
+    ],
+    "exitCode": 0
+  },
+  {
+    "name": "preservation",
+    "command": [
+      "python",
+      "C:\\CODE\\ReactWeb\\Portfolio-Shane\\.tmp-phase05o\\verify-preservation.py"
+    ],
+    "exitCode": 0
+  },
+  {
+    "name": "untraced-inactive-corrected",
+    "command": [
+      "node",
+      ".tmp-phase05o/profile.mjs",
+      "perf-untraced-inactive-control",
+      "1440",
+      "900",
+      "--quick",
+      "--inactive",
+      "--no-trace",
+      "--metrics-only"
+    ],
+    "exitCode": 0
+  },
+  {
+    "name": "untraced-inactive-corrected-analysis",
+    "command": [
+      "python",
+      ".tmp-phase05o/analyze.py",
+      "perf-untraced-inactive-control"
+    ],
+    "exitCode": 0
+  },
+  {
+    "name": "quality-lifecycle",
+    "command": [
+      "node",
+      ".tmp-phase05o/quality-check.mjs"
+    ],
+    "exitCode": 0
+  }
+]

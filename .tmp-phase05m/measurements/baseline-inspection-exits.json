@@ -1,0 +1,62 @@
+[
+  {
+    "command": "node .tmp-phase05m/inspect.mjs baseline 1440 900",
+    "exitCode": 0,
+    "log": "baseline-1440x900.log"
+  },
+  {
+    "command": "node .tmp-phase05m/inspect.mjs baseline 1920 1080",
+    "exitCode": 0,
+    "log": "baseline-1920x1080.log"
+  },
+  {
+    "command": "node .tmp-phase05m/inspect.mjs baseline 768 1024",
+    "exitCode": 0,
+    "log": "baseline-768x1024.log"
+  },
+  {
+    "command": "node .tmp-phase05m/inspect.mjs baseline 1024 768",
+    "exitCode": 0,
+    "log": "baseline-1024x768.log"
+  },
+  {
+    "command": "node .tmp-phase05m/inspect.mjs baseline 375 812",
+    "exitCode": 0,
+    "log": "baseline-375x812.log"
+  },
+  {
+    "command": "node .tmp-phase05m/inspect.mjs baseline 390 844",
+    "exitCode": 0,
+    "log": "baseline-390x844.log"
+  },
+  {
+    "command": "node .tmp-phase05m/inspect.mjs baseline 390 500",
+    "exitCode": 0,
+    "log": "baseline-390x500.log"
+  },
+  {
+    "command": "node .tmp-phase05m/inspect.mjs baseline 430 932",
+    "exitCode": 0,
+    "log": "baseline-430x932.log"
+  },
+  {
+    "command": "node .tmp-phase05m/inspect.mjs baseline 844 390",
+    "exitCode": 0,
+    "log": "baseline-844x390.log"
+  },
+  {
+    "command": "node .tmp-phase05m/inspect.mjs baseline 390 844 --lite",
+    "exitCode": 0,
+    "log": "baseline-390x844--lite.log"
+  },
+  {
+    "command": "node .tmp-phase05m/inspect.mjs baseline 390 844 --light",
+    "exitCode": 0,
+    "log": "baseline-390x844--light.log"
+  },
+  {
+    "command": "node .tmp-phase05m/inspect.mjs baseline 390 844 --lite --light",
+    "exitCode": 0,
+    "log": "baseline-390x844--lite--light.log"
+  }
+]

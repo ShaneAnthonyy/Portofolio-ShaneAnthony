@@ -1,0 +1,53 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Phase 05K — cherry blossom forest evidence</title><style>body{font:16px/1.5 system-ui;background:#14242f;color:#e4edf3;max-width:1500px;margin:30px auto;padding:20px}h1,h2{line-height:1.2}h2{margin-top:60px}a{color:#f7c5df}img{max-width:100%;height:auto;display:block}figure{margin:0}figcaption{padding:8px 0 18px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.two{grid-template-columns:repeat(2,minmax(0,1fr))}button,select,input{font:inherit;padding:8px;max-width:100%}@media(max-width:700px){.grid{grid-template-columns:1fr}}</style></head><body><h1>Phase 05K — cherry blossom forest</h1><p>Six desktop trees, three background hills, shared geometry/material/texture. Real production build and live animation; no asset substitution.</p><p><a href="report.md">Full 17-part report</a> · <a href="measurements/model-validation.json">Model validation</a> · <a href="measurements/scene-comparison.json">Camera and request comparisons</a> · <a href="files.json">File manifest</a></p><h2>Final daylight scene and forest composition</h2><div class="grid two">
+<figure><a href="comparisons/final-1440-normal-light-p0.png"><img src="comparisons/final-1440-normal-light-p0.png"></a><figcaption>Actual production P0 camera</figcaption></figure>
+<figure><a href="comparisons/final-1440-normal-light-overview.png"><img src="comparisons/final-1440-normal-light-overview.png"></a><figcaption>Diagnostic overview; temporary inspection camera, production path unchanged</figcaption></figure>
+</div><h2>Equivalent production camera states</h2><p>Left: previous optimized trees. Center: cherry replacement with the original four placements. Right: final six-tree forest and hills. Live poses and sway are not synchronized.</p>
+<h3>p0</h3><div class="grid">
+<figure><a href="comparisons/baseline-1440-normal-dark-p0.png"><img loading="lazy" src="comparisons/baseline-1440-normal-dark-p0.png"></a><figcaption>Previous optimized tree</figcaption></figure>
+<figure><a href="comparisons/four-1440-normal-dark-p0.png"><img loading="lazy" src="comparisons/four-1440-normal-dark-p0.png"></a><figcaption>Four-tree replacement</figcaption></figure>
+<figure><a href="comparisons/final-1440-normal-dark-p0.png"><img loading="lazy" src="comparisons/final-1440-normal-dark-p0.png"></a><figcaption>Final six-tree forest</figcaption></figure>
+</div>
+<h3>p05</h3><div class="grid">
+<figure><a href="comparisons/baseline-1440-normal-dark-p05.png"><img loading="lazy" src="comparisons/baseline-1440-normal-dark-p05.png"></a><figcaption>Previous optimized tree</figcaption></figure>
+<figure><a href="comparisons/four-1440-normal-dark-p05.png"><img loading="lazy" src="comparisons/four-1440-normal-dark-p05.png"></a><figcaption>Four-tree replacement</figcaption></figure>
+<figure><a href="comparisons/final-1440-normal-dark-p05.png"><img loading="lazy" src="comparisons/final-1440-normal-dark-p05.png"></a><figcaption>Final six-tree forest</figcaption></figure>
+</div>
+<h3>p091</h3><div class="grid">
+<figure><a href="comparisons/baseline-1440-normal-dark-p091.png"><img loading="lazy" src="comparisons/baseline-1440-normal-dark-p091.png"></a><figcaption>Previous optimized tree</figcaption></figure>
+<figure><a href="comparisons/four-1440-normal-dark-p091.png"><img loading="lazy" src="comparisons/four-1440-normal-dark-p091.png"></a><figcaption>Four-tree replacement</figcaption></figure>
+<figure><a href="comparisons/final-1440-normal-dark-p091.png"><img loading="lazy" src="comparisons/final-1440-normal-dark-p091.png"></a><figcaption>Final six-tree forest</figcaption></figure>
+</div>
+<h3>p03</h3><div class="grid">
+<figure><a href="comparisons/baseline-1440-normal-dark-p03.png"><img loading="lazy" src="comparisons/baseline-1440-normal-dark-p03.png"></a><figcaption>Previous optimized tree</figcaption></figure>
+<figure><a href="comparisons/four-1440-normal-dark-p03.png"><img loading="lazy" src="comparisons/four-1440-normal-dark-p03.png"></a><figcaption>Four-tree replacement</figcaption></figure>
+<figure><a href="comparisons/final-1440-normal-dark-p03.png"><img loading="lazy" src="comparisons/final-1440-normal-dark-p03.png"></a><figcaption>Final six-tree forest</figcaption></figure>
+</div>
+<h2>Mobile, tablet, and Lite</h2><div class="grid">
+<figure><a href="comparisons/baseline-390-normal-dark-p0.png"><img loading="lazy" src="comparisons/baseline-390-normal-dark-p0.png"></a><figcaption>baseline-390-normal-dark</figcaption></figure>
+<figure><a href="comparisons/final-390-normal-dark-p0.png"><img loading="lazy" src="comparisons/final-390-normal-dark-p0.png"></a><figcaption>final-390-normal-dark</figcaption></figure>
+<figure><a href="comparisons/final-390-lite-dark-p0.png"><img loading="lazy" src="comparisons/final-390-lite-dark-p0.png"></a><figcaption>final-390-lite-dark</figcaption></figure>
+<figure><a href="comparisons/final-768-normal-dark-p0.png"><img loading="lazy" src="comparisons/final-768-normal-dark-p0.png"></a><figcaption>final-768-normal-dark</figcaption></figure>
+<figure><a href="comparisons/final-768-lite-dark-p0.png"><img loading="lazy" src="comparisons/final-768-lite-dark-p0.png"></a><figcaption>final-768-lite-dark</figcaption></figure>
+<figure><a href="comparisons/final-1440-lite-dark-p0.png"><img loading="lazy" src="comparisons/final-1440-lite-dark-p0.png"></a><figcaption>final-1440-lite-dark</figcaption></figure>
+</div><h2>Original export and consolidated model</h2><p>Each image: original 27-mesh export at left; one-mesh production variant at right. Same embedded PNG, material, UVs and world-space geometry.</p>
+<figure><img loading="lazy" src="comparisons/model-front.png"><figcaption>front</figcaption></figure>
+<figure><img loading="lazy" src="comparisons/model-oblique.png"><figcaption>oblique</figcaption></figure>
+<figure><img loading="lazy" src="comparisons/model-back.png"><figcaption>back</figcaption></figure>
+<h2>Live motion samples</h2><p>Five captured frames per sequence, with per-rAF root-transform measurements in the JSON evidence. Tree sway is intentionally subtle.</p><label>Sequence <select id="sequence">
+<option value="baseline-1440-normal-dark">baseline-1440-normal-dark</option>
+<option value="four-1440-normal-dark">four-1440-normal-dark</option>
+<option value="six-1440-normal-dark">six-1440-normal-dark</option>
+<option value="baseline-390-normal-dark">baseline-390-normal-dark</option>
+<option value="baseline-1440-lite-dark">baseline-1440-lite-dark</option>
+<option value="final-1440-normal-dark">final-1440-normal-dark</option>
+<option value="final-1440-normal-light">final-1440-normal-light</option>
+<option value="final-390-normal-dark">final-390-normal-dark</option>
+<option value="final-1440-lite-dark">final-1440-lite-dark</option>
+<option value="final-390-lite-dark">final-390-lite-dark</option>
+<option value="final-768-normal-dark">final-768-normal-dark</option>
+<option value="final-768-lite-dark">final-768-lite-dark</option>
+</select></label> <button id="play">Play / pause</button> <label>Frame <input id="slider" type="range" min="0" max="4" value="0"></label><p id="caption"></p><img id="frame" alt="Captured live production animation frame">
+<figure><img loading="lazy" src="motion/final-1440-normal-light-strip.jpg"><figcaption>final-1440-normal-light: five live frames</figcaption></figure>
+<figure><img loading="lazy" src="motion/final-390-normal-dark-strip.jpg"><figcaption>final-390-normal-dark: five live frames</figcaption></figure>
+<figure><img loading="lazy" src="motion/final-1440-lite-dark-strip.jpg"><figcaption>final-1440-lite-dark: five live frames</figcaption></figure>
+<script>const sequence=document.querySelector('#sequence'),slider=document.querySelector('#slider'),frame=document.querySelector('#frame'),caption=document.querySelector('#caption');let playing=false;function show(){frame.src='motion/'+sequence.value+'-'+slider.value+'.png';caption.textContent=sequence.value+' — frame '+(Number(slider.value)+1)+' / 5'}sequence.onchange=()=>{slider.value=0;show()};slider.oninput=show;document.querySelector('#play').onclick=()=>playing=!playing;setInterval(()=>{if(playing){slider.value=(Number(slider.value)+1)%5;show()}},650);show()</script></body></html>

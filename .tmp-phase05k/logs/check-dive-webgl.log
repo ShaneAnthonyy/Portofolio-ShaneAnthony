@@ -1,0 +1,7 @@
+PASS WebGL handoff {
+  before: { dive: 14678, hero: 12 },
+  waiting: { dive: 19214, hero: 12 },
+  landed: { dive: 20954, hero: 138 },
+  after: { dive: 20954, hero: 270 }
+}
+PASS standalone Dive reveal remains functional

@@ -1,0 +1,25 @@
+PASS handoff hysteresis preserves the same canvas through eight crossings
+PASS settled About renders Dive only; retained Hero has zero draw calls
+PASS live theme switch preserves crossing position
+PASS live Lite switch disposes Hero; normal mode remains parked while submerged
+PASS hidden tab stops both renderer draw calls and resumes in place
+PASS About navigation and Projects navigation during crossing settle cleanly and dispose distant Hero
+PASS deep reverse prepares Hero while hidden; Home reuses that canvas with poster continuity
+PASS Dive Again and Phase 04L magnetic arrival remain functional
+PASS live reduced motion clears compositing; reduced Dive Again remains immediate
+PASS native mobile touch scroll and viewport-height resize remain continuous
+node:internal/fs/promises:697
+  return new FileHandle(await PromisePrototypeThen(
+                        ^
+
+Error: ENOENT: no such file or directory, open 'C:\CODE\ReactWeb\Portfolio-Shane\.tmp-phase05m\regressions\integration.json'
+    at async open (node:internal/fs/promises:697:25)
+    at async writeFile (node:internal/fs/promises:1317:14)
+    at async file:///C:/CODE/ReactWeb/Portfolio-Shane/.tmp-phase05m/check-surface-integration.mjs:146:3 {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\CODE\\ReactWeb\\Portfolio-Shane\\.tmp-phase05m\\regressions\\integration.json'
+}
+
+Node.js v24.19.0

@@ -1,0 +1,22 @@
+(async()=>{
+ const url=performance.getEntriesByType('resource').map(r=>r.name).find(n=>n.includes('BufferGeometryUtils-')&&n.endsWith('.js')),module=await import(url),T=Object.values(module).find(v=>v?.Object3D&&v.WebGLRenderer);
+ const p=window.__qa={T,mixers:[],mixerCpu:0,samples:[],recording:false,inactive:false};
+ p.place=(root,x,z)=>{const ground=p.scene.getObjectByName('HilltopGround'),g=ground.children[0].geometry,a=g.attributes.position,n=g.parameters.widthSegments,gx=Math.min(n,Math.max(0,(x/120+.5)*n)),gz=Math.min(n,Math.max(0,(z/120+.5)*n)),ix=Math.min(n-1,Math.floor(gx)),iz=Math.min(n-1,Math.floor(gz)),fx=gx-ix,fz=gz-iz,i=iz*(n+1)+ix,A=a.getY(i),B=a.getY(i+n+1),C=a.getY(i+n+2),D=a.getY(i+1),y=fx+fz<=1?A+(B-A)*fz+(D-A)*fx:C+(D-C)*(1-fz)+(B-C)*(1-fx);root.position.set(x,0,z);root.updateMatrixWorld(true);const box=new T.Box3().setFromObject(root);root.position.y=y-.04-box.min.y+ground.position.y;return root.position.toArray()};
+ const original=T.Object3D.prototype.onBeforeRender;
+ T.Object3D.prototype.onBeforeRender=function(renderer,scene,camera,...args){if(renderer.domElement.closest('.webgl-backdrop')&&scene.children.some(n=>n.name==='HilltopGround'))Object.assign(p,{renderer,scene,camera});return original.call(this,renderer,scene,camera,...args)};
+ const update=T.AnimationMixer.prototype.update;
+ T.AnimationMixer.prototype.update=function(dt){if(!p.mixers.includes(this))p.mixers.push(this);if(p.inactive)return this;const t=performance.now(),v=update.call(this,dt);p.mixerCpu+=performance.now()-t;return v};
+ p.actors=()=>p.scene?.getObjectByName('HilltopGround').children.filter(g=>g.children[0]?.getObjectByName('Character_Root')).map(group=>{const root=group.children[0],mixer=p.mixers.find(m=>m.getRoot()===root),kind=root.getObjectByName('Rider_Root')?'chicken':'golem';return {group,root,mixer,kind}})||[];
+ p.snapshot=()=>({now:performance.now(),y:scrollY,renderState:document.querySelector('.webgl-backdrop')?.dataset.renderState,camera:p.camera?.position.toArray(),mixers:p.mixers.length,actors:p.actors().map(({root,group,mixer,kind})=>({kind,id:root.uuid,visible:group.visible,position:root.position.toArray(),yaw:root.rotation.y,time:mixer?.time,actions:mixer?mixer._actions.map(a=>({clip:a.getClip().name,time:a.time,weight:a.getEffectiveWeight(),running:a.isRunning(),enabled:a.enabled})):[],pose:(()=>{const nodes=[];root.traverse(n=>{if(n.children.length)nodes.push({name:n.name,p:n.position.toArray(),q:n.quaternion.toArray()})});return nodes})()})),stats:p.renderer?{...p.renderer.info.render,programs:p.renderer.info.programs.length,dpr:p.renderer.getPixelRatio()}:null});
+ p.bounds=(pixels=false)=>{
+  const {renderer:r,scene,camera,T}=p,gl=r.getContext(),w=gl.drawingBufferWidth,h=gl.drawingBufferHeight,read=()=>{const a=new Uint8Array(w*h*4);gl.readPixels(0,0,w,h,gl.RGBA,gl.UNSIGNED_BYTE,a);return a},shadow=r.shadowMap.autoUpdate;
+  r.setRenderTarget(null);r.render(scene,camera);r.shadowMap.autoUpdate=false;const base=pixels?read():null;
+  const out=p.actors().map(({root,group,kind})=>{
+   const points=[];root.updateMatrixWorld(true);root.traverse(n=>{if(n.isMesh){const a=n.geometry.attributes.position;for(let i=0;i<a.count;i++)points.push(new T.Vector3().fromBufferAttribute(a,i).applyMatrix4(n.matrixWorld).project(camera))}});
+   const xs=points.map(v=>(v.x+1)*innerWidth/2),ys=points.map(v=>(1-v.y)*innerHeight/2),rect={left:Math.min(...xs),right:Math.max(...xs),top:Math.min(...ys),bottom:Math.max(...ys)};
+   let contribution=null;if(pixels&&group.visible){group.visible=false;r.render(scene,camera);const removed=read();group.visible=true;let count=0,body=0;for(let i=0;i<base.length;i+=4){const x=(i/4)%w/w*innerWidth,y=(1-Math.floor(i/4/w)/h)*innerHeight;if(Math.max(Math.abs(base[i]-removed[i]),Math.abs(base[i+1]-removed[i+1]),Math.abs(base[i+2]-removed[i+2]))<4)continue;count++;if(x>=rect.left&&x<=rect.right&&y>=rect.top&&y<=rect.bottom)body++}contribution={allPixels:count,bodyPixels:body,bodyCSSArea:body/(w/innerWidth)/(h/innerHeight)}}
+   const box=new T.Box3().setFromObject(root),hits=[];return {kind,rect,contribution,centerRayBlockers:hits,worldBounds:{min:box.min.toArray(),max:box.max.toArray()}};
+  });r.render(scene,camera);r.shadowMap.autoUpdate=shadow;return out;
+ };
+ function sample(){if(p.recording)p.samples.push(p.snapshot());p.raf=requestAnimationFrame(sample)}p.raf=requestAnimationFrame(sample);
+})()

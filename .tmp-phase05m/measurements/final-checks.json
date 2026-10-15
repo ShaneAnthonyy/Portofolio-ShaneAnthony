@@ -1,0 +1,37 @@
+{
+  "build": {
+    "command": "npm run build",
+    "exitCode": 0,
+    "seconds": 5.97
+  },
+  "diff": {
+    "command": "git diff --check",
+    "exitCode": 0
+  },
+  "visibility": {
+    "command": "python .tmp-phase05m/verify-visibility.py",
+    "exitCode": 0,
+    "states": 72
+  },
+  "preservation": {
+    "command": "python .tmp-phase05m/verify-preservation.py",
+    "exitCode": 0
+  },
+  "performance": {
+    "command": "python .tmp-phase05m/performance-summary.py",
+    "exitCode": 0,
+    "scrollPasses": 32
+  },
+  "mobileMotionRetry": {
+    "command": "node .tmp-phase05m/motion.mjs 390 844",
+    "exitCode": 0,
+    "firstAttemptExitCode": 1,
+    "firstAttemptReason": "CDP speed requires integer; rounded diagnostic speed."
+  },
+  "surfaceRetry": {
+    "command": "node .tmp-phase05m/check-surface-integration.mjs",
+    "exitCode": 0,
+    "firstAttemptExitCode": 1,
+    "firstAttemptReason": "Missing diagnostics output folder after all interaction assertions passed."
+  }
+}

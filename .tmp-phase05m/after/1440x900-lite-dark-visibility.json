@@ -1,0 +1,1070 @@
+{
+  "phase": "after",
+  "width": 1440,
+  "height": 900,
+  "lite": true,
+  "light": false,
+  "states": [
+    {
+      "p": 0,
+      "trees": [
+        {
+          "visible": true,
+          "rootVisible": true,
+          "meshCulled": false,
+          "root": [
+            -18.04487589589724,
+            0.18119224599149097,
+            -19.221379744641787
+          ],
+          "world": [
+            -18.04487589589724,
+            -1.4738077540085088,
+            -19.221379744641787
+          ],
+          "scale": [
+            7.228235294117646,
+            7.228235294117646,
+            7.228235294117646
+          ],
+          "rotation": [
+            0.00367547777883554,
+            0.2,
+            -0.002335986953019057,
+            "XYZ"
+          ],
+          "worldBounds": {
+            "min": [
+              -27.00779534588218,
+              -1.5138049850650759,
+              -27.831315653696212
+            ],
+            "max": [
+              -8.96634766787676,
+              9.858591938320814,
+              -10.132417700424943
+            ]
+          },
+          "canopy": {
+            "left": -275.4400526020699,
+            "top": 118.78058649755064,
+            "right": 363.1750055061129,
+            "bottom": 388.43818107303264
+          },
+          "clippedCanopy": {
+            "left": 0,
+            "right": 363.1750055061129,
+            "top": 118.78058649755064,
+            "bottom": 388.43818107303264
+          },
+          "clippedArea": 97932.89839471583,
+          "contribution": {
+            "changedPixels": 45740,
+            "canopyRegionChangedPixels": 36977,
+            "cssPixelArea": 82229.21348314606,
+            "bounds": {
+              "left": 0,
+              "top": 124,
+              "right": 362.69662921348316,
+              "bottom": 562.6666666666666
+            }
+          }
+        },
+        {
+          "visible": true,
+          "rootVisible": true,
+          "meshCulled": false,
+          "root": [
+            17.873264722425045,
+            1.8082939270025449,
+            -22.830346057884178
+          ],
+          "world": [
+            17.873264722425045,
+            0.15329392700254507,
+            -22.830346057884178
+          ],
+          "scale": [
+            6.776470588235294,
+            6.776470588235294,
+            6.776470588235294
+          ],
+          "rotation": [
+            0.0021194010462761877,
+            2.5,
+            0.00485692940766657,
+            "XYZ"
+          ],
+          "worldBounds": {
+            "min": [
+              8.049569843592451,
+              0.09768580478878403,
+              -32.90743195581156
+            ],
+            "max": [
+              27.99162985545469,
+              10.797642576437774,
+              -13.039349821946683
+            ]
+          },
+          "canopy": {
+            "left": 1069.6915852387885,
+            "top": 134.35085612127827,
+            "right": 1577.2651626802751,
+            "bottom": 360.43583102988146
+          },
+          "clippedCanopy": {
+            "left": 1069.6915852387885,
+            "right": 1440,
+            "top": 134.35085612127827,
+            "bottom": 360.43583102988146
+          },
+          "clippedArea": 83721.16865973311,
+          "contribution": {
+            "changedPixels": 38029,
+            "canopyRegionChangedPixels": 33319,
+            "cssPixelArea": 68366.74157303371,
+            "bounds": {
+              "left": 1070.561797752809,
+              "top": 134.66666666666669,
+              "right": 1438.6516853932585,
+              "bottom": 494.66666666666663
+            }
+          }
+        },
+        {
+          "visible": true,
+          "rootVisible": true,
+          "meshCulled": false,
+          "root": [
+            -29.25042016667942,
+            0.800855180040798,
+            -32.04319165043112
+          ],
+          "world": [
+            -29.25042016667942,
+            -0.8541448199592018,
+            -32.04319165043112
+          ],
+          "scale": [
+            8.131764705882354,
+            8.131764705882354,
+            8.131764705882354
+          ],
+          "rotation": [
+            -0.008962365970131034,
+            1.4,
+            -0.0016101434026530698,
+            "XYZ"
+          ],
+          "worldBounds": {
+            "min": [
+              -38.73237971146999,
+              -0.9567499321464626,
+              -42.07310985417546
+            ],
+            "max": [
+              -19.26414305248293,
+              11.954409389229706,
+              -22.060926511230186
+            ]
+          },
+          "canopy": {
+            "left": -259.55676629191106,
+            "top": 171.38968399384586,
+            "right": 250.66232617105914,
+            "bottom": 368.88596649594035
+          },
+          "clippedCanopy": {
+            "left": 0,
+            "right": 250.66232617105914,
+            "top": 171.38968399384586,
+            "bottom": 368.88596649594035
+          },
+          "clippedArea": 49504.87758211165,
+          "contribution": {
+            "changedPixels": 2193,
+            "canopyRegionChangedPixels": 96,
+            "cssPixelArea": 3942.471910112359,
+            "bounds": {
+              "left": 0,
+              "top": 350.66666666666663,
+              "right": 249.43820224719101,
+              "bottom": 501.3333333333333
+            }
+          }
+        },
+        {
+          "visible": true,
+          "rootVisible": true,
+          "meshCulled": false,
+          "root": [
+            12.091627762376346,
+            1.1839419160702735,
+            -39.814318257323755
+          ],
+          "world": [
+            12.091627762376346,
+            -0.47105808392972626,
+            -39.814318257323755
+          ],
+          "scale": [
+            6.625882352941177,
+            6.625882352941177,
+            6.625882352941177
+          ],
+          "rotation": [
+            0.008995077757384824,
+            3.6,
+            -0.004075411121773534,
+            "XYZ"
+          ],
+          "worldBounds": {
+            "min": [
+              2.6253206510131264,
+              -0.5812162623999305,
+              -49.242176051182426
+            ],
+            "max": [
+              21.336842981763642,
+              9.994708919604399,
+              -30.646015210342302
+            ]
+          },
+          "canopy": {
+            "left": 811.4094275928735,
+            "top": 254.13570612030674,
+            "right": 1124.4427091885432,
+            "bottom": 391.9429998744011
+          },
+          "clippedCanopy": {
+            "left": 811.4094275928735,
+            "right": 1124.4427091885432,
+            "top": 254.13570612030674,
+            "bottom": 391.9429998744011
+          },
+          "clippedArea": 43138.269391662594,
+          "contribution": {
+            "changedPixels": 15054,
+            "canopyRegionChangedPixels": 12992,
+            "cssPixelArea": 27063.370786516854,
+            "bounds": {
+              "left": 811.685393258427,
+              "top": 254.66666666666669,
+              "right": 1124.4943820224719,
+              "bottom": 481.33333333333337
+            }
+          }
+        }
+      ],
+      "camera": {
+        "position": [
+          0,
+          2.5,
+          12
+        ],
+        "matrix": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0.9996876464081228,
+          -0.024992191160203053,
+          0,
+          0,
+          0.024992191160203053,
+          0.9996876464081228,
+          0,
+          0,
+          2.5,
+          12,
+          1
+        ],
+        "projection": [
+          1.5247664604461655,
+          0,
+          0,
+          0,
+          0,
+          2.4142135623730954,
+          0,
+          0,
+          0,
+          0,
+          -1.0006668889629877,
+          -1,
+          0,
+          0,
+          -0.20006668889629878,
+          0
+        ],
+        "aspect": 1.5833333333333333
+      },
+      "fog": {
+        "density": 0.02,
+        "color": [
+          0.0030352698352941188,
+          0.008023192982520522,
+          0.021219010371342217
+        ]
+      },
+      "groundVisible": true,
+      "renderer": {
+        "pixelRatio": 0.75,
+        "canvas": [
+          1068,
+          675
+        ],
+        "programs": 20
+      },
+      "loadedResources": [
+        {
+          "name": "http://127.0.0.1:4173/aquarium/environment/cherry_blossom-opt.glb",
+          "entryType": "resource",
+          "startTime": 609.1000000014901,
+          "duration": 90.89999999850988,
+          "navigationId": 960,
+          "initiatorType": "fetch",
+          "deliveryType": "",
+          "nextHopProtocol": "http/1.1",
+          "renderBlockingStatus": "non-blocking",
+          "contentType": "",
+          "contentEncoding": "",
+          "workerStart": 0,
+          "workerRouterEvaluationStart": 0,
+          "workerCacheLookupStart": 0,
+          "workerMatchedSourceType": "",
+          "workerFinalSourceType": "",
+          "redirectStart": 0,
+          "redirectEnd": 0,
+          "fetchStart": 609.1000000014901,
+          "domainLookupStart": 609.1000000014901,
+          "domainLookupEnd": 609.1000000014901,
+          "connectStart": 609.1000000014901,
+          "secureConnectionStart": 0,
+          "connectEnd": 609.1000000014901,
+          "requestStart": 696.6000000014901,
+          "responseStart": 699.1000000014901,
+          "firstInterimResponseStart": 0,
+          "finalResponseHeadersStart": 699.1000000014901,
+          "responseEnd": 700,
+          "transferSize": 28876,
+          "encodedBodySize": 28576,
+          "decodedBodySize": 28576,
+          "responseStatus": 200,
+          "serverTiming": []
+        }
+      ]
+    },
+    {
+      "p": 0.5,
+      "trees": [
+        {
+          "visible": true,
+          "rootVisible": true,
+          "meshCulled": false,
+          "root": [
+            -18.04487589589724,
+            0.18119224599149097,
+            -19.221379744641787
+          ],
+          "world": [
+            -18.04487589589724,
+            -1.4738077540085088,
+            -19.221379744641787
+          ],
+          "scale": [
+            7.228235294117646,
+            7.228235294117646,
+            7.228235294117646
+          ],
+          "rotation": [
+            -0.008122682320081676,
+            0.2,
+            -0.003997099654401281,
+            "XYZ"
+          ],
+          "worldBounds": {
+            "min": [
+              -27.00775575451,
+              -1.574439261678906,
+              -27.93147160949827
+            ],
+            "max": [
+              -8.948000518262505,
+              9.924002108892683,
+              -10.169248136373282
+            ]
+          },
+          "canopy": {
+            "left": -518.6667333506105,
+            "top": -351.0660445971105,
+            "right": 291.36609959354774,
+            "bottom": 45.12584616919482
+          },
+          "clippedCanopy": {
+            "left": 0,
+            "right": 291.36609959354774,
+            "top": 0,
+            "bottom": 45.12584616919482
+          },
+          "clippedArea": 13148.141789176734,
+          "contribution": {
+            "changedPixels": 7571,
+            "canopyRegionChangedPixels": 1707,
+            "cssPixelArea": 13610.786516853934,
+            "bounds": {
+              "left": 0,
+              "top": 0,
+              "right": 113.25842696629213,
+              "bottom": 194.66666666666666
+            }
+          }
+        },
+        {
+          "visible": true,
+          "rootVisible": true,
+          "meshCulled": false,
+          "root": [
+            17.873264722425045,
+            1.8082939270025449,
+            -22.830346057884178
+          ],
+          "world": [
+            17.873264722425045,
+            0.15329392700254507,
+            -22.830346057884178
+          ],
+          "scale": [
+            6.776470588235294,
+            6.776470588235294,
+            6.776470588235294
+          ],
+          "rotation": [
+            0.008796234545859493,
+            2.5,
+            -0.005261266089667165,
+            "XYZ"
+          ],
+          "worldBounds": {
+            "min": [
+              8.004952122186033,
+              0.10551795434444179,
+              -32.907463242506296
+            ],
+            "max": [
+              27.95041835708072,
+              10.792026879981078,
+              -13.032727477147889
+            ]
+          },
+          "canopy": {
+            "left": 1146.378596848982,
+            "top": -379.9135824817713,
+            "right": 1809.351946165725,
+            "bottom": -67.17161087554355
+          },
+          "clippedCanopy": {
+            "left": 1146.378596848982,
+            "right": 1440,
+            "top": 0,
+            "bottom": -67.17161087554355
+          },
+          "clippedArea": 0,
+          "contribution": {
+            "changedPixels": 3620,
+            "canopyRegionChangedPixels": 0,
+            "cssPixelArea": 6507.865168539326,
+            "bounds": {
+              "left": 1303.8202247191011,
+              "top": 0,
+              "right": 1406.2921348314608,
+              "bottom": 93.33333333333333
+            }
+          }
+        },
+        {
+          "visible": true,
+          "rootVisible": true,
+          "meshCulled": false,
+          "root": [
+            -29.25042016667942,
+            0.800855180040798,
+            -32.04319165043112
+          ],
+          "world": [
+            -29.25042016667942,
+            -0.8541448199592018,
+            -32.04319165043112
+          ],
+          "scale": [
+            8.131764705882354,
+            8.131764705882354,
+            8.131764705882354
+          ],
+          "rotation": [
+            -0.0010417166138587352,
+            1.4,
+            0.0059133823125071755,
+            "XYZ"
+          ],
+          "worldBounds": {
+            "min": [
+              -38.74512630221087,
+              -0.8978065919532268,
+              -41.9395091206943
+            ],
+            "max": [
+              -19.267644060448326,
+              11.895337378190069,
+              -21.999685583577307
+            ]
+          },
+          "canopy": {
+            "left": -533.6631613557199,
+            "top": -391.786857916825,
+            "right": 156.70784231866497,
+            "bottom": -93.70567147379944
+          },
+          "clippedCanopy": {
+            "left": 0,
+            "right": 156.70784231866497,
+            "top": 0,
+            "bottom": -93.70567147379944
+          },
+          "clippedArea": 0,
+          "contribution": {
+            "changedPixels": 0,
+            "canopyRegionChangedPixels": 0,
+            "cssPixelArea": 0,
+            "bounds": null
+          }
+        },
+        {
+          "visible": true,
+          "rootVisible": true,
+          "meshCulled": false,
+          "root": [
+            12.091627762376346,
+            1.1839419160702735,
+            -39.814318257323755
+          ],
+          "world": [
+            12.091627762376346,
+            -0.47105808392972626,
+            -39.814318257323755
+          ],
+          "scale": [
+            6.625882352941177,
+            6.625882352941177,
+            6.625882352941177
+          ],
+          "rotation": [
+            0.000518104055516043,
+            3.6,
+            -0.002238135502530279,
+            "XYZ"
+          ],
+          "worldBounds": {
+            "min": [
+              2.6423413750549702,
+              -0.4915070895105035,
+              -49.24282419740351
+            ],
+            "max": [
+              21.336879597270162,
+              9.90249187077399,
+              -30.74155810815533
+            ]
+          },
+          "canopy": {
+            "left": 830.086769112419,
+            "top": -294.40193641399725,
+            "right": 1217.8295122493737,
+            "bottom": -113.26372778000247
+          },
+          "clippedCanopy": {
+            "left": 830.086769112419,
+            "right": 1217.8295122493737,
+            "top": 0,
+            "bottom": -113.26372778000247
+          },
+          "clippedArea": 0,
+          "contribution": {
+            "changedPixels": 0,
+            "canopyRegionChangedPixels": 0,
+            "cssPixelArea": 0,
+            "bounds": null
+          }
+        }
+      ],
+      "camera": {
+        "position": [
+          0,
+          8.084,
+          9.5
+        ],
+        "matrix": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0.8467329956142464,
+          -0.5320180768903672,
+          0,
+          0,
+          0.5320180768903672,
+          0.8467329956142464,
+          0,
+          0,
+          8.084,
+          9.5,
+          1
+        ],
+        "projection": [
+          1.5247664604461655,
+          0,
+          0,
+          0,
+          0,
+          2.4142135623730954,
+          0,
+          0,
+          0,
+          0,
+          -1.0006668889629877,
+          -1,
+          0,
+          0,
+          -0.20006668889629878,
+          0
+        ],
+        "aspect": 1.5833333333333333
+      },
+      "fog": {
+        "density": 0.02,
+        "color": [
+          0.0030352698352941188,
+          0.008023192982520522,
+          0.021219010371342217
+        ]
+      },
+      "groundVisible": true,
+      "renderer": {
+        "pixelRatio": 0.75,
+        "canvas": [
+          1068,
+          675
+        ],
+        "programs": 20
+      },
+      "loadedResources": [
+        {
+          "name": "http://127.0.0.1:4173/aquarium/environment/cherry_blossom-opt.glb",
+          "entryType": "resource",
+          "startTime": 609.1000000014901,
+          "duration": 90.89999999850988,
+          "navigationId": 960,
+          "initiatorType": "fetch",
+          "deliveryType": "",
+          "nextHopProtocol": "http/1.1",
+          "renderBlockingStatus": "non-blocking",
+          "contentType": "",
+          "contentEncoding": "",
+          "workerStart": 0,
+          "workerRouterEvaluationStart": 0,
+          "workerCacheLookupStart": 0,
+          "workerMatchedSourceType": "",
+          "workerFinalSourceType": "",
+          "redirectStart": 0,
+          "redirectEnd": 0,
+          "fetchStart": 609.1000000014901,
+          "domainLookupStart": 609.1000000014901,
+          "domainLookupEnd": 609.1000000014901,
+          "connectStart": 609.1000000014901,
+          "secureConnectionStart": 0,
+          "connectEnd": 609.1000000014901,
+          "requestStart": 696.6000000014901,
+          "responseStart": 699.1000000014901,
+          "firstInterimResponseStart": 0,
+          "finalResponseHeadersStart": 699.1000000014901,
+          "responseEnd": 700,
+          "transferSize": 28876,
+          "encodedBodySize": 28576,
+          "decodedBodySize": 28576,
+          "responseStatus": 200,
+          "serverTiming": []
+        }
+      ]
+    },
+    {
+      "p": 0.91,
+      "trees": [
+        {
+          "visible": true,
+          "rootVisible": true,
+          "meshCulled": false,
+          "root": [
+            -18.04487589589724,
+            0.18119224599149097,
+            -19.221379744641787
+          ],
+          "world": [
+            -18.04487589589724,
+            -1.4738077540085088,
+            -19.221379744641787
+          ],
+          "scale": [
+            7.228235294117646,
+            7.228235294117646,
+            7.228235294117646
+          ],
+          "rotation": [
+            -0.004207251195558294,
+            0.2,
+            0.00571583323094777,
+            "XYZ"
+          ],
+          "worldBounds": {
+            "min": [
+              -27.070961068397015,
+              -1.5410902261369253,
+              -27.866086894595743
+            ],
+            "max": [
+              -8.992307072152858,
+              9.889224668538368,
+              -10.168608324107108
+            ]
+          },
+          "canopy": {
+            "left": -932.2215145289478,
+            "top": -278.17858829944674,
+            "right": 187.08164291920988,
+            "bottom": 196.38008331058148
+          },
+          "clippedCanopy": {
+            "left": 0,
+            "right": 187.08164291920988,
+            "top": 0,
+            "bottom": 196.38008331058148
+          },
+          "clippedArea": 36739.10862235489,
+          "contribution": null
+        },
+        {
+          "visible": true,
+          "rootVisible": true,
+          "meshCulled": false,
+          "root": [
+            17.873264722425045,
+            1.8082939270025449,
+            -22.830346057884178
+          ],
+          "world": [
+            17.873264722425045,
+            0.15329392700254507,
+            -22.830346057884178
+          ],
+          "scale": [
+            6.776470588235294,
+            6.776470588235294,
+            6.776470588235294
+          ],
+          "rotation": [
+            -0.0015401838793918203,
+            2.5,
+            -0.0004877807775606902,
+            "XYZ"
+          ],
+          "worldBounds": {
+            "min": [
+              8.04536479788075,
+              0.134261124096201,
+              -32.9269604219063
+            ],
+            "max": [
+              27.950497505693257,
+              10.760020848914154,
+              -13.092437944393364
+            ]
+          },
+          "canopy": {
+            "left": 1200.828524652544,
+            "top": -226.37769938695808,
+            "right": 2070.2166533033014,
+            "bottom": 135.88718367395714
+          },
+          "clippedCanopy": {
+            "left": 1200.828524652544,
+            "right": 1440,
+            "top": 0,
+            "bottom": 135.88718367395714
+          },
+          "clippedArea": 32500.33820011106,
+          "contribution": null
+        },
+        {
+          "visible": true,
+          "rootVisible": true,
+          "meshCulled": false,
+          "root": [
+            -29.25042016667942,
+            0.800855180040798,
+            -32.04319165043112
+          ],
+          "world": [
+            -29.25042016667942,
+            -0.8541448199592018,
+            -32.04319165043112
+          ],
+          "scale": [
+            8.131764705882354,
+            8.131764705882354,
+            8.131764705882354
+          ],
+          "rotation": [
+            0.00888898941390329,
+            1.4,
+            -0.0033391933048794774,
+            "XYZ"
+          ],
+          "worldBounds": {
+            "min": [
+              -38.73237342795362,
+              -0.9140308120612487,
+              -41.93942813840645
+            ],
+            "max": [
+              -19.260415321950244,
+              11.910654516000195,
+              -21.98944327530686
+            ]
+          },
+          "canopy": {
+            "left": -712.4396312199917,
+            "top": -145.72048338844627,
+            "right": 109.9777446905084,
+            "bottom": 142.28082193942603
+          },
+          "clippedCanopy": {
+            "left": 0,
+            "right": 109.9777446905084,
+            "top": 0,
+            "bottom": 142.28082193942603
+          },
+          "clippedArea": 15647.723909609882,
+          "contribution": null
+        },
+        {
+          "visible": true,
+          "rootVisible": true,
+          "meshCulled": false,
+          "root": [
+            12.091627762376346,
+            1.1839419160702735,
+            -39.814318257323755
+          ],
+          "world": [
+            12.091627762376346,
+            -0.47105808392972626,
+            -39.814318257323755
+          ],
+          "scale": [
+            6.625882352941177,
+            6.625882352941177,
+            6.625882352941177
+          ],
+          "rotation": [
+            -0.008956093004159555,
+            3.6,
+            0.005995710121474406,
+            "XYZ"
+          ],
+          "worldBounds": {
+            "min": [
+              2.6632180650362294,
+              -0.5977070374965908,
+              -49.362215678781425
+            ],
+            "max": [
+              21.39244629665047,
+              10.004358828650222,
+              -30.757955834291792
+            ]
+          },
+          "canopy": {
+            "left": 837.7818803979964,
+            "top": -20.324132829936502,
+            "right": 1253.7962082556357,
+            "bottom": 167.61836166822195
+          },
+          "clippedCanopy": {
+            "left": 837.7818803979964,
+            "right": 1253.7962082556357,
+            "top": 0,
+            "bottom": 167.61836166822195
+          },
+          "clippedArea": 69731.64006600407,
+          "contribution": null
+        }
+      ],
+      "camera": {
+        "position": [
+          0,
+          3.829695999999999,
+          2.5684159999999983
+        ],
+        "matrix": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0.9688268531590274,
+          -0.2477388314293429,
+          0,
+          0,
+          0.2477388314293429,
+          0.9688268531590274,
+          0,
+          0,
+          3.829695999999999,
+          2.5684159999999983,
+          1
+        ],
+        "projection": [
+          1.5247664604461655,
+          0,
+          0,
+          0,
+          0,
+          2.4142135623730954,
+          0,
+          0,
+          0,
+          0,
+          -1.0006668889629877,
+          -1,
+          0,
+          0,
+          -0.20006668889629878,
+          0
+        ],
+        "aspect": 1.5833333333333333
+      },
+      "fog": {
+        "density": 0.05874816000000001,
+        "color": [
+          0.0019660778241927528,
+          0.012546618384867791,
+          0.029592668238955597
+        ]
+      },
+      "groundVisible": true,
+      "renderer": {
+        "pixelRatio": 0.75,
+        "canvas": [
+          1068,
+          675
+        ],
+        "programs": 20
+      },
+      "loadedResources": [
+        {
+          "name": "http://127.0.0.1:4173/aquarium/environment/cherry_blossom-opt.glb",
+          "entryType": "resource",
+          "startTime": 609.1000000014901,
+          "duration": 90.89999999850988,
+          "navigationId": 960,
+          "initiatorType": "fetch",
+          "deliveryType": "",
+          "nextHopProtocol": "http/1.1",
+          "renderBlockingStatus": "non-blocking",
+          "contentType": "",
+          "contentEncoding": "",
+          "workerStart": 0,
+          "workerRouterEvaluationStart": 0,
+          "workerCacheLookupStart": 0,
+          "workerMatchedSourceType": "",
+          "workerFinalSourceType": "",
+          "redirectStart": 0,
+          "redirectEnd": 0,
+          "fetchStart": 609.1000000014901,
+          "domainLookupStart": 609.1000000014901,
+          "domainLookupEnd": 609.1000000014901,
+          "connectStart": 609.1000000014901,
+          "secureConnectionStart": 0,
+          "connectEnd": 609.1000000014901,
+          "requestStart": 696.6000000014901,
+          "responseStart": 699.1000000014901,
+          "firstInterimResponseStart": 0,
+          "finalResponseHeadersStart": 699.1000000014901,
+          "responseEnd": 700,
+          "transferSize": 28876,
+          "encodedBodySize": 28576,
+          "decodedBodySize": 28576,
+          "responseStatus": 200,
+          "serverTiming": []
+        }
+      ]
+    }
+  ],
+  "requests": [
+    {
+      "url": "http://127.0.0.1:4173/aquarium/environment/cherry_blossom-opt.glb",
+      "status": 200,
+      "statusText": "OK",
+      "headers": {
+        "Cache-Control": "no-cache",
+        "ETag": "W/\"28576-1792053526949\"",
+        "Connection": "keep-alive",
+        "Content-Length": "28576",
+        "Keep-Alive": "timeout=5",
+        "Date": "Thu, 15 Oct 2026 10:42:29 GMT",
+        "Content-Type": "model/gltf-binary",
+        "Vary": "Origin",
+        "Last-Modified": "Thu, 15 Oct 2026 08:38:46 GMT"
+      },
+      "mimeType": "model/gltf-binary",
+      "charset": "",
+      "connectionReused": true,
+      "connectionId": 14038,
+      "remoteIPAddress": "127.0.0.1",
+      "remotePort": 4173,
+      "fromDiskCache": false,
+      "fromServiceWorker": false,
+      "fromPrefetchCache": false,
+      "encodedDataLength": 275,
+      "timing": {
+        "requestTime": 22956.787618,
+        "proxyStart": -1,
+        "proxyEnd": -1,
+        "dnsStart": -1,
+        "dnsEnd": -1,
+        "connectStart": -1,
+        "connectEnd": -1,
+        "sslStart": -1,
+        "sslEnd": -1,
+        "workerStart": -1,
+        "workerReady": -1,
+        "workerFetchStart": -1,
+        "workerRespondWithSettled": -1,
+        "sendStart": 76.677,
+        "sendEnd": 76.852,
+        "pushStart": 0,
+        "pushEnd": 0,
+        "receiveHeadersStart": 79.199,
+        "receiveHeadersEnd": 79.277
+      },
+      "responseTime": 1792060949982.904,
+      "protocol": "http/1.1",
+      "alternateProtocolUsage": "unspecifiedReason",
+      "securityState": "secure"
+    }
+  ],
+  "errors": [],
+  "warnings": []
+}

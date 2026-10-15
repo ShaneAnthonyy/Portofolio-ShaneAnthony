@@ -1,0 +1,492 @@
+[
+  {
+    "label": "1440x900-normal-dark-gpu-untraced",
+    "pass": "natural-1-forward",
+    "metrics": {
+      "frames": 219,
+      "medianMs": 25.899999998509884,
+      "p95Ms": 35.30000000074506,
+      "maxMs": 299.20000000298023,
+      "over50": 2,
+      "over100": 1,
+      "scriptMs": 1358.156,
+      "layoutMs": 0.22800000000000598,
+      "styleMs": 2005.0150000000003,
+      "heapDeltaBytes": 80800
+    },
+    "range": {
+      "targetMin": 0.0,
+      "targetMax": 0.88,
+      "actualMin": 0.0,
+      "actualMax": 0.88
+    },
+    "bins": {
+      "0.0": {
+        "samples": 34,
+        "medianMs": 26.400000002235174,
+        "p95Ms": 38.69999999925494,
+        "maxMs": 41.400000002235174,
+        "meanRenderCpuMs": 3.1382352940957334,
+        "meanDraws": 119.0,
+        "meanTransparentCallbacks": 31.0
+      },
+      "0.1": {
+        "samples": 19,
+        "medianMs": 26.899999998509884,
+        "p95Ms": 28.199999999254942,
+        "maxMs": 28.199999999254942,
+        "meanRenderCpuMs": 2.384210526158935,
+        "meanDraws": 119.0,
+        "meanTransparentCallbacks": 31.0
+      },
+      "0.2": {
+        "samples": 20,
+        "medianMs": 26.599999997764826,
+        "p95Ms": 30.599999997764826,
+        "maxMs": 30.699999999254942,
+        "meanRenderCpuMs": 2.684999999962747,
+        "meanDraws": 119.0,
+        "meanTransparentCallbacks": 31.0
+      },
+      "0.3": {
+        "samples": 19,
+        "medianMs": 26.300000000745058,
+        "p95Ms": 31.300000000745058,
+        "maxMs": 35.100000001490116,
+        "meanRenderCpuMs": 2.7052631574241737,
+        "meanDraws": 119.0,
+        "meanTransparentCallbacks": 31.0
+      },
+      "0.4": {
+        "samples": 19,
+        "medianMs": 26.400000002235174,
+        "p95Ms": 28.199999999254942,
+        "maxMs": 37.600000001490116,
+        "meanRenderCpuMs": 2.252631578986582,
+        "meanDraws": 119.0,
+        "meanTransparentCallbacks": 31.0
+      },
+      "0.5": {
+        "samples": 19,
+        "medianMs": 26.799999997019768,
+        "p95Ms": 38.399999998509884,
+        "maxMs": 46.70000000298023,
+        "meanRenderCpuMs": 3.394736842497399,
+        "meanDraws": 119.0,
+        "meanTransparentCallbacks": 31.0
+      },
+      "0.6": {
+        "samples": 13,
+        "medianMs": 26.799999997019768,
+        "p95Ms": 28.400000002235174,
+        "maxMs": 299.20000000298023,
+        "meanRenderCpuMs": 25.14615384632578,
+        "meanDraws": 121.3076923076923,
+        "meanTransparentCallbacks": 32.53846153846154
+      },
+      "0.7": {
+        "samples": 15,
+        "medianMs": 27.099999997764826,
+        "p95Ms": 35.5,
+        "maxMs": 63.899999998509884,
+        "meanRenderCpuMs": 6.333333333830039,
+        "meanDraws": 119.6,
+        "meanTransparentCallbacks": 30.6
+      },
+      "0.8": {
+        "samples": 60,
+        "medianMs": 13.399999998509884,
+        "p95Ms": 24.300000000745058,
+        "maxMs": 28.400000002235174,
+        "meanRenderCpuMs": 3.22166666649282,
+        "meanDraws": 99.88333333333334,
+        "meanTransparentCallbacks": 16.566666666666666
+      }
+    },
+    "slowFrames": [
+      {
+        "ms": 299.20000000298023,
+        "actualPBefore": 0.6185,
+        "actualPAfter": 0.624,
+        "targetP": 0.6766666666666666,
+        "time": 7672.599999997765,
+        "events": [
+          {
+            "name": "getProgramInfoLog",
+            "start": 7807.599999997765,
+            "duration": 15.100000001490116
+          },
+          {
+            "name": "getProgramInfoLog",
+            "start": 7701.199999999255,
+            "duration": 14.5
+          },
+          {
+            "name": "getProgramInfoLog",
+            "start": 7787.099999997765,
+            "duration": 14.200000002980232
+          },
+          {
+            "name": "getProgramInfoLog",
+            "start": 7882.5,
+            "duration": 12.800000000745058
+          },
+          {
+            "name": "getProgramInfoLog",
+            "start": 7826.89999999851,
+            "duration": 12.300000000745058
+          },
+          {
+            "name": "getProgramInfoLog",
+            "start": 7770.89999999851,
+            "duration": 12.100000001490116
+          },
+          {
+            "name": "getProgramInfoLog",
+            "start": 7737.300000000745,
+            "duration": 11.899999998509884
+          },
+          {
+            "name": "getProgramInfoLog",
+            "start": 7847,
+            "duration": 11.199999999254942
+          }
+        ]
+      },
+      {
+        "ms": 63.899999998509884,
+        "actualPBefore": 0.742,
+        "actualPAfter": 0.7485,
+        "targetP": 0.8113888888888889,
+        "time": 8372,
+        "events": [
+          {
+            "name": "ReactCommit",
+            "start": 8376.800000000745,
+            "duration": 0
+          }
+        ]
+      }
+    ],
+    "slowGlCalls": [
+      {
+        "name": "getProgramInfoLog",
+        "start": 7701.199999999255,
+        "duration": 14.5,
+        "actualP": 0.6185
+      },
+      {
+        "name": "getProgramInfoLog",
+        "start": 7720.599999997765,
+        "duration": 10.700000002980232,
+        "actualP": 0.6185
+      },
+      {
+        "name": "getProgramInfoLog",
+        "start": 7737.300000000745,
+        "duration": 11.899999998509884,
+        "actualP": 0.6185
+      },
+      {
+        "name": "getProgramInfoLog",
+        "start": 7754.699999999255,
+        "duration": 10.699999999254942,
+        "actualP": 0.6185
+      },
+      {
+        "name": "getProgramInfoLog",
+        "start": 7770.89999999851,
+        "duration": 12.100000001490116,
+        "actualP": 0.6185
+      },
+      {
+        "name": "getProgramInfoLog",
+        "start": 7787.099999997765,
+        "duration": 14.200000002980232,
+        "actualP": 0.6185
+      },
+      {
+        "name": "getProgramInfoLog",
+        "start": 7807.599999997765,
+        "duration": 15.100000001490116,
+        "actualP": 0.6185
+      },
+      {
+        "name": "getProgramInfoLog",
+        "start": 7826.89999999851,
+        "duration": 12.300000000745058,
+        "actualP": 0.6185
+      },
+      {
+        "name": "getProgramInfoLog",
+        "start": 7841.599999997765,
+        "duration": 2.7000000029802322,
+        "actualP": 0.6185
+      },
+      {
+        "name": "getProgramInfoLog",
+        "start": 7847,
+        "duration": 11.199999999254942,
+        "actualP": 0.6185
+      },
+      {
+        "name": "getProgramInfoLog",
+        "start": 7861.5,
+        "duration": 11.099999997764826,
+        "actualP": 0.6185
+      },
+      {
+        "name": "getProgramInfoLog",
+        "start": 7876,
+        "duration": 2.699999999254942,
+        "actualP": 0.6185
+      },
+      {
+        "name": "getProgramInfoLog",
+        "start": 7882.5,
+        "duration": 12.800000000745058,
+        "actualP": 0.6185
+      },
+      {
+        "name": "getProgramInfoLog",
+        "start": 7899.099999997765,
+        "duration": 11.100000001490116,
+        "actualP": 0.6185
+      },
+      {
+        "name": "getProgramInfoLog",
+        "start": 7913.5,
+        "duration": 3.399999998509884,
+        "actualP": 0.6185
+      },
+      {
+        "name": "getProgramInfoLog",
+        "start": 7919.099999997765,
+        "duration": 2.800000000745058,
+        "actualP": 0.6185
+      },
+      {
+        "name": "getProgramInfoLog",
+        "start": 7923.300000000745,
+        "duration": 3.099999997764826,
+        "actualP": 0.6185
+      },
+      {
+        "name": "getProgramInfoLog",
+        "start": 7928.300000000745,
+        "duration": 2.899999998509884,
+        "actualP": 0.6185
+      },
+      {
+        "name": "getProgramInfoLog",
+        "start": 7933.599999997765,
+        "duration": 10.600000001490116,
+        "actualP": 0.6185
+      },
+      {
+        "name": "getProgramInfoLog",
+        "start": 7947.5,
+        "duration": 11,
+        "actualP": 0.6185
+      },
+      {
+        "name": "getProgramInfoLog",
+        "start": 7963.800000000745,
+        "duration": 6.399999998509884,
+        "actualP": 0.6185
+      }
+    ],
+    "longTasks": [
+      {
+        "name": "self",
+        "entryType": "longtask",
+        "startTime": 7685.800000000745,
+        "duration": 287,
+        "navigationId": 8981,
+        "attribution": [
+          {}
+        ],
+        "actualP": 0.6185
+      },
+      {
+        "name": "self",
+        "entryType": "longtask",
+        "startTime": 8379.89999999851,
+        "duration": 58,
+        "navigationId": 8981,
+        "attribution": [
+          {}
+        ],
+        "actualP": 0.742
+      }
+    ],
+    "longAnimationFrames": [
+      {
+        "name": "long-animation-frame",
+        "entryType": "long-animation-frame",
+        "startTime": 7674.39999999851,
+        "duration": 298,
+        "navigationId": 8981,
+        "paintTime": 7972.39999999851,
+        "presentationTime": 7996,
+        "renderStart": 7685.89999999851,
+        "styleAndLayoutStart": 7972,
+        "firstUIEventTimestamp": 7685.39999999851,
+        "blockingDuration": 237.5,
+        "scripts": [
+          {}
+        ]
+      },
+      {
+        "name": "long-animation-frame",
+        "entryType": "long-animation-frame",
+        "startTime": 8374.89999999851,
+        "duration": 61.69999999925494,
+        "navigationId": 8981,
+        "paintTime": 8436.599999997765,
+        "presentationTime": 8460,
+        "renderStart": 8380.099999997765,
+        "styleAndLayoutStart": 8436.099999997765,
+        "firstUIEventTimestamp": 8379.300000000745,
+        "blockingDuration": 8.6,
+        "scripts": [
+          {},
+          {}
+        ]
+      }
+    ],
+    "timeline": {},
+    "longTimelineEvents": [],
+    "affectedRange": {
+      "actualPMin": 0.1,
+      "actualPMax": 0.65,
+      "samples": 104,
+      "medianMs": 26.799999997019768,
+      "p95Ms": 31.300000000745058,
+      "maxMs": 299.20000000298023,
+      "over50": 1,
+      "over100": 1
+    }
+  },
+  {
+    "label": "1440x900-normal-dark-gpu-untraced",
+    "pass": "natural-1-reverse",
+    "metrics": {
+      "frames": 230,
+      "medianMs": 25.900000002235174,
+      "p95Ms": 29.399999998509884,
+      "maxMs": 36.899999998509884,
+      "over50": 0,
+      "over100": 0,
+      "scriptMs": 998.561,
+      "layoutMs": 0,
+      "styleMs": 2014.4590000000005,
+      "heapDeltaBytes": 1066832
+    },
+    "range": {
+      "targetMin": 0.0,
+      "targetMax": 0.88,
+      "actualMin": 0.0,
+      "actualMax": 0.88
+    },
+    "bins": {
+      "0.0": {
+        "samples": 65,
+        "medianMs": 13.599999997764826,
+        "p95Ms": 27.800000000745058,
+        "maxMs": 36.899999998509884,
+        "meanRenderCpuMs": 2.9523076919982065,
+        "meanDraws": 119.0,
+        "meanTransparentCallbacks": 31.0
+      },
+      "0.1": {
+        "samples": 20,
+        "medianMs": 26.599999997764826,
+        "p95Ms": 29.599999997764826,
+        "maxMs": 36.19999999925494,
+        "meanRenderCpuMs": 1.9950000002980233,
+        "meanDraws": 119.0,
+        "meanTransparentCallbacks": 31.0
+      },
+      "0.2": {
+        "samples": 19,
+        "medianMs": 26.400000002235174,
+        "p95Ms": 28.300000000745058,
+        "maxMs": 28.800000000745058,
+        "meanRenderCpuMs": 2.389473683936031,
+        "meanDraws": 119.0,
+        "meanTransparentCallbacks": 31.0
+      },
+      "0.3": {
+        "samples": 19,
+        "medianMs": 26.0,
+        "p95Ms": 29.100000001490116,
+        "maxMs": 29.400000002235174,
+        "meanRenderCpuMs": 2.1684210525923655,
+        "meanDraws": 119.0,
+        "meanTransparentCallbacks": 31.0
+      },
+      "0.4": {
+        "samples": 20,
+        "medianMs": 26.899999998509884,
+        "p95Ms": 28.5,
+        "maxMs": 28.800000000745058,
+        "meanRenderCpuMs": 2.345000000111759,
+        "meanDraws": 119.0,
+        "meanTransparentCallbacks": 31.0
+      },
+      "0.5": {
+        "samples": 19,
+        "medianMs": 25.900000002235174,
+        "p95Ms": 31.100000001490116,
+        "maxMs": 31.600000001490116,
+        "meanRenderCpuMs": 2.615789473841065,
+        "meanDraws": 119.0,
+        "meanTransparentCallbacks": 31.0
+      },
+      "0.6": {
+        "samples": 19,
+        "medianMs": 26.399999998509884,
+        "p95Ms": 30.200000002980232,
+        "maxMs": 30.5,
+        "meanRenderCpuMs": 3.9421052630794677,
+        "meanDraws": 121.21052631578948,
+        "meanTransparentCallbacks": 32.473684210526315
+      },
+      "0.7": {
+        "samples": 20,
+        "medianMs": 27.0,
+        "p95Ms": 29.399999998509884,
+        "maxMs": 31.800000000745058,
+        "meanRenderCpuMs": 3.8449999997392297,
+        "meanDraws": 120.5,
+        "meanTransparentCallbacks": 31.5
+      },
+      "0.8": {
+        "samples": 28,
+        "medianMs": 26.100000001490116,
+        "p95Ms": 29.199999999254942,
+        "maxMs": 31.699999999254942,
+        "meanRenderCpuMs": 3.6035714286512563,
+        "meanDraws": 104.32142857142857,
+        "meanTransparentCallbacks": 18.821428571428573
+      }
+    },
+    "slowFrames": [],
+    "slowGlCalls": [],
+    "longTasks": [],
+    "longAnimationFrames": [],
+    "timeline": {},
+    "longTimelineEvents": [],
+    "affectedRange": {
+      "actualPMin": 0.1,
+      "actualPMax": 0.65,
+      "samples": 107,
+      "medianMs": 26.5,
+      "p95Ms": 29.199999999254942,
+      "maxMs": 36.19999999925494,
+      "over50": 0,
+      "over100": 0
+    }
+  }
+]

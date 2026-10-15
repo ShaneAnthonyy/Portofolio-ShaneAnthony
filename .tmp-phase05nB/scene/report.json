@@ -1,0 +1,498 @@
+{
+  "report": {
+    "states": [
+      {
+        "state": "p0",
+        "chars": [
+          {
+            "kind": "chicken",
+            "t": 0.39,
+            "clip": "idle",
+            "active": true,
+            "visible": true,
+            "pos": [
+              14,
+              0.04,
+              -22
+            ]
+          },
+          {
+            "kind": "golem",
+            "t": 0.39,
+            "clip": "idle",
+            "active": true,
+            "visible": true,
+            "pos": [
+              -10,
+              -1.83,
+              -42
+            ]
+          }
+        ],
+        "stats": {
+          "calls": 184,
+          "tris": 334987,
+          "geos": 115,
+          "texs": 50
+        },
+        "proj": {
+          "chars": {
+            "chicken": {
+              "ndc": [
+                0.627,
+                -0.114,
+                0.995
+              ],
+              "behind": false
+            },
+            "golem": {
+              "ndc": [
+                -0.282,
+                -0.133,
+                0.997
+              ],
+              "behind": false
+            }
+          },
+          "cam": [
+            0,
+            2.5,
+            12
+          ],
+          "w": 1440,
+          "h": 900
+        }
+      },
+      {
+        "state": "p05",
+        "chars": [
+          {
+            "kind": "chicken",
+            "t": 3.44,
+            "clip": "walk",
+            "active": true,
+            "visible": true,
+            "pos": [
+              10.32,
+              -0.27,
+              -25.68
+            ]
+          },
+          {
+            "kind": "golem",
+            "t": 3.44,
+            "clip": "walk",
+            "active": true,
+            "visible": true,
+            "pos": [
+              -4.35,
+              -1.53,
+              -44.82
+            ]
+          }
+        ],
+        "stats": {
+          "calls": 184,
+          "tris": 334987,
+          "geos": 115,
+          "texs": 50
+        },
+        "proj": {
+          "chars": {
+            "chicken": {
+              "ndc": [
+                0.459,
+                0.821,
+                0.995
+              ],
+              "behind": false
+            },
+            "golem": {
+              "ndc": [
+                -0.13,
+                0.981,
+                0.997
+              ],
+              "behind": false
+            }
+          },
+          "cam": [
+            0,
+            8.08,
+            9.5
+          ],
+          "w": 1440,
+          "h": 900
+        }
+      },
+      {
+        "state": "p091",
+        "chars": [
+          {
+            "kind": "chicken",
+            "t": 6.05,
+            "clip": "run",
+            "active": true,
+            "visible": true,
+            "pos": [
+              -3.31,
+              -0.86,
+              -33.32
+            ]
+          },
+          {
+            "kind": "golem",
+            "t": 6.05,
+            "clip": "idle",
+            "active": true,
+            "visible": true,
+            "pos": [
+              2,
+              -1.19,
+              -48
+            ]
+          }
+        ],
+        "stats": {
+          "calls": 1,
+          "tris": 1,
+          "geos": 115,
+          "texs": 50
+        },
+        "proj": {
+          "chars": {
+            "chicken": {
+              "ndc": [
+                -0.141,
+                0.292,
+                0.995
+              ],
+              "behind": false
+            },
+            "golem": {
+              "ndc": [
+                0.061,
+                0.368,
+                0.997
+              ],
+              "behind": false
+            }
+          },
+          "cam": [
+            0,
+            3.83,
+            2.57
+          ],
+          "w": 1440,
+          "h": 900
+        }
+      }
+    ],
+    "timeline": [
+      {
+        "state": "t1-idle",
+        "chars": [
+          {
+            "kind": "chicken",
+            "t": 8.51,
+            "clip": "run",
+            "active": false,
+            "visible": false,
+            "pos": [
+              -26,
+              -1.68,
+              -44
+            ]
+          },
+          {
+            "kind": "golem",
+            "t": 8.77,
+            "clip": "idle",
+            "active": true,
+            "visible": true,
+            "pos": [
+              2,
+              -1.19,
+              -48
+            ]
+          }
+        ],
+        "proj": {
+          "chars": {
+            "chicken": {
+              "ndc": [
+                -0.785,
+                0.966,
+                0.997
+              ],
+              "behind": false
+            },
+            "golem": {
+              "ndc": [
+                0.057,
+                1.024,
+                0.997
+              ],
+              "behind": false
+            }
+          },
+          "cam": [
+            0,
+            8.08,
+            9.5
+          ],
+          "w": 1440,
+          "h": 900
+        }
+      },
+      {
+        "state": "t35-walk",
+        "chars": [
+          {
+            "kind": "chicken",
+            "t": 8.51,
+            "clip": "run",
+            "active": false,
+            "visible": false,
+            "pos": [
+              -26,
+              -1.68,
+              -44
+            ]
+          },
+          {
+            "kind": "golem",
+            "t": 11.89,
+            "clip": "walk",
+            "active": true,
+            "visible": true,
+            "pos": [
+              3.6,
+              -1.24,
+              -48.96
+            ]
+          }
+        ],
+        "proj": {
+          "chars": {
+            "chicken": {
+              "ndc": [
+                -0.785,
+                0.966,
+                0.997
+              ],
+              "behind": false
+            },
+            "golem": {
+              "ndc": [
+                0.102,
+                1.029,
+                0.997
+              ],
+              "behind": false
+            }
+          },
+          "cam": [
+            0,
+            8.08,
+            9.5
+          ],
+          "w": 1440,
+          "h": 900
+        }
+      },
+      {
+        "state": "t6-run",
+        "chars": [
+          {
+            "kind": "chicken",
+            "t": 8.51,
+            "clip": "run",
+            "active": false,
+            "visible": false,
+            "pos": [
+              -26,
+              -1.68,
+              -44
+            ]
+          },
+          {
+            "kind": "golem",
+            "t": 14.5,
+            "clip": "walk",
+            "active": false,
+            "visible": true,
+            "pos": [
+              12,
+              -1.49,
+              -54
+            ]
+          }
+        ],
+        "proj": {
+          "chars": {
+            "chicken": {
+              "ndc": [
+                -0.785,
+                0.966,
+                0.997
+              ],
+              "behind": false
+            },
+            "golem": {
+              "ndc": [
+                0.311,
+                1.053,
+                0.997
+              ],
+              "behind": false
+            }
+          },
+          "cam": [
+            0,
+            8.08,
+            9.5
+          ],
+          "w": 1440,
+          "h": 900
+        }
+      },
+      {
+        "state": "t9-exit",
+        "chars": [
+          {
+            "kind": "chicken",
+            "t": 8.51,
+            "clip": "run",
+            "active": false,
+            "visible": false,
+            "pos": [
+              -26,
+              -1.68,
+              -44
+            ]
+          },
+          {
+            "kind": "golem",
+            "t": 14.5,
+            "clip": "walk",
+            "active": false,
+            "visible": true,
+            "pos": [
+              12,
+              -1.49,
+              -54
+            ]
+          }
+        ],
+        "proj": {
+          "chars": {
+            "chicken": {
+              "ndc": [
+                -0.785,
+                0.966,
+                0.997
+              ],
+              "behind": false
+            },
+            "golem": {
+              "ndc": [
+                0.311,
+                1.053,
+                0.997
+              ],
+              "behind": false
+            }
+          },
+          "cam": [
+            0,
+            8.08,
+            9.5
+          ],
+          "w": 1440,
+          "h": 900
+        }
+      }
+    ],
+    "perf": [
+      {
+        "label": "desktop-fwd",
+        "frames": 488,
+        "median": 13.3,
+        "p95": 13.5,
+        "max": 13.6,
+        "over50": 0
+      },
+      {
+        "label": "desktop-rev",
+        "frames": 488,
+        "median": 13.3,
+        "p95": 13.5,
+        "max": 13.6,
+        "over50": 0
+      }
+    ],
+    "replay": [
+      {
+        "kind": "chicken",
+        "t": 0.76,
+        "clip": "idle",
+        "active": true,
+        "visible": true,
+        "pos": [
+          14,
+          0.04,
+          -22
+        ]
+      },
+      {
+        "kind": "golem",
+        "t": 0.76,
+        "clip": "idle",
+        "active": true,
+        "visible": true,
+        "pos": [
+          -10,
+          -1.83,
+          -42
+        ]
+      }
+    ],
+    "errors": [],
+    "mobile": {
+      "chars": [
+        {
+          "kind": "chicken",
+          "t": 0.19,
+          "clip": "idle",
+          "active": true,
+          "visible": true,
+          "pos": [
+            14,
+            0.04,
+            -22
+          ]
+        },
+        {
+          "kind": "golem",
+          "t": 0.19,
+          "clip": "idle",
+          "active": true,
+          "visible": true,
+          "pos": [
+            -10,
+            -1.83,
+            -42
+          ]
+        }
+      ],
+      "stats": {
+        "calls": 100,
+        "tris": 237260,
+        "geos": 55,
+        "texs": 41
+      }
+    }
+  },
+  "errors": []
+}

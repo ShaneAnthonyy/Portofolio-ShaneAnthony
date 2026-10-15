@@ -1,0 +1,2 @@
+PASS baseline 390x844-normal-dark-gpu natural-1-forward {"frames":380,"medianMs":13.399999998509884,"p95Ms":14.600000001490116,"maxMs":15.699999999254942,"over50":0,"over100":0,"scriptMs":2326.2090000000003,"layoutMs":0,"styleMs":276.798,"heapDeltaBytes":5392576}
+PASS baseline 390x844-normal-dark-gpu natural-1-reverse {"frames":374,"medianMs":13.300000000745058,"p95Ms":14.800000000745058,"maxMs":48.5,"over50":0,"over100":0,"scriptMs":1908.62,"layoutMs":0,"styleMs":203.03500000000003,"heapDeltaBytes":-699024}

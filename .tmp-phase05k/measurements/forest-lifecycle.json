@@ -1,0 +1,54 @@
+{
+  "checks": [
+    "forest stops drawing under parked Hero",
+    "Lite replay resumes four resident cherry clones without reload",
+    "normal replay restores six trees using the same clone identities",
+    "live resize limits visible forest to 2 / 4 / 6 without rebuilding resources"
+  ],
+  "initial": {
+    "ids": [
+      "98f4aa1e-4d3a-4154-ba7e-3b643d684cf8",
+      "00788492-92fa-4dc0-9509-712f7158d4c8",
+      "583ad6a4-03da-40a3-9baa-f91af9e1c479",
+      "2c0f2329-2924-4a3f-a445-e000027311ad",
+      "37ace238-de30-48d7-8839-7dc31fa3307d",
+      "ff5b7eec-7017-40a5-bd4d-c6b878738f0a"
+    ],
+    "visible": 6,
+    "groundVisible": true,
+    "draws": 120,
+    "dive": "running"
+  },
+  "parked": {
+    "ids": [
+      "98f4aa1e-4d3a-4154-ba7e-3b643d684cf8",
+      "00788492-92fa-4dc0-9509-712f7158d4c8",
+      "583ad6a4-03da-40a3-9baa-f91af9e1c479",
+      "2c0f2329-2924-4a3f-a445-e000027311ad",
+      "37ace238-de30-48d7-8839-7dc31fa3307d",
+      "ff5b7eec-7017-40a5-bd4d-c6b878738f0a"
+    ],
+    "visible": 6,
+    "groundVisible": false,
+    "draws": 546,
+    "dive": "paused"
+  },
+  "final": {
+    "ids": [
+      "98f4aa1e-4d3a-4154-ba7e-3b643d684cf8",
+      "00788492-92fa-4dc0-9509-712f7158d4c8",
+      "583ad6a4-03da-40a3-9baa-f91af9e1c479",
+      "2c0f2329-2924-4a3f-a445-e000027311ad",
+      "37ace238-de30-48d7-8839-7dc31fa3307d",
+      "ff5b7eec-7017-40a5-bd4d-c6b878738f0a"
+    ],
+    "visible": 6,
+    "groundVisible": true,
+    "draws": 2552,
+    "dive": "running"
+  },
+  "requests": [
+    "http://127.0.0.1:4173/aquarium/environment/cherry_blossom-opt.glb"
+  ],
+  "errors": []
+}

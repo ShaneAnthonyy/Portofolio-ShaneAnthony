@@ -1,0 +1,37 @@
+[
+  {
+    "command": "node .tmp-phase05k/scene.mjs final 1440",
+    "exitCode": 0,
+    "log": "logs/final-1440.log"
+  },
+  {
+    "command": "node .tmp-phase05k/scene.mjs final 1440 --light",
+    "exitCode": 0,
+    "log": "logs/final-1440---light.log"
+  },
+  {
+    "command": "node .tmp-phase05k/scene.mjs final 390",
+    "exitCode": 0,
+    "log": "logs/final-390.log"
+  },
+  {
+    "command": "node .tmp-phase05k/scene.mjs final 1440 --lite",
+    "exitCode": 0,
+    "log": "logs/final-1440---lite.log"
+  },
+  {
+    "command": "node .tmp-phase05k/scene.mjs final 390 --lite",
+    "exitCode": 0,
+    "log": "logs/final-390---lite.log"
+  },
+  {
+    "command": "node .tmp-phase05k/scene.mjs final 768",
+    "exitCode": 0,
+    "log": "logs/final-768.log"
+  },
+  {
+    "command": "node .tmp-phase05k/scene.mjs final 768 --lite",
+    "exitCode": 0,
+    "log": "logs/final-768---lite.log"
+  }
+]

@@ -91,8 +91,8 @@ export default function App() {
   const shouldDive = canReplay && !progress.reduced
   const entered = !shouldDive || introComplete || progress.dive >= 0.995
   const portfolioUnlocked = !shouldDive || (introComplete && !returningToP0)
-  const bubbleDepth = Math.min(Math.max(progress.t, 0), 1)
   const visualEntered = entered || magneticLanding || shouldDive && progress.dive >= 0.94
+  const bubbleDepth = visualEntered ? Math.min(Math.max(progress.t, 0), 1) : 0
   const diveProgress = (introComplete && !returningToP0) ? 1 : undefined
   const diveNearEnd = shouldDive && !introComplete && !returningToP0 && (progress.dive ?? 0) >= 0.9
   const heroPrewarm = (diveNearEnd || magneticLanding) && performanceMode !== 'lite' && !progress.reduced
@@ -461,6 +461,7 @@ export default function App() {
           >
             <AquariumDivePrototype
               integrated
+              presentationReady={gateEntered}
               diveProgress={diveProgress}
               introComplete={introComplete}
               magneticLanding={magneticLanding}

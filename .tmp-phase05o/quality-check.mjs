@@ -1,0 +1,11 @@
+import assert from'node:assert/strict'
+import{fresh,send,evaluate,until,delay,click,close,errors}from'./browser.mjs'
+import{readFile,writeFile}from'node:fs/promises'
+const result={errors,checks:[]},state=()=>evaluate('window.__qa.snapshot()')
+const install=async()=>{await evaluate(await readFile(new URL('instrument.js',import.meta.url),'utf8'));await until('!!window.__qa.renderer')}
+try{
+ await fresh({beforeEnter:install});const initial=await state();await evaluate(`document.querySelector('.lite-toggle').click()`);await until(`document.documentElement.dataset.perf==='lite'`);await delay(200);const lite=await state();await delay(800);const held=await state();assert.deepEqual(lite.actors,held.actors);assert.ok(held.actors.every(a=>!a.visible));result.lite=held
+ await evaluate(`document.querySelector('.lite-toggle').click()`);await until(`document.documentElement.dataset.perf==='normal'`);await until(`window.__qa.actors().every(a=>a.group.visible&&a.mixer.time>${Math.max(...held.actors.map(a=>a.time))})`);const resumed=await state();assert.deepEqual(resumed.actors.map(a=>a.id),initial.actors.map(a=>a.id));assert.equal(resumed.mixers,2);assert.ok(resumed.actors.every(a=>a.time>=held.actors.find(b=>b.kind===a.kind).time));result.resumed=resumed;result.checks.push('Normal -> Lite suspends/hides resident actors; Normal resumes same clocks and two mixers')
+ await fresh({lite:true,beforeEnter:install});assert.equal(await evaluate('window.__qa.actors().length'),0);await evaluate(`document.querySelector('.lite-toggle').click()`);await until(`document.documentElement.dataset.perf==='normal'`);await delay(1500);assert.equal(await evaluate('window.__qa.actors().length'),0);assert.equal(await evaluate(`performance.getEntriesByType('resource').filter(r=>/chicken_jockey|golem_animated/.test(r.name)).length`),0);result.checks.push('Fresh Lite -> Normal preserves existing initialization policy; actors remain omitted until a normal initialization')
+ assert.equal(errors.filter(e=>!String(e.url).endsWith('/favicon.ico')).length,0,JSON.stringify(errors));console.log('PASS',result.checks.join('; '))
+}finally{await writeFile(new URL('measurements/quality-lifecycle.json',import.meta.url),JSON.stringify(result,null,2));await close()}

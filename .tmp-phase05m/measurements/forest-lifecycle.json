@@ -1,0 +1,66 @@
+{
+  "checks": [
+    "forest stops drawing under parked Hero",
+    "Lite replay resumes four resident cherry clones without reload",
+    "normal replay restores ten trees using the same clone identities",
+    "live resize limits visible forest to 2 / 6 / 10 without rebuilding resources"
+  ],
+  "initial": {
+    "ids": [
+      "4a7cc545-aa02-45eb-ba8a-405fad20d0dd",
+      "f2a70034-927a-4a1d-9b2e-47f0d6e4b11c",
+      "937a4e1f-8c55-4bc1-9f04-cad7e58199e0",
+      "ba455142-b54f-4517-8191-c2d1631b633f",
+      "3744109e-58b4-46d5-8f9d-3b64eb7cb0aa",
+      "5b567339-dbea-4554-b251-29cdc40925e7",
+      "a66450b4-6fcb-433f-ad8d-4abdaef93736",
+      "e01d0b30-341d-4dea-b63d-59ab7c29805b",
+      "6af91872-ba05-491c-bb13-1bc40e36c7c8",
+      "0907dc2d-ae5c-4987-a654-6cd4a9f010a5"
+    ],
+    "visible": 10,
+    "groundVisible": true,
+    "draws": 190,
+    "dive": "running"
+  },
+  "parked": {
+    "ids": [
+      "4a7cc545-aa02-45eb-ba8a-405fad20d0dd",
+      "f2a70034-927a-4a1d-9b2e-47f0d6e4b11c",
+      "937a4e1f-8c55-4bc1-9f04-cad7e58199e0",
+      "ba455142-b54f-4517-8191-c2d1631b633f",
+      "3744109e-58b4-46d5-8f9d-3b64eb7cb0aa",
+      "5b567339-dbea-4554-b251-29cdc40925e7",
+      "a66450b4-6fcb-433f-ad8d-4abdaef93736",
+      "e01d0b30-341d-4dea-b63d-59ab7c29805b",
+      "6af91872-ba05-491c-bb13-1bc40e36c7c8",
+      "0907dc2d-ae5c-4987-a654-6cd4a9f010a5"
+    ],
+    "visible": 10,
+    "groundVisible": false,
+    "draws": 1050,
+    "dive": "paused"
+  },
+  "final": {
+    "ids": [
+      "4a7cc545-aa02-45eb-ba8a-405fad20d0dd",
+      "f2a70034-927a-4a1d-9b2e-47f0d6e4b11c",
+      "937a4e1f-8c55-4bc1-9f04-cad7e58199e0",
+      "ba455142-b54f-4517-8191-c2d1631b633f",
+      "3744109e-58b4-46d5-8f9d-3b64eb7cb0aa",
+      "5b567339-dbea-4554-b251-29cdc40925e7",
+      "a66450b4-6fcb-433f-ad8d-4abdaef93736",
+      "e01d0b30-341d-4dea-b63d-59ab7c29805b",
+      "6af91872-ba05-491c-bb13-1bc40e36c7c8",
+      "0907dc2d-ae5c-4987-a654-6cd4a9f010a5"
+    ],
+    "visible": 10,
+    "groundVisible": true,
+    "draws": 3998,
+    "dive": "running"
+  },
+  "requests": [
+    "http://127.0.0.1:4173/aquarium/environment/cherry_blossom-opt.glb"
+  ],
+  "errors": []
+}

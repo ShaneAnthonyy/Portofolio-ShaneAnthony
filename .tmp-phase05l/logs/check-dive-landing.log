@@ -1,0 +1,5 @@
+staged: {"y":3276,"unlocked":false,"titleCX":713,"titleCY":423,"heroTop":0,"heroH":900,"dockT":"matrix(1, 0, 0, 1, 195.844, 0)","vh":900,"vw":1440,"belowFold":false}
+PASS Magnetic landing: precise stop at 0, centered hero, dock settled, no About exposure
+PASS Settled frame stable over 2s
+PASS Actual animation frames preserve Hero geometry across early collapse and completion
+{"checks":["Magnetic landing: precise stop at 0, centered hero, dock settled, no About exposure","Settled frame stable over 2s","Actual animation frames preserve Hero geometry across early collapse and completion"]}

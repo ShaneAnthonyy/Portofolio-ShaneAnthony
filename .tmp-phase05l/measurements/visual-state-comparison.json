@@ -1,0 +1,178 @@
+[
+  {
+    "before": "baseline",
+    "after": "after-full",
+    "p": 0.0,
+    "identicalCameraMatricesProjectionAndResolution": true
+  },
+  {
+    "before": "baseline",
+    "after": "after-full",
+    "p": 0.15,
+    "identicalCameraMatricesProjectionAndResolution": true
+  },
+  {
+    "before": "baseline",
+    "after": "after-full",
+    "p": 0.3,
+    "identicalCameraMatricesProjectionAndResolution": true
+  },
+  {
+    "before": "baseline",
+    "after": "after-full",
+    "p": 0.45,
+    "identicalCameraMatricesProjectionAndResolution": true
+  },
+  {
+    "before": "baseline",
+    "after": "after-full",
+    "p": 0.55,
+    "identicalCameraMatricesProjectionAndResolution": true
+  },
+  {
+    "before": "baseline",
+    "after": "after-full",
+    "p": 0.62,
+    "identicalCameraMatricesProjectionAndResolution": true
+  },
+  {
+    "before": "baseline",
+    "after": "after-full",
+    "p": 0.7,
+    "identicalCameraMatricesProjectionAndResolution": true
+  },
+  {
+    "before": "baseline",
+    "after": "after-full",
+    "p": 0.8,
+    "identicalCameraMatricesProjectionAndResolution": true
+  },
+  {
+    "before": "baseline-mobile",
+    "after": "after-mobile",
+    "p": 0.0,
+    "identicalCameraMatricesProjectionAndResolution": true
+  },
+  {
+    "before": "baseline-mobile",
+    "after": "after-mobile",
+    "p": 0.15,
+    "identicalCameraMatricesProjectionAndResolution": true
+  },
+  {
+    "before": "baseline-mobile",
+    "after": "after-mobile",
+    "p": 0.3,
+    "identicalCameraMatricesProjectionAndResolution": true
+  },
+  {
+    "before": "baseline-mobile",
+    "after": "after-mobile",
+    "p": 0.45,
+    "identicalCameraMatricesProjectionAndResolution": true
+  },
+  {
+    "before": "baseline-mobile",
+    "after": "after-mobile",
+    "p": 0.55,
+    "identicalCameraMatricesProjectionAndResolution": true
+  },
+  {
+    "before": "baseline-mobile",
+    "after": "after-mobile",
+    "p": 0.62,
+    "identicalCameraMatricesProjectionAndResolution": true
+  },
+  {
+    "before": "baseline-mobile",
+    "after": "after-mobile",
+    "p": 0.7,
+    "identicalCameraMatricesProjectionAndResolution": true
+  },
+  {
+    "before": "baseline-mobile",
+    "after": "after-mobile",
+    "p": 0.8,
+    "identicalCameraMatricesProjectionAndResolution": true
+  },
+  {
+    "before": "Phase 05K approved final",
+    "after": "final-1440-normal-dark",
+    "identicalCameraLightsTerrainTreePlacementAndQuality": true
+  },
+  {
+    "before": "Phase 05K approved final",
+    "after": "final-1440-normal-dark",
+    "identicalCameraLightsTerrainTreePlacementAndQuality": true
+  },
+  {
+    "before": "Phase 05K approved final",
+    "after": "final-1440-normal-dark",
+    "identicalCameraLightsTerrainTreePlacementAndQuality": true
+  },
+  {
+    "before": "Phase 05K approved final",
+    "after": "final-1440-normal-dark",
+    "identicalCameraLightsTerrainTreePlacementAndQuality": true
+  },
+  {
+    "before": "Phase 05K approved final",
+    "after": "final-390-normal-dark",
+    "identicalCameraLightsTerrainTreePlacementAndQuality": true
+  },
+  {
+    "before": "Phase 05K approved final",
+    "after": "final-390-normal-dark",
+    "identicalCameraLightsTerrainTreePlacementAndQuality": true
+  },
+  {
+    "before": "Phase 05K approved final",
+    "after": "final-390-normal-dark",
+    "identicalCameraLightsTerrainTreePlacementAndQuality": true
+  },
+  {
+    "before": "Phase 05K approved final",
+    "after": "final-390-normal-dark",
+    "identicalCameraLightsTerrainTreePlacementAndQuality": true
+  },
+  {
+    "before": "Phase 05K approved final",
+    "after": "final-1440-normal-light",
+    "identicalCameraLightsTerrainTreePlacementAndQuality": true
+  },
+  {
+    "before": "Phase 05K approved final",
+    "after": "final-1440-normal-light",
+    "identicalCameraLightsTerrainTreePlacementAndQuality": true
+  },
+  {
+    "before": "Phase 05K approved final",
+    "after": "final-1440-normal-light",
+    "identicalCameraLightsTerrainTreePlacementAndQuality": true
+  },
+  {
+    "before": "Phase 05K approved final",
+    "after": "final-1440-normal-light",
+    "identicalCameraLightsTerrainTreePlacementAndQuality": true
+  },
+  {
+    "before": "Phase 05K approved final",
+    "after": "final-390-lite-dark",
+    "identicalCameraLightsTerrainTreePlacementAndQuality": true
+  },
+  {
+    "before": "Phase 05K approved final",
+    "after": "final-390-lite-dark",
+    "identicalCameraLightsTerrainTreePlacementAndQuality": true
+  },
+  {
+    "before": "Phase 05K approved final",
+    "after": "final-390-lite-dark",
+    "identicalCameraLightsTerrainTreePlacementAndQuality": true
+  },
+  {
+    "before": "Phase 05K approved final",
+    "after": "final-390-lite-dark",
+    "identicalCameraLightsTerrainTreePlacementAndQuality": true
+  }
+]

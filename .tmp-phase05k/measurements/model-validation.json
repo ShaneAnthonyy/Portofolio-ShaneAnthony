@@ -1,0 +1,315 @@
+{
+  "models": [
+    {
+      "file": "cherry_blossom.glb",
+      "meshes": 27,
+      "triangles": 324,
+      "vertices": 648,
+      "bounds": {
+        "min": [
+          -1.0625,
+          0,
+          -1
+        ],
+        "max": [
+          1.0625,
+          1.5625,
+          1.0625
+        ]
+      },
+      "materials": [
+        {
+          "type": "MeshStandardMaterial",
+          "color": [
+            1,
+            1,
+            1
+          ],
+          "roughness": 1,
+          "metalness": 0,
+          "transparent": false,
+          "side": 2,
+          "alphaTest": 0.05,
+          "opacity": 1
+        }
+      ],
+      "textures": [
+        {
+          "width": 128,
+          "height": 128,
+          "colorSpace": "srgb",
+          "magFilter": 1003,
+          "minFilter": 1003,
+          "wrapS": 1001,
+          "wrapT": 1001
+        }
+      ],
+      "foot": [
+        [
+          0.125,
+          0,
+          0.125
+        ],
+        [
+          0.125,
+          0,
+          -0.125
+        ],
+        [
+          -0.125,
+          0,
+          -0.125
+        ],
+        [
+          -0.125,
+          0,
+          0.125
+        ],
+        [
+          -0.125,
+          0,
+          0.125
+        ],
+        [
+          0.125,
+          0,
+          0.125
+        ],
+        [
+          -0.125,
+          0,
+          -0.125
+        ],
+        [
+          0.125,
+          0,
+          -0.125
+        ],
+        [
+          -0.125,
+          0,
+          0.125
+        ],
+        [
+          0.125,
+          0,
+          0.125
+        ],
+        [
+          0.125,
+          0,
+          -0.125
+        ],
+        [
+          -0.125,
+          0,
+          -0.125
+        ]
+      ],
+      "rootRotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ],
+      "rootScale": [
+        1,
+        1,
+        1
+      ],
+      "animations": 0
+    },
+    {
+      "file": "cherry_blossom-opt.glb",
+      "meshes": 1,
+      "triangles": 324,
+      "vertices": 648,
+      "bounds": {
+        "min": [
+          -1.0625,
+          0,
+          -1
+        ],
+        "max": [
+          1.0625,
+          1.5625,
+          1.0625
+        ]
+      },
+      "materials": [
+        {
+          "type": "MeshStandardMaterial",
+          "color": [
+            1,
+            1,
+            1
+          ],
+          "roughness": 1,
+          "metalness": 0,
+          "transparent": false,
+          "side": 2,
+          "alphaTest": 0.05,
+          "opacity": 1
+        }
+      ],
+      "textures": [
+        {
+          "width": 128,
+          "height": 128,
+          "colorSpace": "srgb",
+          "magFilter": 1003,
+          "minFilter": 1003,
+          "wrapS": 1001,
+          "wrapT": 1001
+        }
+      ],
+      "foot": [
+        [
+          0.125,
+          0,
+          0.125
+        ],
+        [
+          0.125,
+          0,
+          -0.125
+        ],
+        [
+          -0.125,
+          0,
+          -0.125
+        ],
+        [
+          -0.125,
+          0,
+          0.125
+        ],
+        [
+          -0.125,
+          0,
+          0.125
+        ],
+        [
+          0.125,
+          0,
+          0.125
+        ],
+        [
+          -0.125,
+          0,
+          -0.125
+        ],
+        [
+          0.125,
+          0,
+          -0.125
+        ],
+        [
+          -0.125,
+          0,
+          0.125
+        ],
+        [
+          0.125,
+          0,
+          0.125
+        ],
+        [
+          0.125,
+          0,
+          -0.125
+        ],
+        [
+          -0.125,
+          0,
+          -0.125
+        ]
+      ],
+      "rootRotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ],
+      "rootScale": [
+        1,
+        1,
+        1
+      ],
+      "animations": 0
+    }
+  ],
+  "views": [
+    {
+      "name": "front",
+      "differentChannels": 540,
+      "totalChannels": 2304000,
+      "maxChannelDifference": 39,
+      "meanChannelDifference": 0.004225694444444444,
+      "stats": [
+        {
+          "frame": 1,
+          "calls": 27,
+          "triangles": 324,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "frame": 2,
+          "calls": 1,
+          "triangles": 324,
+          "points": 0,
+          "lines": 0
+        }
+      ]
+    },
+    {
+      "name": "oblique",
+      "differentChannels": 663,
+      "totalChannels": 2304000,
+      "maxChannelDifference": 46,
+      "meanChannelDifference": 0.005225694444444444,
+      "stats": [
+        {
+          "frame": 3,
+          "calls": 27,
+          "triangles": 324,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "frame": 4,
+          "calls": 1,
+          "triangles": 324,
+          "points": 0,
+          "lines": 0
+        }
+      ]
+    },
+    {
+      "name": "back",
+      "differentChannels": 411,
+      "totalChannels": 2304000,
+      "maxChannelDifference": 37,
+      "meanChannelDifference": 0.0030668402777777777,
+      "stats": [
+        {
+          "frame": 5,
+          "calls": 27,
+          "triangles": 324,
+          "points": 0,
+          "lines": 0
+        },
+        {
+          "frame": 6,
+          "calls": 1,
+          "triangles": 324,
+          "points": 0,
+          "lines": 0
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "warnings": []
+}

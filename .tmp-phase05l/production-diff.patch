@@ -1,0 +1,83 @@
+--- src/App.jsx (before Phase 05L)
++++ src/App.jsx
+@@ -91,8 +91,8 @@
+   const shouldDive = canReplay && !progress.reduced
+   const entered = !shouldDive || introComplete || progress.dive >= 0.995
+   const portfolioUnlocked = !shouldDive || (introComplete && !returningToP0)
+-  const bubbleDepth = Math.min(Math.max(progress.t, 0), 1)
+   const visualEntered = entered || magneticLanding || shouldDive && progress.dive >= 0.94
++  const bubbleDepth = visualEntered ? Math.min(Math.max(progress.t, 0), 1) : 0
+   const diveProgress = (introComplete && !returningToP0) ? 1 : undefined
+   const diveNearEnd = shouldDive && !introComplete && !returningToP0 && (progress.dive ?? 0) >= 0.9
+   const heroPrewarm = (diveNearEnd || magneticLanding) && performanceMode !== 'lite' && !progress.reduced
+--- src/components/AquariumDivePrototype.jsx (before Phase 05L)
++++ src/components/AquariumDivePrototype.jsx
+@@ -758,6 +758,7 @@
+         }
+       }
+       onFrame(mount.clientWidth, mount.clientHeight, true)
++      if (nextMode === 'normal' && !reduced && !backdropRef.current) track(prepareTransition(), 'transition')
+       if (reduced) rerender()
+     }
+     renderer.outputColorSpace = THREE.SRGBColorSpace
+@@ -901,6 +902,7 @@
+ 
+     let lastP = 0
+     let trans = null
++    let preparingTransition = null
+     const MASK_DEBUG =
+       import.meta.env.DEV &&
+       typeof window !== 'undefined' &&
+@@ -1121,6 +1123,7 @@
+       return trans
+     }
+     const renderFrame = (p, tSec) => {
++      if (preparingTransition) return
+       if (qState.mode === 'lite') {
+         setInstallVisible(p < 0.94)
+         renderer.render(scene, camera)
+@@ -1154,6 +1157,34 @@
+       setInstallVisible(true)
+       renderer.setRenderTarget(null)
+       renderer.render(tr.quadScene, tr.quadCam)
++    }
++
++    const prepareTransition = () => {
++      if (cancelled || reduced || backdropRef.current || qState.mode === 'lite') return Promise.resolve()
++      const tr = ensureTransition()
++      if (tr.preparation) return tr.preparation
++      tr.preparation = (async () => {
++        preparingTransition = tr
++        const target = renderer.getRenderTarget()
++        try {
++          setInstallVisible(true)
++          renderer.initRenderTarget(tr.skyRT)
++          renderer.setRenderTarget(tr.sceneRT)
++          const sceneReady = renderer.compileAsync(scene, camera)
++          renderer.setRenderTarget(target)
++          setInstallVisible(lastP < 0.94)
++          await Promise.all([sceneReady, renderer.compileAsync(tr.quadScene, tr.quadCam)])
++          if (cancelled || trans !== tr || qState.mode === 'lite') return
++          preparingTransition = null
++          const time = performance.now() / 1000
++          renderFrame(0.62, time)
++          renderFrame(lastP, time)
++        } finally {
++          if (preparingTransition === tr) preparingTransition = null
++          if (!cancelled) renderer.setRenderTarget(target)
++        }
++      })()
++      return tr.preparation
+     }
+ 
+     const applyProgress = (p) => {
+@@ -3368,6 +3399,9 @@
+       renderLoop = tick
+     }
+ 
++    if (!backdropRef.current && !reduced && qState.mode === 'normal') {
++      track(Promise.allSettled([...pendingStarts.keys()]).then(prepareTransition), 'transition')
++    }
+     document.addEventListener('visibilitychange', syncLoop)
+     syncLoop()
+ 

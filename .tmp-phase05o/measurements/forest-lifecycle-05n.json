@@ -1,0 +1,81 @@
+{
+  "checks": [
+    "forest stops drawing under parked Hero",
+    "Lite replay resumes six resident mixed clones without reload",
+    "normal replay restores fourteen trees using the same clone identities",
+    "live resize limits visible forest to 3 / 8 / 14 without rebuilding resources"
+  ],
+  "initial": {
+    "ids": [
+      "5b21acaa-1bab-4d30-b8f1-e438cd450d9a",
+      "8acb274f-e61d-4a7f-8d4d-556649525edc",
+      "e12a530d-459c-46f1-b475-2d54fc36e876",
+      "0c5e82a3-8421-4183-a736-9ad6d68cab5e",
+      "2c401450-7c5a-49d0-9d5e-978acd01cf77",
+      "1aa2ae03-5efe-46a2-9d5a-e3945d733423",
+      "67184cb4-69b9-415a-a9c3-c19b46be4cb3",
+      "f9b40670-47f6-46b3-8764-5dc0798e0a69",
+      "7dd3c4aa-c7b5-4912-a872-0129959688f2",
+      "6bd97cd0-b153-47a6-94ab-83905b79520f",
+      "66ec9219-9c6c-4685-a103-ce98c738d6b4",
+      "48daafa4-4c0e-4234-bfc7-35b3c0e6f1a0",
+      "51abe9e3-b847-4304-94f2-db85a4b235b5",
+      "9d526192-f51b-4b75-b14c-8c7486286bea"
+    ],
+    "visible": 14,
+    "groundVisible": true,
+    "draws": 280,
+    "dive": "running"
+  },
+  "parked": {
+    "ids": [
+      "5b21acaa-1bab-4d30-b8f1-e438cd450d9a",
+      "8acb274f-e61d-4a7f-8d4d-556649525edc",
+      "e12a530d-459c-46f1-b475-2d54fc36e876",
+      "0c5e82a3-8421-4183-a736-9ad6d68cab5e",
+      "2c401450-7c5a-49d0-9d5e-978acd01cf77",
+      "1aa2ae03-5efe-46a2-9d5a-e3945d733423",
+      "67184cb4-69b9-415a-a9c3-c19b46be4cb3",
+      "f9b40670-47f6-46b3-8764-5dc0798e0a69",
+      "7dd3c4aa-c7b5-4912-a872-0129959688f2",
+      "6bd97cd0-b153-47a6-94ab-83905b79520f",
+      "66ec9219-9c6c-4685-a103-ce98c738d6b4",
+      "48daafa4-4c0e-4234-bfc7-35b3c0e6f1a0",
+      "51abe9e3-b847-4304-94f2-db85a4b235b5",
+      "9d526192-f51b-4b75-b14c-8c7486286bea"
+    ],
+    "visible": 14,
+    "groundVisible": false,
+    "draws": 1470,
+    "dive": "paused"
+  },
+  "final": {
+    "ids": [
+      "5b21acaa-1bab-4d30-b8f1-e438cd450d9a",
+      "8acb274f-e61d-4a7f-8d4d-556649525edc",
+      "e12a530d-459c-46f1-b475-2d54fc36e876",
+      "0c5e82a3-8421-4183-a736-9ad6d68cab5e",
+      "2c401450-7c5a-49d0-9d5e-978acd01cf77",
+      "1aa2ae03-5efe-46a2-9d5a-e3945d733423",
+      "67184cb4-69b9-415a-a9c3-c19b46be4cb3",
+      "f9b40670-47f6-46b3-8764-5dc0798e0a69",
+      "7dd3c4aa-c7b5-4912-a872-0129959688f2",
+      "6bd97cd0-b153-47a6-94ab-83905b79520f",
+      "66ec9219-9c6c-4685-a103-ce98c738d6b4",
+      "48daafa4-4c0e-4234-bfc7-35b3c0e6f1a0",
+      "51abe9e3-b847-4304-94f2-db85a4b235b5",
+      "9d526192-f51b-4b75-b14c-8c7486286bea"
+    ],
+    "visible": 14,
+    "groundVisible": true,
+    "draws": 5606,
+    "dive": "running"
+  },
+  "requests": [
+    "http://127.0.0.1:4173/aquarium/environment/cherry_blossom-opt.glb"
+  ],
+  "greenRequests": [
+    "http://127.0.0.1:4173/aquarium/environment/green_tree-opt.glb"
+  ],
+  "errors": []
+}

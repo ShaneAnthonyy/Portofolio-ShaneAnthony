@@ -1,0 +1,10 @@
+[
+  {
+    "command": "node .tmp-phase05m/profile.mjs baseline 1440 900 --gpu",
+    "exitCode": 0
+  },
+  {
+    "command": "node .tmp-phase05m/profile.mjs baseline 390 844 --quick --gpu",
+    "exitCode": 0
+  }
+]

@@ -1,0 +1,10 @@
+PASS resize/rotation tree layout 390 844 2
+PASS resize/rotation tree layout 844 390 2
+PASS resize/rotation tree layout 390 844 2
+PASS resize/rotation tree layout 768 1024 6
+PASS resize/rotation tree layout 1440 900 10
+PASS phone-origin landscape retains two visible mobile placements
+PASS Reduced Motion bypass 375 812
+PASS Reduced Motion bypass 390 844
+PASS Reduced Motion bypass 390 500
+PASS Reduced Motion bypass 430 932

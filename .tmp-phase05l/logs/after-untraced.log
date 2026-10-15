@@ -1,0 +1,2 @@
+PASS after-untraced 1440x900-normal-dark-gpu-untraced natural-1-forward {"frames":401,"medianMs":13.300000000745058,"p95Ms":14.699999999254942,"maxMs":19.300000000745058,"over50":0,"over100":0,"scriptMs":1723.1980000000003,"layoutMs":0,"styleMs":136.42100000000002,"heapDeltaBytes":8547004}
+PASS after-untraced 1440x900-normal-dark-gpu-untraced natural-1-reverse {"frames":398,"medianMs":13.399999998509884,"p95Ms":14.5,"maxMs":16.600000001490116,"over50":0,"over100":0,"scriptMs":1588.2990000000007,"layoutMs":0,"styleMs":131.10100000000003,"heapDeltaBytes":1087340}

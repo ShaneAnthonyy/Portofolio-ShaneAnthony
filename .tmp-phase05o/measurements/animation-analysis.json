@@ -1,0 +1,203 @@
+[
+  {
+    "folder": "dark",
+    "actors": {
+      "chicken": {
+        "changes": [
+          {
+            "clip": "idle",
+            "time": 0.33889999999850995,
+            "wall": 15223.19999999553
+          },
+          {
+            "clip": "walk",
+            "time": 2.091299999997021,
+            "wall": 18026
+          },
+          {
+            "clip": "run",
+            "time": 4.5724999999999945,
+            "wall": 20506.19999999553
+          }
+        ],
+        "maxRootStep": 1.4422008391472032,
+        "maxYawStep": 0.05778017568532379,
+        "maxWeightError": 0.0006251335144042969,
+        "maxTerrainOffsetError": 0,
+        "samples": 1132,
+        "poseNodes": 16
+      },
+      "golem": {
+        "changes": [
+          {
+            "clip": "idle",
+            "time": 0.33889999999850995,
+            "wall": 15223.19999999553
+          },
+          {
+            "clip": "walk",
+            "time": 2.091299999997021,
+            "wall": 18026
+          },
+          {
+            "clip": "idle",
+            "time": 5.079699999995518,
+            "wall": 21014.39999999851
+          },
+          {
+            "clip": "walk",
+            "time": 11.07779999999701,
+            "wall": 28083
+          },
+          {
+            "clip": "idle",
+            "time": 14.594199999995563,
+            "wall": 32095.69999999553
+          }
+        ],
+        "maxRootStep": 0.08528939710443982,
+        "maxYawStep": 0.048987929805741404,
+        "maxWeightError": 0.0006251335144042969,
+        "maxTerrainOffsetError": 0,
+        "samples": 1132,
+        "poseNodes": 3
+      }
+    },
+    "motionFrames": 103,
+    "runtimeErrors": []
+  },
+  {
+    "folder": "light",
+    "actors": {
+      "chicken": {
+        "changes": [
+          {
+            "clip": "idle",
+            "time": 0.35250000000000004,
+            "wall": 14191.39999999851
+          },
+          {
+            "clip": "walk",
+            "time": 2.072800000004473,
+            "wall": 17008.89999999851
+          },
+          {
+            "clip": "run",
+            "time": 4.566700000010426,
+            "wall": 19501.10000000149
+          }
+        ],
+        "maxRootStep": 1.4499345600829094,
+        "maxYawStep": 0.058982373770867014,
+        "maxWeightError": 0.0006251335144042969,
+        "maxTerrainOffsetError": 0,
+        "samples": 1149,
+        "poseNodes": 16
+      },
+      "golem": {
+        "changes": [
+          {
+            "clip": "idle",
+            "time": 0.35250000000000004,
+            "wall": 14191.39999999851
+          },
+          {
+            "clip": "walk",
+            "time": 2.072800000004473,
+            "wall": 17008.89999999851
+          },
+          {
+            "clip": "idle",
+            "time": 5.073400000005949,
+            "wall": 20007.20000000298
+          },
+          {
+            "clip": "walk",
+            "time": 11.089400000013416,
+            "wall": 27143.39999999851
+          },
+          {
+            "clip": "idle",
+            "time": 14.588300000011971,
+            "wall": 31226.20000000298
+          }
+        ],
+        "maxRootStep": 0.084674668185062,
+        "maxYawStep": 0.048296254119581494,
+        "maxWeightError": 0.0006251335144042969,
+        "maxTerrainOffsetError": 0,
+        "samples": 1149,
+        "poseNodes": 3
+      }
+    },
+    "motionFrames": 99,
+    "runtimeErrors": []
+  },
+  {
+    "folder": "mobile",
+    "actors": {
+      "chicken": {
+        "changes": [
+          {
+            "clip": "idle",
+            "time": 0,
+            "wall": 14582.70000000298
+          },
+          {
+            "clip": "walk",
+            "time": 2.0918999999985117,
+            "wall": 18956.39999999851
+          },
+          {
+            "clip": "run",
+            "time": 4.585399999991054,
+            "wall": 21864.60000000149
+          }
+        ],
+        "maxRootStep": 0.5668249292376123,
+        "maxYawStep": 0.09721836750550927,
+        "maxWeightError": 0.000624239444732666,
+        "maxTerrainOffsetError": 0,
+        "samples": 1079,
+        "poseNodes": 16
+      },
+      "golem": {
+        "changes": [
+          {
+            "clip": "idle",
+            "time": 0,
+            "wall": 14582.70000000298
+          },
+          {
+            "clip": "walk",
+            "time": 2.0918999999985117,
+            "wall": 18956.39999999851
+          },
+          {
+            "clip": "idle",
+            "time": 5.085699999995517,
+            "wall": 22571.5
+          },
+          {
+            "clip": "walk",
+            "time": 11.084499999999982,
+            "wall": 31827.79999999702
+          },
+          {
+            "clip": "idle",
+            "time": 14.58289999999854,
+            "wall": 37057.79999999702
+          }
+        ],
+        "maxRootStep": 0.05233545993452655,
+        "maxYawStep": 0.09800413210501535,
+        "maxWeightError": 0.0006268620491027832,
+        "maxTerrainOffsetError": 0,
+        "samples": 1079,
+        "poseNodes": 3
+      }
+    },
+    "motionFrames": 103,
+    "runtimeErrors": []
+  }
+]
