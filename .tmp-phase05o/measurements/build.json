@@ -1,6 +1,0 @@
-{
-  "command": "npm run build",
-  "exitCode": 0,
-  "log": "logs/final-build.log",
-  "seconds": 0.0000214
-}

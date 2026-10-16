@@ -39,7 +39,7 @@ export default function AmbientFish({
       return [H * a, Math.max(H * b, H * a + 40)]
     },
     xRangeFor: (d, W, H, w) => {
-      const [a, b] = SIDES[d.side] || SIDES.full
+      const [a, b] = W < 720 ? SIDES.full : SIDES[d.side] || SIDES.full
       return [W * a, Math.max(W * b - w, W * a + 1)]
     },
     speedFor: (i) => ({

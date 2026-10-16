@@ -1,7 +1,0 @@
- M src/App.jsx
- M src/components/AquariumDivePrototype.jsx
-?? .tmp-phase05k/
-?? .tmp-phase05l/
-?? .tmp-phase05m/
-?? public/aquarium/environment/cherry_blossom-opt.glb
-?? public/aquarium/environment/cherry_blossom.glb

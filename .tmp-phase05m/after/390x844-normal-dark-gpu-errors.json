@@ -1,6 +1,0 @@
-{
-  "errors": [],
-  "warnings": [
-    "THREE.WebGLShadowMap: PCFSoftShadowMap has been removed. Using PCFShadowMap instead."
-  ]
-}

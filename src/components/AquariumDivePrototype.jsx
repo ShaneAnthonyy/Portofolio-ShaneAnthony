@@ -754,8 +754,11 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       if (trans) {
         const isLite = nextMode === 'lite'
         if (isLite || trans.liteSized) {
-          trans.sceneRT.dispose()
-          trans.skyRT.dispose()
+          for (const resource of [trans.sceneRT, trans.skyRT, trans.quadScene.children[0].geometry, trans.quadMat]) {
+            resource.dispose()
+            const index = disposables.indexOf(resource)
+            if (index >= 0) disposables.splice(index, 1)
+          }
           trans = null
         }
       }
@@ -1244,7 +1247,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       })
       const mobileTrees = compactTrees(w)
       const treeCount = mobileTrees ? 2 : w < 1100 ? (qState.mode === 'lite' ? 3 : 6) : qState.mode === 'lite' ? 4 : 10
-      const greenCount = mobileTrees ? (qState.mode === 'lite' ? 0 : 1) : w < 1100 ? (qState.mode === 'lite' ? 1 : 2) : qState.mode === 'lite' ? 2 : 4
+      const greenCount = mobileTrees ? (qState.mode === 'lite' ? 0 : 3) : w < 1100 ? (qState.mode === 'lite' ? 1 : 4) : qState.mode === 'lite' ? 2 : 8
       let treeIndex = 0
       let greenIndex = 0
       Object.entries(loadedGroups).forEach(([name, group]) => {
@@ -1371,22 +1374,31 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
     const charRigs = [] // { root, mixer, clips, state, t, waypoints, groundY } — ambient characters
     let characterReturning = false
     let charactersPresented = false
+    const characterBounds = new THREE.Box3()
+    const characterFrustum = new THREE.Frustum()
+    const characterProjection = new THREE.Matrix4()
+    const characterCamera = new THREE.Vector3()
+    const characterPosition = new THREE.Vector3()
     const layoutCharacters = (w, h) => {
-      const lane = Math.min(1, w / Math.max(h, 1) / 1.25)
+      const portrait = w < 720 && w < h
       charRigs.forEach((c) => {
-        const mobileGolem = c.kind === 'golem' && w < 720 && w < h
-        const offsetX = mobileGolem ? 14 * lane + 3 : 0
-        if (c.lane === lane && c.offsetX === offsetX) return
+        const lane = Math.min(1, w / Math.max(h, 1) / 1.25) * (portrait ? c.kind === 'chicken' ? 1.4 : 0.4 : 1)
+        const offsetX = portrait ? c.kind === 'chicken' ? 0.65 : 3.5 : 0
+        const offsetZ = portrait ? c.kind === 'golem' ? -4 : 3 : 0
+        if (c.lane === lane && c.offsetX === offsetX && c.offsetZ === offsetZ) return
         const ratio = lane / c.lane
         const fitPoint = (point) => {
           point[0] = (point[0] - c.offsetX) * ratio + offsetX
+          point[2] += offsetZ - c.offsetZ
           point[1] = c.heightAt(point[0], point[2]) + c.groundOffset
         }
         c.seq.forEach((step) => {
           if (!step.move) return
+          step.distance ??= Math.hypot(step.to[0] - step.from[0], step.to[2] - step.from[2])
           fitPoint(step.from)
           fitPoint(step.to)
-          step.yaw = Math.atan2(step.to[0] - step.from[0], step.to[2] - step.from[2]) + (c.kind === 'chicken' ? Math.PI : 0)
+          step.speedScale = Math.hypot(step.to[0] - step.from[0], step.to[2] - step.from[2]) / step.distance
+          step.yaw = Math.atan2(step.to[0] - step.from[0], step.to[2] - step.from[2]) + Math.PI
         })
         fitPoint(c.home.pos)
         c.home.yaw = c.seq.find((step) => step.move).yaw
@@ -1396,6 +1408,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         if (c.t === 0) c.root.rotation.y = c.home.yaw
         c.lane = lane
         c.offsetX = offsetX
+        c.offsetZ = offsetZ
       })
     }
     let motionLogged = false
@@ -1915,6 +1928,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
           c.t = 0
           c.curClip = null
           c.active = true
+          c.exited = false
           if (c.group) c.group.visible = true
           if (c.home) {
             c.root.position.set(c.home.pos[0], c.home.pos[1], c.home.pos[2])
@@ -1950,9 +1964,28 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
           let acc = 0
           let cur = seq[seq.length - 1]
           let curStart = 0
+          let curIndex = seq.length - 1
           for (let i = 0; i < seq.length; i++) {
-            if (c.t < acc + seq[i].dur) { cur = seq[i]; curStart = acc; break }
+            if (c.t < acc + seq[i].dur) { cur = seq[i]; curStart = acc; curIndex = i; break }
             acc += seq[i].dur
+          }
+          if (cur.exit && !c.exited) {
+            camera.updateWorldMatrix(true, false)
+            c.root.updateWorldMatrix(true, true)
+            characterFrustum.setFromProjectionMatrix(characterProjection.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse))
+            if (characterFrustum.intersectsBox(characterBounds.setFromObject(c.root))) {
+              const x = c.root.position.x - 10 * c.lane * characterDt
+              const z = c.root.position.z
+              c.root.position.set(x, c.heightAt(x, z) + c.groundOffset, z)
+              c.t = curStart
+            } else {
+              c.exited = true
+              const next = seq[curIndex + 1]
+              const origin = seq[curIndex - 1].to
+              next.dur = 3 * Math.max(1, Math.hypot(next.to[0] - c.root.position.x, next.to[2] - c.root.position.z) / Math.hypot(next.to[0] - origin[0], next.to[2] - origin[2]))
+              next.from = c.root.position.toArray()
+              next.yaw = Math.atan2(next.to[0] - next.from[0], next.to[2] - next.from[2]) + Math.PI
+            }
           }
           if (cur.clip !== c.curClip && c.clips[cur.clip]) {
             const previous = c.mixer.clipAction(c.clips[c.curClip])
@@ -1960,15 +1993,22 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
             previous.crossFadeTo(next, 0.16, false)
             c.curClip = cur.clip
           }
+          if (c.kind === 'golem' && cur.move) c.mixer.clipAction(c.clips.walk).setEffectiveTimeScale(0.4 * (cur.speedScale ?? 1))
           c.mixer.update(characterDt)
           if (cur.move) {
             const k = Math.min((c.t - curStart) / cur.dur, 1)
-            const e = k * k * (3 - 2 * k)
+            const e = cur.ease === 'in' ? k * k * (2 - k) : cur.ease === 'out' ? k + k * k - k * k * k : k * k * (3 - 2 * k)
             const x = cur.from[0] + (cur.to[0] - cur.from[0]) * e
             const z = cur.from[2] + (cur.to[2] - cur.from[2]) * e
             c.root.position.set(x, c.heightAt(x, z) + c.groundOffset, z)
             const angle = cur.yaw - c.root.rotation.y
             c.root.rotation.y += Math.atan2(Math.sin(angle), Math.cos(angle)) * (1 - Math.exp(-characterDt / 0.12))
+          }
+          if (cur.faceCamera) {
+            camera.getWorldPosition(characterCamera)
+            c.root.getWorldPosition(characterPosition)
+            const angle = Math.atan2(characterCamera.x - characterPosition.x, characterCamera.z - characterPosition.z) + Math.PI - c.root.rotation.y
+            c.root.rotation.y += Math.atan2(Math.sin(angle), Math.cos(angle)) * (1 - Math.exp(-characterDt / 0.18))
           }
           if (c.t >= seq.reduce((s, s2) => s + s2.dur, 0)) {
             if (c.exitHide && c.group) c.group.visible = false
@@ -2853,17 +2893,25 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       const GREEN_TREE_CFG = [
         { name: 'tree-green-left-open', x: -24, z: -26, s: 4.2, rotY: 1.1, ph: 2.2 },
         { name: 'tree-green-right-open', x: 23, z: -30, s: 4.0, rotY: 2.2, ph: 3.3 },
+        { name: 'tree-green-left-inner-fill', x: -5, z: -27, s: 2.3, rotY: 0.5, ph: 1.4 },
+        { name: 'tree-green-right-inner-fill', x: 7, z: -57, s: 3.2, rotY: 2.8, ph: 4.6 },
         { name: 'tree-green-left-rear', x: -14, z: -45, s: 3.8, rotY: 4.0, ph: 5.5 },
         { name: 'tree-green-right-rear', x: 16, z: -50, s: 3.5, rotY: 5.0, ph: 7.7 },
+        { name: 'tree-green-left-rear-fill', x: -30, z: -59, s: 3.6, rotY: 3.4, ph: 6.8 },
+        { name: 'tree-green-right-rear-fill', x: 37, z: -58, s: 3.6, rotY: 5.6, ph: 9.2 },
       ]
-      const GREEN_MOBILE_CFG = [{ ...GREEN_TREE_CFG[2], x: 0, z: -30, s: 3.0 }]
+      const GREEN_MOBILE_CFG = [
+        { ...GREEN_TREE_CFG[4], x: 0, z: -30, s: 3.0 },
+        { ...GREEN_TREE_CFG[2], x: -8, z: -39, s: 2.4 },
+        { ...GREEN_TREE_CFG[3], x: 8, z: -42, s: 2.6 },
+      ]
       let mobileLayout = compactTrees(mount.clientWidth)
       const treeCfgs = mobileLayout
         ? MOBILE_TREE_CFG
         : TREE_CFG.slice(0, mount.clientWidth < 1100 ? (qState.mode === 'lite' ? 3 : 6) : qState.mode === 'lite' ? 4 : 10)
       const greenCfgs = mobileLayout
         ? (qState.mode === 'lite' ? [] : GREEN_MOBILE_CFG)
-        : GREEN_TREE_CFG.slice(0, mount.clientWidth < 1100 ? (qState.mode === 'lite' ? 1 : 2) : qState.mode === 'lite' ? 2 : 4)
+        : GREEN_TREE_CFG.slice(0, mount.clientWidth < 1100 ? (qState.mode === 'lite' ? 1 : 4) : qState.mode === 'lite' ? 2 : 8)
       const treeRoots = []
       const greenRoots = []
       const treeUrl = '/aquarium/environment/cherry_blossom-opt.glb'
@@ -2910,8 +2958,8 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         treeRoots.slice(0, 2).forEach(({ root, scale, rotation }, i) => {
           positionTree(root, mobile ? MOBILE_TREE_CFG[i] : TREE_CFG[i], scale, rotation)
         })
-        greenRoots.slice(0, 1).forEach(({ root, scale, rotation }) => {
-          positionTree(root, mobile ? GREEN_MOBILE_CFG[0] : GREEN_TREE_CFG[2], scale, rotation)
+        greenRoots.slice(0, GREEN_MOBILE_CFG.length).forEach(({ root, scale, rotation }, i) => {
+          positionTree(root, mobile ? GREEN_MOBILE_CFG[i] : GREEN_TREE_CFG.find((cfg) => cfg.name === greenCfgs[i].name), scale, rotation)
         })
       }
       const placeTreeClone = (src, cfg) => {
@@ -3088,7 +3136,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         }
         const placeChar = (gltf, url, kind) => {
           if (cancelled) return
-          const yawFor = (fx, fz, tx, tz) => Math.atan2(tx - fx, tz - fz) + (kind === 'chicken' ? Math.PI : 0)
+          const yawFor = (fx, fz, tx, tz) => Math.atan2(tx - fx, tz - fz) + Math.PI
           const root = gltf.scene
           root.traverse((n) => {
             if (n.isCamera || n.isLight) n.removeFromParent()
@@ -3111,38 +3159,47 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
           }
           const s = fitChar(root, kind === 'chicken' ? [1.4, 1.6, 1.4] : [2.6, 4.4, 2.6])
           if (!s) return
+          if (kind === 'golem') root.scale.multiplyScalar(1.5)
           const group = new THREE.Group()
           group.add(root)
           poc.ground.add(group)
           trackLoaded(group)
           const mixer = new THREE.AnimationMixer(root)
+          if (kind === 'golem') mixer.clipAction(clips.walk).setEffectiveTimeScale(0.4)
           mixer.clipAction(clips.idle).play()
-          const rig = { root, group, mixer, clips, t: 0, curClip: 'idle', active: true, seq: [], exitHide: false }
+          const rig = { root, group, mixer, clips, t: 0, curClip: 'idle', active: true, seq: [], exitHide: false, exited: false }
           if (kind === 'chicken') {
-            const A = [14, -18], B = [11, -20], C = [-30, -22]
+            const A = [10, -11], B = [8, -14], C = [-32, -14], D = [-15, -8.5], E = [-11, -8]
             const yA = groundChar(root, A[0], A[1])
             const yB = groundChar(root, B[0], B[1])
             const yC = groundChar(root, C[0], C[1])
+            const yD = groundChar(root, D[0], D[1])
+            const yE = groundChar(root, E[0], E[1])
             root.position.set(A[0], yA, A[1])
             rig.seq = [
               { clip: 'idle', dur: 2.0 },
               { clip: 'walk', dur: 2.5, move: true, from: [A[0], yA, A[1]], to: [B[0], yB, B[1]], yaw: yawFor(A[0], A[1], B[0], B[1]) },
               { clip: 'run', dur: 4.0, move: true, from: [B[0], yB, B[1]], to: [C[0], yC, C[1]], yaw: yawFor(B[0], B[1], C[0], C[1]) },
+              { clip: 'run', dur: 0.6, exit: true },
+              { clip: 'run', dur: 3, move: true, from: [C[0], yC, C[1]], to: [D[0], yD, D[1]], yaw: yawFor(C[0], C[1], D[0], D[1]) },
+              { clip: 'walk', dur: 3.5, move: true, from: [D[0], yD, D[1]], to: [E[0], yE, E[1]], yaw: yawFor(D[0], D[1], E[0], E[1]) },
+              { clip: 'walk', dur: 1.2, faceCamera: true },
             ]
-            rig.exitHide = true
             root.rotation.y = yawFor(A[0], A[1], B[0], B[1])
             rig.home = { pos: [A[0], yA, A[1]], yaw: root.rotation.y }
           } else {
-            const A = [-14, -16], B = [-12, -16], C = [-10, -17]
+            const A = [-11, -10], B = [-9, -10], C = [-7, -10.5], D = [8.5, -8]
             const yA = groundChar(root, A[0], A[1])
             const yB = groundChar(root, B[0], B[1])
             const yC = groundChar(root, C[0], C[1])
+            const yD = groundChar(root, D[0], D[1])
             root.position.set(A[0], yA, A[1])
             rig.seq = [
               { clip: 'idle', dur: 2.0 },
               { clip: 'walk', dur: 3.0, move: true, from: [A[0], yA, A[1]], to: [B[0], yB, B[1]], yaw: yawFor(A[0], A[1], B[0], B[1]) },
               { clip: 'idle', dur: 6.0 },
-              { clip: 'walk', dur: 3.5, move: true, from: [B[0], yB, B[1]], to: [C[0], yC, C[1]], yaw: yawFor(B[0], B[1], C[0], C[1]) },
+              { clip: 'walk', dur: 3.5, move: true, ease: 'in', from: [B[0], yB, B[1]], to: [C[0], yC, C[1]], yaw: yawFor(B[0], B[1], C[0], C[1]) },
+              { clip: 'walk', dur: 24, move: true, ease: 'out', from: [C[0], yC, C[1]], to: [D[0], yD, D[1]], yaw: yawFor(C[0], C[1], D[0], D[1]) },
             ]
             root.rotation.y = yawFor(A[0], A[1], B[0], B[1])
             rig.home = { pos: [A[0], yA, A[1]], yaw: root.rotation.y }
@@ -3151,6 +3208,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
           rig.groundOffset = rig.home.pos[1] - terrainHeightAt(rig.home.pos[0], rig.home.pos[2])
           rig.lane = 1
           rig.offsetX = 0
+          rig.offsetZ = 0
           if (lastP >= 0.94) group.visible = false
           rig.kind = kind
           charRigs.push(rig)

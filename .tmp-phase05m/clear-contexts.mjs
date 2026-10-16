@@ -1,7 +1,0 @@
-const version=await fetch('http://127.0.0.1:9223/json/version').then(r=>r.json()),ws=new WebSocket(version.webSocketDebuggerUrl)
-await new Promise(resolve=>ws.addEventListener('open',resolve,{once:true}))
-let id=0;const requests=new Map();ws.addEventListener('message',e=>{const r=JSON.parse(e.data),p=requests.get(r.id);if(p){requests.delete(r.id);r.error?p.reject(r.error):p.resolve(r.result)}})
-const send=(method,params={})=>new Promise((resolve,reject)=>{const n=++id;requests.set(n,{resolve,reject});ws.send(JSON.stringify({id:n,method,params}))})
-const {browserContextIds}=await send('Target.getBrowserContexts')
-for(const browserContextId of browserContextIds)await send('Target.disposeBrowserContext',{browserContextId})
-console.log('Disposed idle contexts in owned diagnostic Chrome:',browserContextIds.length);ws.close()

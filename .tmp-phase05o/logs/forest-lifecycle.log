@@ -1,4 +1,0 @@
-PASS forest stops drawing under parked Hero
-PASS Lite replay resumes six resident mixed clones without reload
-PASS normal replay restores fourteen trees using the same clone identities
-PASS live resize limits visible forest to 3 / 8 / 14 without rebuilding resources

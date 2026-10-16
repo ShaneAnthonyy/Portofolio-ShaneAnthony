@@ -302,7 +302,7 @@ export default function Skills() {
           onPointerCancel={() => release(i)}
           onClick={() => selectFish(i)}
         >
-          <img src={d.img} alt="" aria-hidden="true" draggable="false" />
+          <img loading="lazy" decoding="async" src={d.img} alt="" aria-hidden="true" draggable="false" />
         </button>
       )
     })
@@ -334,6 +334,17 @@ export default function Skills() {
           <p className="section__sub">
             Technologies I can ship with, from interfaces to working systems.
           </p>
+          <div className="skills-legend" role="group" aria-labelledby="skills-legend-title">
+            <p className="skills-legend__title" id="skills-legend-title">PROFICIENCY LEVELS</p>
+            <ul className="skills-legend__levels" role="list">
+              <li className="skills-legend__level skills-legend__level--amateur">Amateur</li>
+              <li className="skills-legend__level skills-legend__level--intermediate">Intermediate</li>
+              <li className="skills-legend__level skills-legend__level--expert">Expert</li>
+            </ul>
+            <p className="skills-legend__current">
+              Current highest proficiency: <strong>Intermediate</strong>
+            </p>
+          </div>
         </aside>
 
         <div className="section__body">

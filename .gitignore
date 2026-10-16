@@ -1,3 +1,9 @@
 node_modules
 dist
 .DS_Store
+.tmp-*/
+*-trace.json
+tests/measurements/
+tests/screenshots/
+tests/*.log
+coverage/

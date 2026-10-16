@@ -1,6 +1,0 @@
-initial-render {"time":8248.19999999553,"mixers":0,"loading":true,"actors":[]}
-both-actors-loaded {"time":12012.89999999851,"mixers":0,"loading":true,"actors":[{"kind":"chicken","position":[14,1.4832152690493632,-18]},{"kind":"golem","position":[-14,0.16789173841476446,-16]}]}
-ready {"time":15219.69999999553,"mixers":0,"loading":true,"actors":[{"kind":"chicken","position":[14,1.4832152690493632,-18]},{"kind":"golem","position":[-14,0.16789173841476446,-16]}]}
-ready-held-ten-seconds {"time":25229.29999999702,"mixers":0,"loading":true,"actors":[{"kind":"chicken","position":[14,1.4832152690493632,-18]},{"kind":"golem","position":[-14,0.16789173841476446,-16]}]}
-entered {"time":25251.69999999553,"mixers":2,"loading":false,"actors":[{"kind":"chicken","time":0,"position":[14,1.4832152690493632,-18]},{"kind":"golem","time":0,"position":[-14,0.16789173841476446,-16]}]}
-complete-real-time {"time":40474.69999999553,"mixers":2,"loading":false,"actors":[{"kind":"chicken","time":8.506200000002911,"position":[-30,0.20474906027352452,-22]},{"kind":"golem","time":15.228900000006032,"position":[-10,0.10282153099775312,-17]}]}

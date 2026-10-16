@@ -645,17 +645,6 @@ html[data-perf='lite'] .aqua-root.is-portfolio-unlocked .webgl-backdrop canvas {
   box-shadow: var(--shadow-md);
 }
 
-.btn--ghost {
-  background: var(--bg-alt);
-  border-color: var(--line);
-  color: var(--text);
-}
-
-.btn--ghost:hover {
-  border-color: var(--accent);
-  color: var(--accent-ink);
-}
-
 /* ---------- Skills (depth map; see Skills section below) ---------- */
 
 .tier {
@@ -684,11 +673,6 @@ html[data-perf='lite'] .aqua-root.is-portfolio-unlocked .webgl-backdrop canvas {
   border-color: var(--tier-am-border);
   background: var(--tier-am-bg);
   font-weight: 400;
-}
-
-html:not([data-theme='dark']) .btn--ghost {
-  background: var(--aqua-panel-bg);
-  border-color: var(--aqua-line);
 }
 
 html:not([data-theme='dark']) .navbar__link {
@@ -2143,6 +2127,64 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   max-width: 10ch;
 }
 
+.skills-legend {
+  --legend-text: var(--aqua-ink);
+  margin-top: 24px;
+  font-size: 0.72rem;
+  line-height: 1.6;
+  color: var(--legend-text);
+}
+
+.skills-legend__title {
+  margin: 0 0 8px;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+}
+
+.skills-legend__levels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.skills-legend__level {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  color: color-mix(in srgb, var(--legend-ink) 35%, var(--legend-text));
+}
+
+.skills-legend__level::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--legend-ink);
+}
+
+.skills-legend__level--amateur { --legend-ink: var(--tier-am-ink); }
+.skills-legend__level--intermediate { --legend-ink: var(--tier-int-ink); }
+.skills-legend__level--expert { --legend-ink: var(--aqua-ink); }
+.skills-legend__level--expert::before { background: transparent; border: 1px solid currentColor; }
+
+html:not([data-theme='dark']) .skills-legend {
+  --legend-text: color-mix(in srgb, var(--text) 75%, black);
+}
+
+html:not([data-theme='dark']) .skills-legend__level {
+  color: color-mix(in srgb, var(--legend-ink) 5%, var(--legend-text));
+}
+
+.skills-legend__current {
+  margin: 8px 0 0;
+}
+
 #skills .fish-layer,
 #skills .fish-hit-layer {
   left: 50%;
@@ -3106,8 +3148,7 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
 }
 
 .tidal-card__meta,
-.tidal-card__tech,
-.tidal-card__direction {
+.tidal-card__tech {
   font-family: var(--font-mono);
   color: var(--aqua-muted);
   font-size: 10px;
@@ -3168,52 +3209,7 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   border-top: 1px solid var(--aqua-frame);
 }
 
-.tidal-card__direction { text-transform: uppercase; }
 .tidal-card__name { font-size: 13px; line-height: 1.45; font-weight: 600; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-
-.tidal-prototype {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: clamp(16px, 3vw, 44px);
-  color: var(--aqua-ink);
-  background: linear-gradient(145deg, var(--aqua-pill-bg), var(--aqua-bg-0));
-}
-
-.tidal-prototype > span {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  line-height: 1.6;
-}
-
-.tidal-prototype > strong {
-  font-family: var(--font-display);
-  font-size: clamp(26px, 4.4vw, 72px);
-  font-weight: 700;
-  letter-spacing: -0.03em;
-}
-
-.tidal-prototype > strong > span {
-  display: block;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0;
-  margin-top: 12px;
-}
-
-.tidal-prototype__ticket {
-  display: flex;
-  justify-content: space-between;
-  border-top: 1px solid var(--aqua-frame);
-  padding-top: 16px;
-}
-
-.tidal-card:not([data-position='0']) .tidal-prototype { padding: 14px; }
-.tidal-card:not([data-position='0']) .tidal-prototype > strong { font-size: 22px; }
-.tidal-card:not([data-position='0']) .tidal-prototype > span,
-.tidal-card:not([data-position='0']) .tidal-prototype > strong > span { display: none; }
 
 .slider-controls {
   display: flex;
@@ -3281,10 +3277,7 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   .tidal-card[data-position='1'] { grid-column: 2; }
   .tidal-card:not([data-position='0']) .tidal-card__media { width: 88px; height: 72px; aspect-ratio: auto; flex-shrink: 0; }
   .tidal-card__preview { padding: 4px 0; border-top: 0; }
-  .tidal-card__direction { font-size: 9px; }
   .tidal-card__name { font-size: 12px; }
-  .tidal-card:not([data-position='0']) .tidal-prototype > strong { font-size: 13px; }
-  .tidal-card:not([data-position='0']) .tidal-prototype { padding: 8px; justify-content: center; }
 }
 
 @media (max-width: 760px) {
@@ -3298,20 +3291,9 @@ html:not([data-theme='dark']) .aqua-root .footer .aqua-card {
   .tidal-card__meta { margin-bottom: 12px; }
   .tidal-card__description { font-size: 13px; margin-bottom: 14px; }
   .tidal-card__tech { margin-bottom: 12px; }
-  .tidal-prototype { padding: 18px 24px; }
-  .tidal-prototype > strong { font-size: 42px; }
-  .tidal-prototype > strong > span { margin-top: 4px; }
-  .tidal-prototype__ticket { padding-top: 8px; }
-  .tidal-prototype > span { font-size: 8px; }
   .tidal-track { gap: 14px; }
-  .tidal-card:not([data-position='0']) .tidal-card__media { width: 56px; height: 60px; aspect-ratio: auto; }
-  .tidal-card[data-position='-1'], .tidal-card[data-position='1'] { gap: 10px; }
-  .tidal-card:not([data-position='0']) .tidal-prototype > strong { font-size: 10px; }
   .slider-controls { justify-content: space-between; gap: 8px; margin-top: 16px; }
 }
-
-html[data-perf='lite'] .tidal-prototype { background: var(--aqua-pill-bg); }
-
 
 .slider-detail-overlay {
   animation: detail-overlay-in 0.25s ease both;

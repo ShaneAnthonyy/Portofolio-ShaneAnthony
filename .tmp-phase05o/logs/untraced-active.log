@@ -1,2 +1,0 @@
-PASS perf-untraced-active 1440x900-normal-dark-untraced natural-1-forward {"frames":397,"medianMs":13.399999998509884,"p95Ms":15.799999997019768,"maxMs":27.600000001490116,"over50":0,"over100":0,"scriptMs":2639.92,"layoutMs":0,"styleMs":199.34299999999996,"heapDeltaBytes":12190060}
-PASS perf-untraced-active 1440x900-normal-dark-untraced natural-1-reverse {"frames":395,"medianMs":13.300000004470348,"p95Ms":15.299999997019768,"maxMs":25.80000000447035,"over50":0,"over100":0,"scriptMs":2247.9990000000003,"layoutMs":0,"styleMs":187.94299999999998,"heapDeltaBytes":-5750392}

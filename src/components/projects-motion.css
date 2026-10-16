@@ -131,16 +131,6 @@
   flex-shrink: 0;
 }
 
-.tidal-v3 .tidal-prototype {
-  box-sizing: border-box;
-  width: 100%;
-  height: 100%;
-}
-
-.tidal-v3 .tidal-card .tidal-prototype > strong {
-  font-size: clamp(16px, calc(16px + var(--tidal-feature, 0) * 42px), 58px);
-}
-
 .tidal-v3 .tidal-card:focus-visible {
   outline: 2px solid var(--aqua-ink);
   outline-offset: -3px;

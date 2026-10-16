@@ -9,6 +9,8 @@ export default function FishSkill({ fish, hovered, held, below, selected, outerR
       <span className="fish__visual">
         <span className="fish__wiggle">
           <img
+            loading="lazy"
+            decoding="async"
             src={fish.img}
             alt=""
             className="pixelated"

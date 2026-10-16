@@ -1,7 +1,0 @@
-PASS critical range forward/reverse 768 1024 dark Normal
-PASS critical range forward/reverse 1024 768 light Normal
-PASS critical range forward/reverse 1920 1080 dark Normal
-PASS critical range forward/reverse 1440 540 light Normal
-PASS critical range forward/reverse 390 320 dark Lite
-PASS visibility resume and resize in affected range
-PASS captured forward/reverse motion frames and camera trajectory

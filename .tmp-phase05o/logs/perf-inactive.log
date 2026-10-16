@@ -1,2 +1,0 @@
-PASS perf-inactive 1440x900-normal-dark-inactive natural-1-forward {"frames":401,"medianMs":13.399999998509884,"p95Ms":15,"maxMs":16.299999997019768,"over50":0,"over100":0,"scriptMs":3186.997,"layoutMs":0,"styleMs":338.885,"heapDeltaBytes":12233600}
-PASS perf-inactive 1440x900-normal-dark-inactive natural-1-reverse {"frames":398,"medianMs":13.299999997019768,"p95Ms":14.899999998509884,"maxMs":16.400000005960464,"over50":0,"over100":0,"scriptMs":2582.7290000000003,"layoutMs":0,"styleMs":271.82399999999996,"heapDeltaBytes":-1792628}
