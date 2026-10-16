@@ -73,10 +73,6 @@ See [`tests/README.md`](tests/README.md) for available test commands, browser pr
 
 The experience balances immersive visuals with practical usability. The implementation includes optimized 3D assets, managed rendering lifecycles, responsive presentation, and alternative experiences for lighter rendering and reduced-motion preferences.
 
-## Live Demo
-
-Explore the portfolio at **[shane-anthony.vercel.app](https://shane-anthony.vercel.app)**.
-
 ---
 
 Designed and developed by **Shane Anthony**.
