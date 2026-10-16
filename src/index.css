@@ -84,7 +84,6 @@
   margin-top: 0;
 }
 
-/* ---------- Phase 14B DEV-only dive probe (never rendered in prod) ---------- */
 .dive-probe {
   position: fixed;
   left: 8px;
@@ -307,8 +306,6 @@ main {
   gap: 12px;
 }
 
-/* Shared Speaker + Theme dock: one coordinated unit for the dive
-   floating group and the Navbar slot (FLIP transform target). */
 .navbar__dock {
   display: flex;
   align-items: center;
@@ -3294,6 +3291,9 @@ html:not([data-theme='dark']) .skills-legend__level {
   .tidal-track { gap: 14px; }
   .slider-controls { justify-content: space-between; gap: 8px; margin-top: 16px; }
 }
+
+html[data-perf='lite'] .tidal-prototype { background: var(--aqua-pill-bg); }
+
 
 .slider-detail-overlay {
   animation: detail-overlay-in 0.25s ease both;

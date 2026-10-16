@@ -105,8 +105,6 @@ function fishGeometry() {
   return geometry
 }
 
-// Elliptical lanes keep the center open at every aspect ratio. The tangent
-// determines heading, including fish travelling in the opposite direction.
 export function fishPose(index, time, width, height, compact = width < height) {
   const direction = index % 2 ? -1 : 1
   const speed = direction * (0.028 + random(index + 5) * 0.018)
@@ -123,8 +121,6 @@ export function fishPose(index, time, width, height, compact = width < height) {
   }
 }
 
-// A single orthographic pass: instanced fish, plants, stones and baked-style
-// contact shadows. No external assets, render targets or real-time shadows.
 export function createHeroAquarium(host) {
   const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: false, powerPreference: 'low-power', stencil: false, depth: true })
   renderer.outputColorSpace = THREE.SRGBColorSpace
@@ -338,7 +334,7 @@ export function createHeroAquarium(host) {
     renderer.setPixelRatio(Math.min(dpr, mobile ? 1 : 1.25))
     renderer.setSize(pixelWidth, pixelHeight)
     const aspect = pixelWidth / Math.max(pixelHeight, 1)
-    // Portrait gets its own narrower habitat, not a crop of the desktop scene.
+    
     width = aspect < 1 ? 9 : 16 * aspect
     height = width / aspect
     size.value.set(width, height)

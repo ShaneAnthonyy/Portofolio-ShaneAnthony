@@ -1,8 +1,6 @@
 import assert from 'node:assert/strict'
 import { fishPose } from '../src/scenes/heroAquarium.js'
 
-// Sample ten minutes of every swimming lane, including narrow and short views.
-// Check bounds, the text-safe center, and that fish face their actual travel.
 for (const [width, height, compact] of [[25.6, 16, false], [9, 19.5, true], [19.5, 16, true]]) {
   for (let i = 0; i < (compact ? 3 : 6); i++) {
     for (let time = 0; time <= 600; time += 0.5) {

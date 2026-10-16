@@ -25,3 +25,8 @@ See `tests/README.md`. Canonical command: `node tests/check-projects.mjs`
 
 Locate it in the backup's `MANIFEST-sha256.json`, copy it back, and re-verify the hash
 before trusting it.
+
+Final ground/shadow refinement evidence and the final cleanup report are archived at
+`C:\CODE\ReactWeb\Portfolio-Shane-Archive\2026-10-16-final-refinements`.
+See `FINAL-REPORT.md`, `MANIFEST-sha256.json`, and `archival-results.json` there.
+Current ground/shadow checks were preserved in `tests/` before archival.

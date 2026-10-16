@@ -1,18 +1,3 @@
-"""Phase 15G/15H: build Lite derivatives (fish-a/b/c + floor).
-
-Re-encodes ONLY the embedded PNG image bufferViews at 512px.
-Geometry buffers, accessors, materials, samplers, extensions, and all
-other chunks are copied byte-identically, so UVs/transforms/animation
-compatibility cannot change. flipY handling lives in the three.js loader
-path, which is untouched.
-
-Usage (run once from Portfolio-Shane/):
-    python scripts/build-lite-fish.py
-
-Outputs: public/aquarium/lite/{fish_a,fish_b,fish_c,floor}.glb
-Requires: Python 3 + Pillow (stdlib json/struct otherwise).
-"""
-
 import io
 import json
 import struct
@@ -62,12 +47,10 @@ def main():
         js, blob = read_glb(src)
         image_bvs = sorted({img["bufferView"] for img in js.get("images", [])})
         assert image_bvs, f"no images in {name}"
-        # Geometry bufferViews are everything the images don't use.
         geo_bvs = [i for i in range(len(js["bufferViews"])) if i not in set(image_bvs)]
         new_blob = bytearray()
         offsets = {}
         new_lens = {}
-        # Geometry first, byte-identical, original order.
         for i in geo_bvs:
             bv = js["bufferViews"][i]
             start = bv.get("byteOffset") or 0
@@ -76,7 +59,6 @@ def main():
             offsets[i] = len(new_blob)
             new_lens[i] = len(chunk)
             new_blob += chunk
-        # Images re-encoded at TARGET px, original order.
         for i in sorted(image_bvs):
             bv = js["bufferViews"][i]
             start = bv.get("byteOffset") or 0
@@ -94,13 +76,11 @@ def main():
             new_lens[i] = len(buf.getvalue())
             new_blob += buf.getvalue()
             print(f"  image bv{i}: {im.size[0]}x{im.size[1]} {len(buf.getvalue()) // 1024}KB")
-        # Rewrite offsets/lengths; accessors untouched (geometry identical).
         for i, bv in enumerate(js["bufferViews"]):
             bv["byteOffset"] = offsets[i]
             bv["byteLength"] = new_lens[i]
         out = OUT_DIR / f"{name}.glb"
         write_glb(out, js, bytes(new_blob))
-        # Report.
         before = src.stat().st_size
         after = out.stat().st_size
         print(f"{name}: {before / 1048576:.2f}MB -> {after / 1048576:.2f}MB")

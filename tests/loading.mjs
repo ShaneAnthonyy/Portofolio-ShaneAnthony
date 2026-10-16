@@ -1,7 +1,7 @@
 import {readFile,writeFile} from 'node:fs/promises'
 import {send,socket,evaluate,until,delay,click,close,errors,warnings,screenshot} from './browser.mjs'
 const rows=[],requests=new Map(),suffix=process.argv[2]?'-'+process.argv[2]:'';let iteration='';
-await send('Network.enable');await send('Performance.enable');await send('Emulation.setCPUThrottlingRate',{rate:1});await send('Page.addScriptToEvaluateOnNewDocument',{source:await readFile(new URL('early.js',import.meta.url),'utf8')});
+await send('Network.enable');await send('Performance.enable');await send('Emulation.setCPUThrottlingRate',{rate:1});await send('Page.addScriptToEvaluateOnNewDocument',{source:await readFile(new URL('fixtures/early.js',import.meta.url),'utf8')});
 socket.addEventListener('message',e=>{const m=JSON.parse(e.data),a=m.params;if(m.method==='Network.requestWillBeSent')requests.set(a.requestId,{iteration,url:a.request.url,method:a.request.method,type:a.type,start:a.timestamp,initiator:a.initiator});if(m.method==='Network.responseReceived'&&requests.has(a.requestId))Object.assign(requests.get(a.requestId),{response:a.response,responseAt:a.timestamp});if(m.method==='Network.loadingFinished'&&requests.has(a.requestId))Object.assign(requests.get(a.requestId),{end:a.timestamp,encodedDataLength:a.encodedDataLength});if(m.method==='Network.loadingFailed'&&requests.has(a.requestId))Object.assign(requests.get(a.requestId),{failure:a.errorText})});
 try{
  for(const [width,height,mode]of [[1440,900,'normal'],[1920,1080,'normal'],[768,1024,'normal'],[390,844,'normal'],[375,812,'normal'],[1440,900,'lite'],[390,844,'lite'],[1440,900,'reduced'],[390,844,'reduced']])for(const cache of ['cold','warm']){

@@ -6,4 +6,10 @@ dist
 tests/measurements/
 tests/screenshots/
 tests/*.log
+tests/*.json
+tests/logs/
+tests/baseline/
+tests/after/
+tests/loading/
+tests/regressions/
 coverage/

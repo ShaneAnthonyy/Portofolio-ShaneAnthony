@@ -22,13 +22,13 @@ export const about = {
   summary: `Passionate Computer Science student and aspiring Software Developer dedicated to bridging the gap between intelligent systems and engaging digital experiences. Equipped with technical skills in frontend development (ReactJS, JavaScript, CSS), UI/UX prototyping (Figma), and AI engineering, including Machine Learning and Natural Language Processing. Eager to apply my problem-solving abilities and self-learning drive in a real-world setting to build responsive, smart applications as a Software Developer Intern.`,
   education: [
     {
-      period: 'July 2021 — July 2024',
+      period: '2021 — 2024',
       school: 'SMAKN Anglo Lippo Cikarang, Bekasi',
       detail: 'Natural Science',
       note: 'Final Score 84 / 100',
     },
     {
-      period: 'Sept 2024 — Present',
+      period: '2024 — Present',
       school: 'Bina Nusantara University, Tangerang',
       detail: 'Computer Science - Artificial Intelligence',
       note: 'GPA 3.48 / 4.00',

@@ -75,7 +75,7 @@ export async function screenshot(name) {
   const { data } = await send('Page.captureScreenshot', { format: 'png' })
   await writeFile(new URL(name, output), Buffer.from(data, 'base64'))
 }
-await mkdir(output, { recursive: true })
+await Promise.all(['measurements/', 'screenshots/', 'logs/', 'loading/', 'regressions/'].map(path => mkdir(new URL(path, output), { recursive: true })))
 await send('Page.enable')
 await send('Runtime.enable')
 await send('Log.enable')

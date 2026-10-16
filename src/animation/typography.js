@@ -10,7 +10,6 @@ const typeDebug =
 
 function tlog(id, event) {
   if (typeDebug) {
-    // eslint-disable-next-line no-console
     console.log(`[type-debug] ${id} ${event}`)
   }
 }
@@ -92,7 +91,6 @@ function auditScope(id, scope, phase) {
   }
   const title = scope.querySelector('h1, h2, h3')
   const cs = title ? window.getComputedStyle(title) : null
-  // eslint-disable-next-line no-console
   console.log(
     `[type-debug] ${id} ${phase} owner=GSAP typeAnimated=${scope.classList.contains('type-animated')} ` +
       `cssAnims=[${cssAnims.join(',')}] opacity=${cs ? cs.opacity : 'n/a'} transform=${cs ? cs.transform : 'n/a'}`

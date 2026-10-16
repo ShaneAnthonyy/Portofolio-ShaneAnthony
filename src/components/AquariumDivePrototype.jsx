@@ -12,11 +12,11 @@ import { arrivalProgress } from '../animation/diveArrival.js'
 
 
 const KEYS = [
-  { p: 0.0, pos: [0, 2.5, 12], tgt: [0, 2.2, 0] }, // P0 front view
-  { p: 0.3, pos: [0, 4.5, 9.5], tgt: [0, 2.0, 0] }, // P1 above + closer
-  { p: 0.55, pos: [0, 8.5, 9.5], tgt: [0, 1.5, -1] }, // P2 exit rise: higher+farther, tank lower third
-  { p: 0.75, pos: [0, 7.0, 7.5], tgt: [0, 1.8, -2] }, // P3 takeover: above/away, sky dominant
-  { p: 1.0, pos: [0, 2.5, 0.5], tgt: [0, 2.0, -6] }, // P4 underwater
+  { p: 0.0, pos: [0, 2.5, 12], tgt: [0, 2.2, 0] }, 
+  { p: 0.3, pos: [0, 4.5, 9.5], tgt: [0, 2.0, 0] }, 
+  { p: 0.55, pos: [0, 8.5, 9.5], tgt: [0, 1.5, -1] }, 
+  { p: 0.75, pos: [0, 7.0, 7.5], tgt: [0, 1.8, -2] },
+  { p: 1.0, pos: [0, 2.5, 0.5], tgt: [0, 2.0, -6] },
 ]
 
 const smooth = (t) => t * t * (3 - 2 * t)
@@ -334,23 +334,60 @@ function getBlobTexture() {
   blobTex = new THREE.CanvasTexture(cv)
   return blobTex
 }
-let tableShadowTex = null
 function getTableShadowTexture() {
-  if (tableShadowTex) return tableShadowTex
-  const W = 256
-  const H = 128
+  const S = 128
   const cv = document.createElement('canvas')
-  cv.width = W
-  cv.height = H
+  cv.width = cv.height = S
   const g = cv.getContext('2d')
-  const gr = g.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, W / 2)
+  const gr = g.createRadialGradient(S / 2, S / 2, 0, S / 2, S / 2, S / 2)
   gr.addColorStop(0, 'rgba(255,255,255,1)')
-  gr.addColorStop(0.45, 'rgba(255,255,255,0.45)')
+  gr.addColorStop(0.25, 'rgba(255,255,255,0.95)')
+  gr.addColorStop(0.55, 'rgba(255,255,255,0.48)')
+  gr.addColorStop(0.85, 'rgba(255,255,255,0.06)')
   gr.addColorStop(1, 'rgba(255,255,255,0)')
   g.fillStyle = gr
-  g.fillRect(0, 0, W, H)
-  tableShadowTex = new THREE.CanvasTexture(cv)
-  return tableShadowTex
+  g.fillRect(0, 0, S, S)
+  return new THREE.CanvasTexture(cv)
+}
+function contactShadowGeometry(count) {
+  const geo = new THREE.BufferGeometry()
+  const uv = [], indices = []
+  for (let p = 0; p < count; p++) {
+    for (let z = 0; z <= 8; z++) {
+      for (let x = 0; x <= 8; x++) {
+        uv.push(x / 8, z / 8)
+        if (x < 8 && z < 8) {
+          const a = p * 81 + z * 9 + x
+          indices.push(a, a + 9, a + 1, a + 1, a + 9, a + 10)
+        }
+      }
+    }
+  }
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(count * 81 * 3), 3))
+  geo.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2))
+  geo.setAttribute('color', new THREE.Float32BufferAttribute(new Float32Array(count * 81 * 4), 4))
+  geo.setIndex(indices)
+  return geo
+}
+function placeContactShadow(mesh, patches, heightAt, inverse) {
+  const { position, color } = mesh.geometry.attributes
+  const point = new THREE.Vector3()
+  patches.forEach((patch, p) => {
+    const c = Math.cos(patch.angle || 0), s = Math.sin(patch.angle || 0)
+    for (let z = 0; z <= 8; z++) {
+      for (let x = 0; x <= 8; x++) {
+        const dx = (x / 8 - 0.5) * patch.width, dz = (z / 8 - 0.5) * patch.depth
+        const wx = patch.x + dx * c - dz * s, wz = patch.z + dx * s + dz * c
+        point.set(wx, heightAt(wx, wz) + 0.004, wz)
+        if (inverse) point.applyMatrix4(inverse)
+        const i = p * 81 + z * 9 + x
+        position.setXYZ(i, point.x, point.y, point.z)
+        color.setXYZW(i, 1, 1, 1, patch.opacity)
+      }
+    }
+  })
+  position.needsUpdate = color.needsUpdate = true
+  mesh.geometry.computeBoundingSphere()
 }
 function contactDisc(radius, opacity) {
   const geo = new THREE.PlaneGeometry(radius * 2, radius * 2)
@@ -431,7 +468,7 @@ function buildScene({ hideFarRocks, liteWater = false } = {}) {
     temp[slot].length = 0
   }
 
-  // ---- TEMPORARY primitives: replaced per-slot as GLBs land + validate ----
+  // ---- TEMPORARY primitives: replaced per-slot as GLBs land + validate ---- //
   const glassMat = new THREE.MeshStandardMaterial({
     color: 0xbfdce8,
     transparent: true,
@@ -508,10 +545,10 @@ function buildScene({ hideFarRocks, liteWater = false } = {}) {
     actx.fillStyle = g
     actx.fillRect(fx, fy, fw, fh)
   }
-  edgeFade(0, 0, 61, 0, 0, 0, 61, 256) // left
-  edgeFade(512, 0, 451, 0, 451, 0, 61, 256) // right
-  edgeFade(0, 0, 0, 31, 0, 0, 512, 31) // top
-  edgeFade(0, 256, 0, 225, 0, 225, 512, 31) // bottom
+  edgeFade(0, 0, 61, 0, 0, 0, 61, 256) 
+  edgeFade(512, 0, 451, 0, 451, 0, 61, 256) 
+  edgeFade(0, 0, 0, 31, 0, 0, 512, 31) 
+  edgeFade(0, 256, 0, 225, 0, 225, 512, 31) 
   const waterAlphaTex = new THREE.CanvasTexture(alphaCanvas)
   waterAlphaTex.wrapS = waterAlphaTex.wrapT = THREE.ClampToEdgeWrapping
   disposables.push(waterAlphaTex)
@@ -557,7 +594,7 @@ function buildScene({ hideFarRocks, liteWater = false } = {}) {
   ]
   const rockTone = [0x515c67, 0x5a6470, 0x49525c]
   rockDefs.forEach(({ p, s, far }, i) => {
-    if (far && hideFarRocks) return // Open-air dive: external rocks removed
+    if (far && hideFarRocks) return
     const rm = new THREE.MeshStandardMaterial({
       color: far ? 0x2c3e52 : rockTone[i % rockTone.length],
       roughness: 0.9,
@@ -836,7 +873,6 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       })
 
       if (SMOOTH_DEBUG) {
-        // eslint-disable-next-line no-console
         console.log(
           '[smooth-debug] SIGN STATE: diveP=%s signVisible=%s fade=%s position=%s scale=%s',
           Number(diveP).toFixed(3),
@@ -886,8 +922,8 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
     enableAquaLayer(aquariumRoot)
     const AQUA_SCENE_NAMES = new Set(['tank.glb', 'floor.glb', 'rocks.glb', 'kelp.glb', 'coral', 'fish-a', 'fish-b', 'fish-c', 'butterfly-koi-a', 'butterfly-koi-b', 'shrimp-a', 'shrimp-b'])
     const aquaParentFor = (name) => (AQUA_SCENE_NAMES.has(name) ? aquariumRoot : scene)
-    const fishList = [] // { node, cfg, rotY, base, range }
-    const koiList = [] // { node, cfg, rotY, base, range } — butterfly koi, PoC only
+    const fishList = [] 
+    const koiList = [] 
     let schoolCache = null
     const tempFallback = {
       node: null,
@@ -999,7 +1035,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
             i & 4 ? inner.max.z : inner.min.z
           )
           .applyMatrix4(camera.matrixWorldInverse)
-        if (_pv.z > -0.05) return false // corner behind camera: mask off
+        if (_pv.z > -0.05) return false 
         _pv.applyMatrix4(camera.projectionMatrix)
         const ux = _pv.x * 0.5 + 0.5
         const uy = _pv.y * 0.5 + 0.5
@@ -1583,50 +1619,37 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         sdx = -_shadowWorld.x / sdl
         sdz = -_shadowWorld.z / sdl
       }
-      const sDirChanged =
-        !poc.tableShadowDir ||
-        Math.abs(poc.tableShadowDir.x - sdx) > 1e-4 ||
-        Math.abs(poc.tableShadowDir.z - sdz) > 1e-4
-      if (sDirChanged) poc.tableShadowDir = { x: sdx, z: sdz }
       const tableH = Math.max(fb.max.y - fb.min.y, 0.001)
       const soff = tableH * 0.08
       const scx = fc.x + sdx * soff
       const scz = fc.z + sdz * soff
       const terrainY = poc.ground ? poc.ground.position.y : fb.min.y - 0.01
       if (!poc.tableShadowGroup) {
-        const dbg = TABLE_SHADOW_DEBUG ? 1 : 0
         const g = new THREE.Group()
         g.name = 'TableShadow'
-        const geo = new THREE.PlaneGeometry(1, 1)
-        const fpMat = new THREE.MeshBasicMaterial({
-          color: dbg ? 0x00ffff : 0x070b0e,
+        const map = getTableShadowTexture()
+        const mat = new THREE.MeshBasicMaterial({
+          color: TABLE_SHADOW_DEBUG ? 0x00ffff : 0x000000,
           transparent: true,
-          opacity: dbg ? 0.35 : 0.24,
-          map: getTableShadowTexture(),
+          vertexColors: true,
+          map,
           depthWrite: false,
           toneMapped: false,
+          polygonOffset: true,
+          polygonOffsetFactor: -1,
+          polygonOffsetUnits: -1,
         })
-        const fp = new THREE.Mesh(geo, fpMat)
-        fp.rotation.x = -Math.PI / 2
+        const fp = new THREE.Mesh(contactShadowGeometry(5), mat)
+        fp.name = 'StandContactShadow'
         fp.renderOrder = 2
         g.add(fp)
-        const footMat = new THREE.MeshBasicMaterial({
-          color: dbg ? 0xffff00 : 0x05090c,
-          transparent: true,
-          opacity: dbg ? 0.35 : 0.21,
-          map: getTableShadowTexture(),
-          depthWrite: false,
-          toneMapped: false,
-        })
-        const feet = []
-        for (let i = 0; i < 4; i++) {
-          const fm = new THREE.Mesh(geo, footMat)
-          fm.rotation.x = -Math.PI / 2
-          fm.renderOrder = 2
-          g.add(fm)
-          feet.push(fm)
-        }
-        if (dbg) {
+        const signShadow = new THREE.Mesh(contactShadowGeometry(2), mat.clone())
+        signShadow.name = 'SignContactShadow'
+        signShadow.renderOrder = 2
+        sign.group.add(signShadow)
+        sign.mats.push(signShadow.material)
+        poc.signShadow = signShadow
+        if (TABLE_SHADOW_DEBUG) {
           const lineGeo = new THREE.BufferGeometry().setFromPoints([
             new THREE.Vector3(),
             new THREE.Vector3(),
@@ -1639,25 +1662,44 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
           poc.tableShadowLine = line
           disposables.push(lineGeo, line.material)
         }
-        disposables.push(geo, fpMat, footMat)
+        disposables.push(map, fp.geometry, mat, signShadow.geometry, signShadow.material)
         poc.tableShadowGroup = g
         poc.tableShadowFoot = fp
-        poc.tableShadowFeet = feet
         scene.add(g)
         if (lastP >= 0.94) g.visible = false
       }
-      const fp = poc.tableShadowFoot
-      fp.position.set(scx, terrainY + 0.006, scz)
-      fp.scale.set(fw * 1.0, fd * 0.75 * 1.175, 1)
-      fp.rotation.set(-Math.PI / 2, 0, Math.atan2(-sdz, sdx))
-      const footW = Math.max(fw * 0.104, 0.3)
-      const footD = Math.max(fd * 0.104, 0.3)
-      const fx = [fc.x - fw * 0.38, fc.x + fw * 0.38]
-      const fz = [fc.z - fd * 0.38, fc.z + fd * 0.38]
-      poc.tableShadowFeet.forEach((fm, i) => {
-        fm.position.set(fx[i % 2], terrainY + 0.006, fz[(i / 2) | 0])
-        fm.scale.set(footW, footD, 1)
+      const feet = Array.from({ length: 4 }, () => new THREE.Box3())
+      const vertex = new THREE.Vector3()
+      tg.traverse((n) => {
+        if (!n.isMesh || n === poc.tankBlob) return
+        const positions = n.geometry.attributes.position
+        for (let i = 0; i < positions.count; i++) {
+          vertex.fromBufferAttribute(positions, i).applyMatrix4(n.matrixWorld)
+          if (vertex.y > fb.min.y + 0.035) continue
+          feet[(vertex.x >= fc.x ? 1 : 0) + (vertex.z >= fc.z ? 2 : 0)].expandByPoint(vertex)
+        }
       })
+      const heightAt = (x, z) => terrainY + (poc.terrainHeightAt ? poc.terrainHeightAt(x, z) : 0)
+      const patches = [{ x: scx, z: scz, width: fw * 1.06, depth: fd * 0.96, opacity: 0.20 }]
+      feet.forEach((foot) => {
+        const center = foot.getCenter(new THREE.Vector3())
+        patches.push({
+          x: center.x, z: center.z,
+          width: (foot.max.x - foot.min.x) * 2 + 0.2,
+          depth: (foot.max.z - foot.min.z) * 2.4 + 0.2,
+          opacity: 0.82,
+        })
+      })
+      placeContactShadow(poc.tableShadowFoot, patches, heightAt)
+      const signMatrix = new THREE.Matrix4().makeRotationY(sign.base.yaw)
+      signMatrix.setPosition(sign.base.x, sign.base.y, sign.base.z)
+      const post = sign.group.children[1]
+      const postCenter = post.position.clone().applyMatrix4(signMatrix)
+      const postSize = new THREE.Box3().setFromBufferAttribute(post.geometry.attributes.position).getSize(new THREE.Vector3())
+      placeContactShadow(poc.signShadow, [
+        { x: postCenter.x + sdx * 0.4, z: postCenter.z + sdz * 0.4, width: 1.35, depth: 0.45, angle: Math.atan2(sdz, sdx), opacity: 0.17 },
+        { x: postCenter.x, z: postCenter.z, width: postSize.x + 0.55, depth: postSize.z + 0.55, opacity: 0.82 },
+      ], heightAt, signMatrix.invert())
       if (poc.tableShadowLine) {
         const lp = poc.tableShadowLine.geometry.attributes.position
         lp.setXYZ(0, fc.x, terrainY + 0.02, fc.z)
@@ -2192,7 +2234,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         hillGeo.setAttribute('color', new THREE.BufferAttribute(tint, 3))
       }
       const hillMat = new THREE.MeshStandardMaterial({
-        color: new THREE.Color(0.92, 1.16, 0.74),
+        color: new THREE.Color(0.26, 0.34, 0.42),
         roughness: 1.0,
         metalness: 0,
         vertexColors: true,
@@ -2210,15 +2252,16 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       scene.add(poc.ground)
       disposables.push(hillGeo, hillMat)
       const hillTexBase = '/aquarium/terrain/grass_ground/grass_ground'
+      const hillGrassUrl = '/aquarium/terrain/grass_ground/minecraft_grass_v2.png'
       const hillTexLoader = new THREE.TextureLoader()
       const hillChannels = qState.runtime.waterHigh
         ? [
-            { key: 'map', suf: 'diff_1024.webp', srgb: true, cap: 1024 },
+            { key: 'map', url: hillGrassUrl, srgb: true, cap: 20 },
             { key: 'normalMap', suf: 'nor_gl_512.webp', srgb: false, cap: 512, normalScale: 0.6 },
             { key: 'roughnessMap', suf: 'rough_1024.webp', srgb: false, cap: 1024 },
             { key: 'aoMap', suf: 'ao_1024.webp', srgb: false, cap: 1024 },
           ]
-        : [{ key: 'map', url: '/aquarium/lite/grass_ground_lite.jpg', srgb: true, cap: Math.min(1024, qState.runtime.texCap) }]
+        : [{ key: 'map', url: hillGrassUrl, srgb: true, cap: 20 }]
       hillChannels.forEach(({ key, suf, url, srgb, cap, normalScale }) => {
         track(
           hillTexLoader
@@ -2240,7 +2283,12 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
               }
               if (srgb) finalTex.colorSpace = THREE.SRGBColorSpace
               finalTex.wrapS = finalTex.wrapT = THREE.RepeatWrapping
-              finalTex.repeat.set(8, 8)
+              finalTex.repeat.setScalar(key === 'map' ? 124 : 8)
+              if (key === 'map') {
+                finalTex.magFilter = THREE.NearestFilter
+                finalTex.minFilter = THREE.LinearMipmapLinearFilter
+                finalTex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy())
+              }
               if (key === 'aoMap') {
                 if (!hillGeo.getAttribute('uv2')) return
                 finalTex.channel = 2
@@ -2928,6 +2976,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         const c = terrainPositions.getY(i + terrainSegments + 2), d = terrainPositions.getY(i + 1)
         return fx + fz <= 1 ? a + (b - a) * fz + (d - a) * fx : c + (d - c) * (1 - fz) + (b - c) * (1 - fx)
       }
+      poc.terrainHeightAt = terrainHeightAt
       const positionTree = (root, cfg, scale, rotation) => {
         root.position.set(0, 0, 0)
         root.scale.setScalar(scale * cfg.s)

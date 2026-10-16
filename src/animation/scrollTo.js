@@ -10,7 +10,6 @@ const navDebug =
 
 function nlog(...args) {
   if (navDebug) {
-    // eslint-disable-next-line no-console
     console.log('[NAV]', ...args)
   }
 }

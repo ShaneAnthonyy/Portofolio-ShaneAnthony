@@ -33,7 +33,7 @@ async function run(name,kind,direction){
   results.push(row);await writeFile(new URL(`${label}-profile.json`,out),JSON.stringify({label,width,height,lite,light,results,network,errors,warnings},null,2));console.log('PASS',phase,label,name,JSON.stringify(row.metrics))
 }
 try{
-  await fresh({width,height,lite,theme:light?'light':'dark',beforeEnter:async()=>{await evaluate(await readFile(new URL('instrument.js',import.meta.url),'utf8'));await until('!!window.__qa.renderer');if(inactive)await evaluate(`window.__qa.inactive=true;window.__qa.actors().forEach(a=>a.root.visible=false)`)}})
+  await fresh({width,height,lite,theme:light?'light':'dark',beforeEnter:async()=>{await evaluate(await readFile(new URL('fixtures/instrument.js',import.meta.url),'utf8'));await until('!!window.__qa.renderer');if(inactive)await evaluate(`window.__qa.inactive=true;window.__qa.actors().forEach(a=>a.root.visible=false)`)}})
   if(isolateVars)await evaluate(`(()=>{const root=document.querySelector('.aqua-root'),style=root.style,original=CSSStyleDeclaration.prototype.setProperty;const names=new Set(['--bubble-background-opacity','--bubble-midground-opacity','--bubble-foreground-opacity','--aqua-sat','--aqua-top-a','--aqua-mid-a','--aqua-deep-a']);CSSStyleDeclaration.prototype.setProperty=function(name,...args){if(this===style&&names.has(name)&&!root.classList.contains('is-entered'))return;return original.call(this,name,...args)}})()`)
   await evaluate(`(async()=>{
     const url=performance.getEntriesByType('resource').map(r=>r.name).find(n=>n.includes('BufferGeometryUtils-')&&n.endsWith('.js')),module=await import(url),T=Object.values(module).find(v=>v&&typeof v==='object'&&v.Object3D&&v.WebGLRenderer);
