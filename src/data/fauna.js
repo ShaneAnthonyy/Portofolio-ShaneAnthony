@@ -6,7 +6,7 @@ export const ABOUT_FISH = [
 
 export const PROJECTS_FISH = [
   { img: '/skill/intermediate4.png', skill: 'Python', tier: 'intermediate', w: 72, side: 'left', row: 'top' },
-  { img: '/skill/intermediate3.png', skill: 'JavaScript', tier: 'intermediate', w: 78, side: 'right', row: 'mid' },
+  { img: '/skill/intermediate2.png', skill: 'CSS', tier: 'intermediate', w: 78, side: 'right', row: 'mid' },
   { img: '/skill/intermediate5.png', skill: 'C', tier: 'intermediate', w: 62, side: 'left', row: 'bottom' },
 ]
 

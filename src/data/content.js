@@ -46,7 +46,7 @@ export const skillGroups = [
     items: [
       { name: 'HTML', tier: 'intermediate' },
       { name: 'CSS', tier: 'intermediate' },
-      { name: 'JavaScript', tier: 'intermediate' },
+      { name: 'JavaScript', tier: 'amateur' },
       { name: 'React', tier: 'intermediate' },
     ],
   },

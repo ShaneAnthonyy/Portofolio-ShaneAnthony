@@ -9,7 +9,6 @@ import { choreographyBuilders, useSectionChoreography } from '../animation/secti
 const FISH_DEFS = [
   { img: '/skill/intermediate1.png', skill: 'HTML', tier: 'intermediate', depth: 'back', zone: 'surface', w: 66 },
   { img: '/skill/intermediate2.png', skill: 'CSS', tier: 'intermediate', depth: 'back', zone: 'surface', w: 60 },
-  { img: '/skill/intermediate3.png', skill: 'JavaScript', tier: 'intermediate', depth: 'back', zone: 'surface', w: 84 },
   { img: '/skill/intermediate6.png', skill: 'React', tier: 'intermediate', depth: 'front', zone: 'surface', w: 100 },
   { img: '/skill/intermediate7.png', skill: 'Visual Studio Code', tier: 'intermediate', depth: 'front', zone: 'surface', w: 56 },
   { img: '/skill/intermediate4.png', skill: 'Python', tier: 'intermediate', depth: 'front', zone: 'mid', w: 88 },
