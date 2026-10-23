@@ -123,7 +123,6 @@ export default function About({ unlocked = true }) {
                 {about.languages.map((lang) => `${lang.name} (${lang.level})`).join(' · ')}
               </p>
             </div>
-            {/* GPA stays with its existing education note and progress indicator. */}
             <dl className="about-intro__stats">
               {stats.filter((stat) => !stat.label.startsWith('GPA')).map((stat) => (
                 <div key={stat.label} className="about-intro__stat">

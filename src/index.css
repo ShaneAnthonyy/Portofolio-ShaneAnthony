@@ -974,10 +974,6 @@ html:not([data-theme='dark']) .aqua-root .contact__form {
   background: linear-gradient(rgba(167, 196, 202, 0.08), rgba(167, 196, 202, 0.08)), rgba(188, 200, 202, 0.43);
 }
 
-.contact__item--static {
-  cursor: default;
-}
-
 .contact__label {
   font-size: 0.75rem;
   text-transform: uppercase;
@@ -3292,9 +3288,6 @@ html:not([data-theme='dark']) .skills-legend__level {
   .slider-controls { justify-content: space-between; gap: 8px; margin-top: 16px; }
 }
 
-html[data-perf='lite'] .tidal-prototype { background: var(--aqua-pill-bg); }
-
-
 .slider-detail-overlay {
   animation: detail-overlay-in 0.25s ease both;
 }
@@ -3690,6 +3683,7 @@ html[data-perf='lite'] .tidal-prototype { background: var(--aqua-pill-bg); }
 }
 
 html[data-perf='lite'] .slider-detail {
+  background: var(--aqua-bg-0);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   box-shadow: 0 2px 10px rgba(30, 60, 90, 0.08);
@@ -3741,10 +3735,6 @@ html[data-perf='lite'] .slider-detail {
 
 html:not([data-perf='lite']):not([data-theme='dark']) .slider-detail {
   background: color-mix(in srgb, var(--aqua-bg-0) 84%, white);
-}
-
-html[data-perf='lite']:not([data-theme='dark']) .slider-detail {
-  background: color-mix(in srgb, var(--aqua-bg-0) 68%, transparent);
 }
 
 html[data-perf='lite']:not([data-theme='dark']) .slider-card__banner {

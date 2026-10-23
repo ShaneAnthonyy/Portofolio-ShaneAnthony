@@ -20,19 +20,25 @@ const ZONES = [
     id: 'frontend',
     label: 'Frontend Development',
     desc: 'Interfaces I can ship',
-    skills: ['React', 'JavaScript', 'HTML', 'CSS'],
+    skills: ['React', 'JavaScript', 'HTML', 'CSS', 'Tailwind CSS', 'Three.js', 'WebGL', 'GSAP'],
   },
   {
     id: 'backend',
     label: 'Backend Development',
     desc: 'Working knowledge',
-    skills: ['Python', 'C', 'PHP', 'Java', 'MySQL'],
+    skills: ['Python', 'C', 'PHP', 'Java'],
   },
   {
     id: 'tools',
     label: 'Tools & Frameworks',
     desc: 'Daily workflow',
-    skills: ['Visual Studio Code', 'Figma', 'GitHub', 'Vite', 'Laravel'],
+    skills: ['Visual Studio Code', 'Figma', 'GitHub', 'Vite', 'Laravel', 'phpMyAdmin'],
+  },
+  {
+    id: 'ai',
+    label: 'Artificial Intelligence',
+    desc: 'Applied intelligence',
+    skills: ['Machine Learning', 'Natural Language Processing', 'Computer Vision'],
   },
   {
     id: 'professional',

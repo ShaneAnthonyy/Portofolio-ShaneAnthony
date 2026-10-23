@@ -21,5 +21,5 @@ export const FOOTER_FISH = [
   { img: '/skill/amateur2.png', skill: 'Java', tier: 'amateur', w: 44, row: 'bed' },
   { img: '/skill/amateur3.png', skill: 'GitHub', tier: 'amateur', w: 44, row: 'bed' },
   { img: '/skill/amateur4.png', skill: 'Laravel', tier: 'amateur', w: 46, row: 'bed' },
-  { img: '/skill/amateur5.png', skill: 'MySQL', tier: 'amateur', w: 44, row: 'bed' },
+  { img: '/skill/amateur5.png', skill: 'phpMyAdmin', tier: 'amateur', w: 44, row: 'bed' },
 ]

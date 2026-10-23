@@ -655,7 +655,6 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
   const heroRevealRef = useRef(null)
   const [debug, setDebug] = useState({ p: 0, phase: 'FRONT' })
   const [heroMounted, setHeroMounted] = useState(false)
-  const fishBaseX = useRef(null)
   const prog = useSectionProgress()
   const progRef = useRef(prog)
   progRef.current = prog
@@ -1389,7 +1388,6 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
     const TITLE_LIGHT = new THREE.Color(0xfff8e8)
     const TITLE_DARK = new THREE.Color(0xf2f7ff)
     const _titleC = new THREE.Color()
-    const _aquaC = new THREE.Color()
     const _aquaV = new THREE.Vector3()
     const FISH_CFG = [
       { s: 1.0, ox: 0.18, oy: 0.18, oz: 0.05, rotY: 0, speed: 0.5, bob: 0.1, sway: 0.12, depth: 0.1, phase: 0.0 },
@@ -1487,10 +1485,6 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       if (loadedGroups.tank) consider(loadedGroups.tank)
       else (temp.tank || []).forEach(consider)
       return found ? box : null
-    }
-    const tankBaseY = () => {
-      const b = tankOuterBox()
-      return b ? b.min.y : 0.0
     }
     const tankInnerBox = () => {
       const b = tankOuterBox()

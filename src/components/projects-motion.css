@@ -222,7 +222,6 @@ html[data-perf='lite'] .tidal-v3 .tidal-card {
   color: var(--aqua-ink);
 }
 
-.tidal-v3 .tidal-card__prototype-frame,
 .tidal-v3 .tidal-card__prototype-fallback {
   display: block;
   width: 100%;
@@ -230,11 +229,6 @@ html[data-perf='lite'] .tidal-v3 .tidal-card {
   border: 0;
   background: var(--aqua-pill-bg);
   pointer-events: none;
-}
-
-.tidal-v3 .tidal-card__prototype-frame {
-  user-select: none;
-  -webkit-user-select: none;
 }
 
 @media (max-width: 900px) {

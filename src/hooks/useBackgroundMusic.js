@@ -58,7 +58,6 @@ export default function useBackgroundMusic() {
       try {
         el.pause()
       } catch {
-        /* already stopped */
       }
       return
     }
@@ -92,7 +91,6 @@ export default function useBackgroundMusic() {
           try {
             el.pause()
           } catch {
-            /* already stopped */
           }
           return
         }
@@ -102,7 +100,6 @@ export default function useBackgroundMusic() {
         try {
           el.pause()
         } catch {
-          /* already stopped */
         }
         finish(false)
       }

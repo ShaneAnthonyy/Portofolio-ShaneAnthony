@@ -14,12 +14,12 @@ export const profile = {
 
 export const stats = [
   { label: 'Projects', value: '6' },
-  { label: 'Skills', value: '16' },
+  { label: 'Skills', value: '23' },
   { label: 'GPA / 4.00', value: '3.48' },
 ]
 
 export const about = {
-  summary: `Passionate Computer Science student and aspiring Software Developer dedicated to bridging the gap between intelligent systems and engaging digital experiences. Equipped with technical skills in frontend development (ReactJS, JavaScript, CSS), UI/UX prototyping (Figma), and AI engineering, including Machine Learning and Natural Language Processing. Eager to apply my problem-solving abilities and self-learning drive in a real-world setting to build responsive, smart applications as a Software Developer Intern.`,
+  summary: `Computer Science student at BINUS University specializing in Artificial Intelligence, with hands-on experience in frontend development using React.js, JavaScript, and Tailwind CSS. Experienced in building responsive applications and developing machine learning and NLP research projects. Seeking a Software Developer Internship to apply technical and problem-solving skills in real-world software development.`,
   education: [
     {
       period: '2021 — 2024',
@@ -48,6 +48,10 @@ export const skillGroups = [
       { name: 'CSS', tier: 'intermediate' },
       { name: 'JavaScript', tier: 'amateur' },
       { name: 'React', tier: 'intermediate' },
+      { name: 'Tailwind CSS', tier: 'amateur' },
+      { name: 'Three.js', tier: 'amateur' },
+      { name: 'WebGL', tier: 'amateur' },
+      { name: 'GSAP', tier: 'amateur' },
     ],
   },
   {
@@ -57,7 +61,6 @@ export const skillGroups = [
       { name: 'C', tier: 'intermediate' },
       { name: 'PHP', tier: 'amateur' },
       { name: 'Java', tier: 'amateur' },
-      { name: 'MySQL', tier: 'amateur' },
     ],
   },
   {
@@ -68,6 +71,15 @@ export const skillGroups = [
       { name: 'GitHub', tier: 'amateur' },
       { name: 'Laravel', tier: 'amateur' },
       { name: 'Vite', tier: 'amateur' },
+      { name: 'phpMyAdmin', tier: 'amateur' },
+    ],
+  },
+  {
+    label: 'Artificial Intelligence',
+    items: [
+      { name: 'Machine Learning', tier: 'amateur' },
+      { name: 'Natural Language Processing', tier: 'amateur' },
+      { name: 'Computer Vision', tier: 'amateur' },
     ],
   },
   {
@@ -478,7 +490,8 @@ export const certificates = [
 ]
 
 export const contact = {
-  phoneDisplay: '+62 878-8896-0500',
+  github: 'https://github.com/ShaneAnthonyy',
+  githubLabel: 'github.com/ShaneAnthonyy',
   email: 'shaneanthony736@gmail.com',
   linkedin: 'https://www.linkedin.com/in/shane-anthony26/',
   linkedinLabel: 'linkedin.com/in/shane-anthony26',

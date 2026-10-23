@@ -44,6 +44,7 @@ Each suite is also runnable individually with `node tests/<filename>`.
 | Suite | Retained coverage |
 | --- | --- |
 | `check-projects.mjs` | Corrected **17/17** suite, preserved unchanged: 192 responsive/project/theme/performance combinations; rapid input, keyboard/focus, six dialogs, touch, drag, resize/reduced-motion interruptions and continuous morphing. |
+| `check-projects-lite.mjs` | Lite detail panels in both themes on desktop/mobile: opaque background, no blur, readable text contrast, focus and viewport fit. |
 | `check-aquarium-ground.mjs` | 18 desktop/mobile/theme/Lite views; approved grass, 124x124 repeat, detail maps, opaque material, terrain-aligned stand/sign shadows, texture loads and screenshots. |
 | `check-ground-lifecycle.mjs` | Replay resource identity, paused drawing, exact shadow disposal, Lite assets and Reduced Motion bypass. |
 | `check-forest-lifecycle.mjs` | Tree counts, shared geometry/materials, responsive resizing, asset requests and replay reuse. |
