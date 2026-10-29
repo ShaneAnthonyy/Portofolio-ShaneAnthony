@@ -1,0 +1,121 @@
+.world-environment {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  contain: strict;
+  pointer-events: none;
+  visibility: hidden;
+  opacity: 0;
+  background: linear-gradient(180deg, var(--world-top) 0%, var(--world-middle) 48%, var(--world-horizon) 84%, var(--world-glow) 100%);
+}
+.world-environment__stars { position: absolute; inset: 0; width: 100%; height: 100%; fill: #d4e2f5; opacity: var(--world-stars); shape-rendering: crispEdges; }
+.world-environment__celestial { position: absolute; z-index: 1; top: 0; left: 0; width: clamp(26px, 3.1vw, 44px); height: auto; aspect-ratio: 1; overflow: visible; shape-rendering: crispEdges; }
+.world-environment__sun { fill: var(--world-sun); box-shadow: 0 0 0 6px rgb(255 226 171 / .07), 0 0 0 12px rgb(255 226 171 / .035); }
+.world-environment__wind { position: absolute; inset: 8% -100% auto 0; height: clamp(150px, 24vw, 340px); opacity: var(--world-cloud-opacity); animation: world-cloud-drift 480s linear infinite; will-change: transform; }
+.world-environment__wind svg { width: 100%; height: 100%; shape-rendering: crispEdges; will-change: transform; }
+.world-environment::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background:
+    radial-gradient(ellipse at 28% -6%, rgb(var(--world-reflection-rgb) / calc(.2 - var(--world-stars) * .125)), transparent 55%),
+    linear-gradient(113deg, transparent 18%, rgb(var(--world-reflection-rgb) / calc(.045 - var(--world-stars) * .025)) 19%, transparent 25%, transparent 42%, rgb(var(--world-reflection-rgb) / calc(.045 - var(--world-stars) * .025)) 43%, transparent 51%),
+    linear-gradient(165deg, rgb(var(--world-water-rgb) / .58), rgb(var(--world-water-rgb) / .8) 35%, rgb(var(--world-depth-rgb) / .82) 72%, rgb(var(--world-depth-rgb) / .96));
+}
+.world-environment[data-running='false'] .world-environment__wind { animation-play-state: paused; }
+@keyframes world-cloud-drift { to { transform: translate3d(-25%, 0, 0); } }
+html[data-perf='lite'] .world-environment__wind { animation-play-state: paused; will-change: auto; }
+@media (prefers-reduced-motion: reduce) { .world-environment__wind { animation-play-state: paused; will-change: auto; } }
+
+/* Semantic aliases stay on presentation islands, never html/body or the app root. */
+[data-world-ui='true'] {
+  --world-solid: rgb(var(--world-rgb));
+  --world-surface: rgb(var(--world-rgb) / var(--world-alpha));
+  --world-panel: rgb(var(--world-rgb) / calc(var(--world-alpha) + .38));
+  --world-subtle: rgb(var(--world-rgb) / calc(var(--world-alpha) * .6));
+  --world-nav: rgb(var(--world-rgb) / calc(var(--world-alpha) + .14));
+  --text: var(--world-primary);
+  --muted: var(--world-muted);
+  --bg-alt: var(--world-solid);
+  --accent: var(--world-accent);
+  --accent-ink: var(--world-accent);
+  --accent-soft: rgb(var(--world-reflection-rgb) / .14);
+  --on-accent: #092b38;
+  --line: rgb(var(--world-reflection-rgb) / var(--world-border-alpha));
+  --aqua-ink: var(--world-primary);
+  --aqua-body: var(--world-secondary);
+  --aqua-muted: var(--world-muted);
+  --aqua-accent: var(--world-accent);
+  --aqua-line: var(--line);
+  --aqua-frame: rgb(var(--world-reflection-rgb) / calc(var(--world-border-alpha) + var(--world-edge-alpha) - .065));
+  --aqua-frame-hover: var(--world-accent);
+  --aqua-bg-0: var(--world-solid);
+  --aqua-card-bg: linear-gradient(145deg, rgb(var(--world-reflection-rgb) / var(--world-edge-alpha)), transparent 58%), var(--world-surface);
+  --aqua-panel-bg: var(--world-panel);
+  --aqua-card-shadow: 0 16px 36px rgb(0 12 23 / var(--world-shadow-alpha)), inset 0 1px rgb(var(--world-reflection-rgb) / calc(.14 + (var(--world-edge-alpha) - .065) * 2));
+  --aqua-card-shadow-hover: 0 18px 40px rgb(0 12 23 / var(--world-shadow-alpha)), inset 0 1px rgb(var(--world-reflection-rgb) / calc(.22 + (var(--world-edge-alpha) - .065) * 2));
+  --aqua-card-border-hover: var(--world-accent);
+  --aqua-pill-bg: var(--world-subtle);
+  --aqua-pill-text: var(--world-accent);
+  --aqua-pill-border: var(--line);
+  --aqua-input-bg: rgb(var(--world-rgb) / .5);
+  --aqua-text-shadow: 0 2px 12px rgb(0 14 25 / .55);
+  --aqua-glow: rgb(var(--world-reflection-rgb) / .09);
+  --tier-int-bg: var(--accent-soft);
+  --tier-int-border: var(--line);
+  --tier-int-ink: var(--world-accent);
+  --tier-am-bg: var(--world-subtle);
+  --tier-am-border: var(--line);
+  --tier-am-ink: var(--world-secondary);
+  color: var(--world-primary);
+}
+.aqua-root.is-portfolio-unlocked[data-world-environment='true'] .portfolio-sections { background: transparent; }
+.aqua-root.is-portfolio-unlocked[data-world-environment='true'] .footer { background: transparent; }
+.aqua-root[data-content-background='true']::before { opacity: 0; }
+[data-world-ui='true'] :is(.about-bento__head, .section__rail, .projects__head) { background: none; box-shadow: none; text-shadow: var(--aqua-text-shadow); }
+.aqua-root [data-world-ui='true'] :is(.about-card, .aqua-card, .cabinet-record, .contact__form, .contact__info), [data-world-ui='true'] .tidal-card__body { backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+[data-world-ui='true'] .tidal-card { background: transparent; }
+[data-world-ui='true'] .slider-detail { background: var(--world-panel); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+[data-world-ui='true'] .slider-detail-overlay { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+[data-world-ui='true'] .slider-control { background: var(--world-panel); }
+[data-world-ui='true'] .slider-counter { background: var(--world-panel); box-shadow: 0 0 0 6px var(--world-panel); border-radius: 4px; }
+.aqua-root [data-world-ui='true'] :is(.section__sub, .skills-legend, .depth-zone__desc, .depth-zone__label, .section__eyebrow, .navbar__logo, .navbar__link) { text-shadow: 0 0 2px rgb(0 14 26 / .9), 0 1px 6px rgb(0 14 26 / .7); }
+.aqua-root [data-world-ui='true'] :is(.about-bento__title, .section__title) { text-shadow: 0 1px 2px rgb(0 18 28 / .95), 0 3px 18px rgb(0 18 28 / .7); }
+.aqua-root [data-world-ui='true'] .skills-legend__current { text-shadow: 0 0 1px rgb(0 18 28 / .98), 0 1px 4px rgb(0 18 28 / .85); }
+.aqua-root [data-world-ui='true'] .about-edu__meta { color: var(--aqua-body); }
+[data-world-ui='true'] :is(.world-time-trigger, .audio-toggle, .lite-toggle) { background: var(--world-panel); }
+.aqua-root [data-world-ui='true'] :is(.field input, .field textarea)::placeholder { color: var(--world-muted); opacity: 1; }
+.aqua-root .navbar[data-world-ui='true']:not([data-intro-hidden='true']) { background: var(--world-nav); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-color: var(--line); box-shadow: 0 8px 28px rgb(0 16 28 / .12); }
+[data-world-ui='true'] .navbar__mobile { background: var(--world-panel); }
+#home[data-world-ui='true'] .hero__content::before { content: ''; position: absolute; inset: -18px -12px; z-index: -1; background: radial-gradient(ellipse, rgb(var(--world-rgb) / .52), transparent 72%); opacity: var(--arrival-progress, 1); pointer-events: none; }
+#home[data-world-ui='true'] .hero__title { text-shadow: 0 0 1px rgb(0 18 28 / .25), 0 1px 2px rgb(0 18 28 / .8), 0 2px 10px rgb(0 18 28 / .42); }
+#home[data-world-ui='true'] .hero__role { color: var(--world-primary); text-shadow: 0 0 1px rgb(0 18 28 / .6), 0 1px 3px rgb(0 18 28 / .6); }
+#home[data-world-ui='true'] .hero__replay { text-shadow: 0 0 1px rgb(0 18 28), 0 1px 4px rgb(0 18 28 / .95); }
+[data-world-ui='true'] .hero__replay-label { opacity: .9; }
+.world-time-panel[data-world-ui='true'], .guide-pop--mobile[data-world-ui='true'] { background: var(--world-panel); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+/* The sampled palette already interpolates; retain motion without retargeting color tweens. */
+.aqua-root:is(:not([data-dive-arrival]), [data-arrival-state='settled']) .navbar[data-world-ui='true'] { transition: padding .4s var(--ease-water), opacity .4s var(--ease-water), backdrop-filter .4s var(--ease-water), -webkit-backdrop-filter .4s var(--ease-water); }
+[data-world-ui='true'] .navbar__link { transition: transform .18s ease; }
+.aqua-root:is(:not([data-dive-arrival]), [data-arrival-state='settled']) .navbar[data-world-ui='true'] :is(.world-time-trigger, .audio-toggle) { transition: opacity .2s ease; }
+.aqua-root [data-world-ui='true'] :is(.btn, .guide-btn, .depth-zone__skill, .specimen-panel__close, .cabinet-record__link, .contact__item, .field input, .field textarea, .cabinet-record:not(.reveal)) { transition: none; }
+.aqua-root [data-world-ui='true'] .cabinet-record::before,
+.aqua-root [data-world-ui='true'] .cabinet-record::after,
+.aqua-root [data-world-ui='true'] .cabinet-record__no { transition: opacity .25s ease; }
+.aqua-root [data-world-ui='true'] .cabinet-record__no::after { transition: width .3s var(--ease-water), opacity .25s ease; }
+.aqua-root [data-world-ui='true'] .project-action { transition: transform .2s var(--ease-water); }
+.aqua-root [data-world-ui='true'] .archive-specimen__link { transition: transform .3s cubic-bezier(.22, .61, .36, 1); }
+.aqua-root [data-world-ui='true'] :is(.contact__actions .btn, .contact__copy) { transition: transform .15s ease; }
+html[data-perf='lite'] [data-world-ui='true'] { --world-surface: var(--world-solid); --world-panel: var(--world-solid); --world-nav: var(--world-solid); --aqua-card-bg: var(--world-solid); }
+html[data-perf='lite'] [data-world-ui='true'] :is(.about-card, .aqua-card, .cabinet-record, .contact__form, .contact__info, .tidal-card__body, .slider-detail, .guide-pop),
+html[data-perf='lite'] :is(.navbar, .world-time-panel, .guide-pop--mobile)[data-world-ui='true'] { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  [data-world-ui='true'], [data-world-ui='true'] * { transition: none !important; }
+  [data-world-ui='true'] { --world-surface: var(--world-solid); --world-panel: var(--world-solid); --world-nav: var(--world-solid); --aqua-card-bg: var(--world-solid); }
+  [data-world-ui='true'] :is(.about-card, .aqua-card, .cabinet-record, .contact__form, .contact__info, .tidal-card__body, .slider-detail, .guide-pop),
+  :is(.navbar, .world-time-panel, .guide-pop--mobile)[data-world-ui='true'] { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+}
+@supports not (backdrop-filter: blur(1px)) {
+  [data-world-ui='true'] { --world-surface: var(--world-solid); --world-panel: var(--world-solid); --world-nav: var(--world-solid); --aqua-card-bg: var(--world-solid); }
+}

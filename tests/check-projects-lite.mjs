@@ -6,8 +6,8 @@ const luminance = color => color.match(/[\d.]+/g).slice(0, 3).map(Number)
   .reduce((sum, v, i) => sum + v * [.2126, .7152, .0722][i], 0)
 
 try {
-  for (const [width, height] of [[1440, 900], [390, 844]]) for (const theme of ['light', 'dark']) {
-    await fresh({ width, height, theme, lite: true })
+  for (const [width, height] of [[1440, 900], [390, 844]]) for (const minutes of [720, 0]) {
+    await fresh({ width, height, minutes, lite: true })
     await approach(); await activate(); await until(unlocked, 25000)
     await evaluate(`document.querySelector('#projects').scrollIntoView({block:'center',behavior:'instant'}); document.querySelector('.tidal-card[data-position="0"]').click()`)
     await until(`!!document.querySelector('.slider-detail')`)
@@ -29,7 +29,7 @@ try {
     const a = luminance(panel.background), b = luminance(panel.text)
     const contrast = (Math.max(a, b) + .05) / (Math.min(a, b) + .05)
     assert.ok(contrast >= 4.5, `body text contrast ${contrast.toFixed(2)}:1`)
-    console.log('PASS Lite project details', width, theme, 'opaque, no blur, fits, focused, contrast', contrast.toFixed(2) + ':1')
+    console.log('PASS Lite project details', width, minutes, 'opaque, no blur, fits, focused, contrast', contrast.toFixed(2) + ':1')
   }
 } finally {
   await close()

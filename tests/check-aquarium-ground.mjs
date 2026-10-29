@@ -1,4 +1,5 @@
 import assert from'node:assert/strict'
+import{sampleEnvironment}from'../src/animation/worldTime.js'
 import{readFile,writeFile}from'node:fs/promises'
 import{fresh,send,socket,evaluate,until,delay,screenshot,close,errors,warnings}from'./browser.mjs'
 
@@ -7,8 +8,8 @@ await send('Network.enable')
 socket.addEventListener('message',e=>{const m=JSON.parse(e.data);if(m.method==='Network.responseReceived')requests.push({url:m.params.response.url,status:m.params.response.status});if(m.method==='Network.loadingFailed'&&!m.params.canceled)failures.push(m.params)})
 await send('Page.addScriptToEvaluateOnNewDocument',{source:await readFile(new URL('fixtures/early.js',import.meta.url),'utf8')})
 try{
- for(const[width,height,theme,lite]of[[1440,900,'light',false],[1440,900,'dark',false],[390,844,'light',false],[390,844,'dark',false],[1440,900,'light',true],[390,844,'dark',true]]){
-  await fresh({width,height,theme,lite})
+ for(const[width,height,minutes,lite]of[[1440,900,720,false],[1440,900,0,false],[390,844,720,false],[390,844,0,false],[1440,900,720,true],[390,844,0,true]]){
+  await fresh({width,height,minutes,lite})
   await until(`window.__audit.renderers.some(m=>m.scene?.deref()?.getObjectByName('TableShadow'))`)
   await evaluate(`window.__contactMeta=window.__audit.renderers.find(m=>m.scene?.deref()?.getObjectByName('HilltopGround'))`)
   for(const progress of[0,.3,.65]){
@@ -20,12 +21,12 @@ try{
    assert.equal(state.groundMaterial.opacity,1);assert.equal(state.groundMaterial.transparent,false)
    assert.ok(state.groundMaterial.map.url.endsWith('/aquarium/terrain/grass_ground/minecraft_grass_v2.png'))
    if(!lite)for(const [key,file]of[['normal','grass_ground_nor_gl_512.webp'],['roughness','grass_ground_rough_1024.webp'],['ao','grass_ground_ao_1024.webp']])assert.ok(state.groundMaterial[key]?.url.endsWith('/'+file),key+' map loaded')
-   for(const s of state.shadows){const expected=s.name==='StandContactShadow'?[.20,.82,.82,.82,.82]:[.17,.82];assert.equal(s.strengths.length,expected.length);expected.forEach((v,i)=>assert.ok(Math.abs(s.strengths[i]-v)<1e-6,s.name+' strength'))}
+   for(const s of state.shadows){const expected=s.name==='StandContactShadow'?[.20-.14*sampleEnvironment(minutes).darkness,.82,.82,.82,.82]:[.17-.12*sampleEnvironment(minutes).darkness,.82];assert.equal(s.strengths.length,expected.length);expected.forEach((v,i)=>assert.ok(Math.abs(s.strengths[i]-v)<1e-6,s.name+' strength'))}
    {assert.equal(state.shadows.length,2);for(const s of state.shadows){assert.ok(s.minOffset>.002&&s.maxOffset<.006,s.name+' terrain offset');if(s.name==='SignContactShadow')assert.equal(s.parentVisible,state.sign.visible)}}
-   const label=`${width}x${height}-${theme}-${lite?'lite':'normal'}-p${Math.round(progress*100)}`;await screenshot(`screenshots/ground-${phase}-${label}.png`);rows.push({label,width,height,theme,lite,progress,...state})
-   if(width===1440&&progress===0&&!lite)for(const[name,clip]of[['left-foot',{x:230,y:760,width:170,height:140,scale:2}],['right-foot',{x:1010,y:760,width:170,height:140,scale:2}],['sign-post',{x:1250,y:640,width:175,height:260,scale:2}]]){const{data}=await send('Page.captureScreenshot',{format:'png',clip});await writeFile(new URL(`screenshots/ground-${phase}-${theme}-${name}.png`,import.meta.url),Buffer.from(data,'base64'))}
+   const label=`${width}x${height}-${minutes}-${lite?'lite':'normal'}-p${Math.round(progress*100)}`;await screenshot(`screenshots/ground-${phase}-${label}.png`);rows.push({label,width,height,minutes,lite,progress,...state})
+   if(width===1440&&progress===0&&!lite)for(const[name,clip]of[['left-foot',{x:230,y:760,width:170,height:140,scale:2}],['right-foot',{x:1010,y:760,width:170,height:140,scale:2}],['sign-post',{x:1250,y:640,width:175,height:260,scale:2}]]){const{data}=await send('Page.captureScreenshot',{format:'png',clip});await writeFile(new URL(`screenshots/ground-${phase}-${minutes}-${name}.png`,import.meta.url),Buffer.from(data,'base64'))}
   }
-  console.log('CAPTURED',phase,width,height,theme,lite?'lite':'normal')
+  console.log('CAPTURED',phase,width,height,minutes,lite?'lite':'normal')
   await writeFile(new URL(`measurements/ground-${phase}.json`,import.meta.url),JSON.stringify({rows,requests,failures,errors,warnings},null,2))
  }
 assert.equal(errors.length,0,JSON.stringify(errors));assert.equal(failures.length,0);assert.equal(requests.filter(r=>r.status>=400).length,0)

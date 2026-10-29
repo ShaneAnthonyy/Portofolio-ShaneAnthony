@@ -15,6 +15,7 @@ import useBackgroundMusic from './hooks/useBackgroundMusic.js'
 import { usePerformanceMode } from './animation/quality.js'
 import { gsap } from './animation/gsap.js'
 import { arrivalProgress, magneticMotion } from './animation/diveArrival.js'
+import WorldEnvironment from './components/WorldEnvironment.jsx'
 
 const AquariumDivePrototype = lazy(() => import('./components/AquariumDivePrototype.jsx'))
 
@@ -62,6 +63,7 @@ export default function App() {
   const [heroInView, setHeroInView] = useState(false)
   const [heroActive, setHeroActive] = useState(false)
   const [heroLive, setHeroLive] = useState(false)
+  const [contentBackgroundActive, setContentBackgroundActive] = useState(false)
   const arrivalRef = useRef({ progress: 0, update: null })
   const landingRef = useRef({ active: false, dive: null, start: null, finish: null, cancel: null, blocked: false, touchDown: false })
   const magneticTween = useRef(null)
@@ -82,9 +84,9 @@ export default function App() {
   }, [])
   const [backdropPaused, setBackdropPaused] = useState(false)
   useEffect(() => {
-    if (backdropPaused || heroInView) setHeroLive(true)
+    if ((backdropPaused && !contentBackgroundActive) || heroInView) setHeroLive(true)
     else if (!heroInView) setHeroLive(false)
-  }, [backdropPaused, heroInView])
+  }, [backdropPaused, heroInView, contentBackgroundActive])
   const showProbe = isProbeEnabled()
   const diveProbeRef = useRef(null)
   const canReplay = !isDivePoc && !webglFailed
@@ -94,8 +96,8 @@ export default function App() {
   const visualEntered = entered || magneticLanding || shouldDive && progress.dive >= 0.94
   const bubbleDepth = visualEntered ? Math.min(Math.max(progress.t, 0), 1) : 0
   const diveProgress = (introComplete && !returningToP0) ? 1 : undefined
-  const diveNearEnd = shouldDive && !introComplete && !returningToP0 && (progress.dive ?? 0) >= 0.9
-  const heroPrewarm = (diveNearEnd || magneticLanding) && performanceMode !== 'lite' && !progress.reduced
+  // Warm behind the loading gate and retain across reverse scrolling/replay.
+  const heroPrewarm = shouldDive && loadProgress >= 1 && performanceMode !== 'lite' && !progress.reduced
   const reveal = Math.min(Math.max((progress.dive - 0.94) / 0.06, 0), 1)
   const backgroundBlur = introComplete || progress.dive < 0.94 ? 0 : (1 - reveal) * 1.5
   const atmosphereBlur = shouldDive && progress.dive >= 0.94 ? 2 + (1 - reveal) * 2 : 2
@@ -415,6 +417,8 @@ export default function App() {
       ref={rootRef}
       data-dive-arrival={shouldDive || undefined}
       data-landing-active={magneticLanding || undefined}
+      data-world-environment={true}
+      data-content-background={contentBackgroundActive || undefined}
       className={`aqua-root${visualEntered ? ' is-entered' : ''}${portfolioUnlocked ? ' is-portfolio-unlocked' : ''}${webglHealthy ? ' has-webgl' : ''}`}
       style={{
         '--intro-background-blur': `${backgroundBlur}px`,
@@ -428,6 +432,7 @@ export default function App() {
         '--aqua-deep-a': 0.58 + bubbleDepth * 0.12,
       }}
     >
+      <WorldEnvironment enabled={gateEntered && portfolioUnlocked} diveActive={shouldDive} onOwnershipChange={setContentBackgroundActive} />
       <Navbar diveActive={shouldDive} entered={portfolioUnlocked} diveProgress={diveProgress ?? progress.dive} performanceMode={performanceMode} onPerformanceModeChange={setPerformanceMode} musicOn={music.on} musicLoading={music.loading} musicFailed={music.failed} onMusicToggle={music.toggle} arrivalRef={arrivalRef} />
       <div className={`aqua-bubble-layer${isBubbleDebug ? ' bubble-debug' : ''}`} aria-hidden="true">
         {activeBubbles.map((bubble) => (
@@ -468,7 +473,7 @@ export default function App() {
               landingRef={landingRef}
               returningToP0={returningToP0}
               qualityMode={performanceMode}
-              pauseBackdrop={portfolioUnlocked && heroActive}
+              pauseBackdrop={portfolioUnlocked && (heroActive || contentBackgroundActive)}
               onBackdropPaused={setBackdropPaused}
               onArrivalProgress={updateArrival}
               onReturnComplete={handleReturnComplete}
@@ -486,7 +491,7 @@ export default function App() {
             >
               <Hero
                 onDiveAgain={canReplay ? diveAgain : undefined}
-                aquariumEnabled={gateEntered && (portfolioUnlocked || heroPrewarm)}
+                aquariumEnabled={gateEntered && portfolioUnlocked || heroPrewarm}
                 aquariumPreview={gateEntered}
                 aquariumReady={heroLive || heroPrewarm}
                 aquariumPrewarm={heroPrewarm && !portfolioUnlocked}

@@ -334,7 +334,7 @@ export function createHeroAquarium(host) {
     renderer.setPixelRatio(Math.min(dpr, mobile ? 1 : 1.25))
     renderer.setSize(pixelWidth, pixelHeight)
     const aspect = pixelWidth / Math.max(pixelHeight, 1)
-    
+
     width = aspect < 1 ? 9 : 16 * aspect
     height = width / aspect
     size.value.set(width, height)
@@ -374,15 +374,7 @@ export function createHeroAquarium(host) {
     plants.instanceMatrix.needsUpdate = true
   }
 
-  function setTheme(dark) {
-    darkness.value = dark ? 1 : 0
-    deep.value.set(dark ? '#061923' : '#3f777f')
-    shallow.value.set(dark ? '#123948' : '#b3dad6')
-    sand.value.set(dark ? '#254249' : '#a9bba6')
-    light.value.set(dark ? '#76c4cc' : '#e1f2df')
-    rockMaterial.color.set(dark ? '#527e89' : '#b4c7b0')
-    sun.intensity = dark ? 1.1 : 2.2
-  }
+
 
   function render(seconds = 18) {
     time.value = seconds
@@ -401,10 +393,19 @@ export function createHeroAquarium(host) {
     renderer.render(scene, camera)
   }
 
-  setTheme(document.documentElement.dataset.theme === 'dark')
   resize(host.clientWidth, host.clientHeight)
   return {
-    render, resize, setTheme, canvas: renderer.domElement, info: renderer.info,
+    render, resize,
+    setEnvironment(sample) {
+      darkness.value = sample.darkness
+      deep.value.fromArray(sample.waterDeep)
+      shallow.value.fromArray(sample.waterShallow)
+      sand.value.fromArray(sample.waterSand)
+      light.value.fromArray(sample.waterLight)
+      rockMaterial.color.fromArray(sample.waterRock)
+      sun.intensity = sample.waterSunIntensity
+    },
+    canvas: renderer.domElement, info: renderer.info,
     setApproach(progress) {
       camera.position.y = -3.2 * progress
       camera.lookAt(0, 0, 0)

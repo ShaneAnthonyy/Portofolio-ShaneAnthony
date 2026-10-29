@@ -27,7 +27,6 @@ export default function useBackgroundMusic() {
         try {
           el.pause()
         } catch {
-          /* release-only */
         }
       }
     },

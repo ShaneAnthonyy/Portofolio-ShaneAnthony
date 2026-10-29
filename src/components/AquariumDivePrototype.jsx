@@ -9,7 +9,8 @@ import { createScrollSign } from './MinecraftScrollSign.js'
 import useSectionProgress from '../hooks/useSectionProgress.js'
 import { resolveQuality, effectivePixelRatio } from '../animation/quality.js'
 import { arrivalProgress } from '../animation/diveArrival.js'
-
+import { worldTime } from '../animation/worldTime.js'
+import { createMinecraftSky } from '../scenes/minecraftSky.js'
 
 const KEYS = [
   { p: 0.0, pos: [0, 2.5, 12], tgt: [0, 2.2, 0] }, 
@@ -91,7 +92,7 @@ function downscaleTextures(root, maxDim, disposables) {
         })
       })
     })
-  } catch (err) {
+  } catch {
   }
 }
 
@@ -180,7 +181,7 @@ function shadeMat(mat, { caustic = 0, fresnel = 0, fresnelColor = [0.45, 0.65, 0
         {
           // Terrain-local atmospheric blend (hill only): distance × low-
           // height gate, smoothstepped, dithered against banding. Mixes
-          // albedo toward the theme horizon tint pre-lighting so the haze
+          // albedo toward the sampled horizon tint pre-lighting so the haze
           // stays sun-coherent instead of glowing.
           float hdist = distance(cameraPosition, vShadeW);
           float hdf = smoothstep(${horizon.start.toFixed(1)}, ${horizon.end.toFixed(1)}, hdist);
@@ -318,9 +319,7 @@ function shadeVolume(mat) {
   mat.customProgramCacheKey = () => 'shade-volume-basic'
   return mat
 }
-let blobTex = null
 function getBlobTexture() {
-  if (blobTex) return blobTex
   const S = 128
   const cv = document.createElement('canvas')
   cv.width = cv.height = S
@@ -331,8 +330,7 @@ function getBlobTexture() {
   gr.addColorStop(1, 'rgba(0,0,0,0)')
   g.fillStyle = gr
   g.fillRect(0, 0, S, S)
-  blobTex = new THREE.CanvasTexture(cv)
-  return blobTex
+  return new THREE.CanvasTexture(cv)
 }
 function getTableShadowTexture() {
   const S = 128
@@ -367,12 +365,14 @@ function contactShadowGeometry(count) {
   geo.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2))
   geo.setAttribute('color', new THREE.Float32BufferAttribute(new Float32Array(count * 81 * 4), 4))
   geo.setIndex(indices)
+  geo.attributes.position.setUsage(THREE.DynamicDrawUsage)
+  geo.attributes.color.setUsage(THREE.DynamicDrawUsage)
   return geo
 }
-function placeContactShadow(mesh, patches, heightAt, inverse) {
+function placeContactShadow(mesh, patches, heightAt, inverse, point = new THREE.Vector3()) {
   const { position, color } = mesh.geometry.attributes
-  const point = new THREE.Vector3()
-  patches.forEach((patch, p) => {
+  for (let p = 0; p < patches.length; p++) {
+    const patch = patches[p]
     const c = Math.cos(patch.angle || 0), s = Math.sin(patch.angle || 0)
     for (let z = 0; z <= 8; z++) {
       for (let x = 0; x <= 8; x++) {
@@ -385,17 +385,23 @@ function placeContactShadow(mesh, patches, heightAt, inverse) {
         color.setXYZW(i, 1, 1, 1, patch.opacity)
       }
     }
-  })
+  }
+  // Hidden sign buffers may wait until a resize; retain one merged pending range.
+  const vertices = patches.length * 81
+  if (position.updateRanges.length) position.updateRanges[0].count = Math.max(position.updateRanges[0].count, vertices * 3)
+  else position.addUpdateRange(0, vertices * 3)
+  if (color.updateRanges.length) color.updateRanges[0].count = Math.max(color.updateRanges[0].count, vertices * 4)
+  else color.addUpdateRange(0, vertices * 4)
   position.needsUpdate = color.needsUpdate = true
   mesh.geometry.computeBoundingSphere()
 }
-function contactDisc(radius, opacity) {
+function contactDisc(radius, opacity, map) {
   const geo = new THREE.PlaneGeometry(radius * 2, radius * 2)
   const mat = new THREE.MeshBasicMaterial({
     color: 0x000000,
     transparent: true,
     opacity,
-    map: getBlobTexture(),
+    map,
     depthWrite: false,
   })
   const m = new THREE.Mesh(geo, mat)
@@ -814,6 +820,8 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
 
     const sceneData = buildScene({ hideFarRocks: !backdropRef.current, liteWater: !qState.runtime.waterHigh })
     const { scene, waterMat, waterVolMat, disposables, temp, rockDefs, kelpDefs, trackLoaded, retireTemp, lightsBase } = sceneData
+    const blobMap = getBlobTexture()
+    disposables.push(blobMap)
     emit(0.15)
     const sign = createScrollSign(THREE, disposables)
     sign.group.position.set(sign.base.x, sign.base.y, sign.base.z)
@@ -886,8 +894,6 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         )
       }
     }
-    const WATER_VOL_LIGHT = new THREE.Color(0x3c8ea5)
-    const WATER_VOL_DARK = new THREE.Color(0x24586d)
     const _waterC = new THREE.Color()
     const camera = new THREE.PerspectiveCamera(
       45,
@@ -991,14 +997,10 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       new URLSearchParams(window.location.search).has('grass-debug')
         ? 1
         : 0
-    const SKY_DEBUG =
-      import.meta.env.DEV &&
       typeof window !== 'undefined' &&
       new URLSearchParams(window.location.search).has('sky-debug')
         ? 1
         : 0
-    const HORIZON_DEBUG =
-      import.meta.env.DEV &&
       typeof window !== 'undefined' &&
       new URLSearchParams(window.location.search).has('horizon-debug')
         ? 1
@@ -1374,11 +1376,26 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
     }
 
     // ---- Open-air dive environment (distant sky dome + matte ground + table) ----
-    let themeObs = null
+    let unsubscribeWorld = null
+    let environment = worldTime.getSnapshot().environment
+    // Actual objects; preserve the approved ambient/key channel mapping from updateOutdoor.
+    const worldLights = {
+      ambient: lightsBase.find(([light]) => light.isAmbientLight)[0],
+      hemi: lightsBase.find(([light]) => light.isHemisphereLight)[0],
+      key: lightsBase[2][0], fill: lightsBase[3][0],
+    }
+    const worldLighting = {
+      minutes: null, aspect: null, anchors: null, sampler: null,
+      sun: new THREE.Vector3(), moon: new THREE.Vector3(), target: new THREE.Vector3(),
+      direction: new THREE.Vector3(), point: new THREE.Vector3(),
+      color: new THREE.Color(), warm: new THREE.Color(),
+    }
+    let shadowAnchors = null
+    // The renderer does not dispose a scene light's retained shadow target.
+    disposables.push(worldLights.key)
     const tableGroupRef = { current: null }
     const poc = {
-      skyDay: null, skyNight: null, skyDayMat: null, skyNightMat: null,
-      ground: null, k: 0, tgt: 0,
+      ground: null,
       rig: null, aquaRect: null, aquaSpot: null, aquaFill: null, aquaHemi: null,
       waterBoundsHelper: null, waterBoundsBox: null,
     }
@@ -1446,25 +1463,8 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       })
     }
     let motionLogged = false
-    const _pocC = new THREE.Color()
     const _pocD = new THREE.Color()
-    const _horC = new THREE.Vector3()
-    const POC_DAY = {
-      sun: [new THREE.Color(0xffe8c8), 2.2],
-      hemiSky: new THREE.Color(0xbfd9ff), hemiGround: new THREE.Color(0x8a7a52), hemi: 0.9,
-      amb: [new THREE.Color(0xcfe0ee), 0.5],
-      fill: [new THREE.Color(0xffd9b0), 0.4],
-      exposure: 1.0, fog: new THREE.Color(0xc8d4de),
-    }
-    const POC_NIGHT = {
-      sun: [new THREE.Color(0x9db8ff), 0.35],
-      hemiSky: new THREE.Color(0x33415e), hemiGround: new THREE.Color(0x1a1f2a), hemi: 0.25,
-      amb: [new THREE.Color(0x2a3a55), 0.15],
-      fill: [new THREE.Color(0x6a86b8), 0.1],
-      exposure: 0.85, fog: new THREE.Color(0x0a1628),
-    }
     const POC_DEEP = new THREE.Color(0x052033)
-    const POC_SKY_DIM = new THREE.Color(0xe2e8ec)
     const nightLiftMaterials = []
     const nightLiftSeen = new WeakSet()
     const trackNightLift = (material, factor) => {
@@ -1690,10 +1690,17 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       const post = sign.group.children[1]
       const postCenter = post.position.clone().applyMatrix4(signMatrix)
       const postSize = new THREE.Box3().setFromBufferAttribute(post.geometry.attributes.position).getSize(new THREE.Vector3())
-      placeContactShadow(poc.signShadow, [
+      const signPatches = [
         { x: postCenter.x + sdx * 0.4, z: postCenter.z + sdz * 0.4, width: 1.35, depth: 0.45, angle: Math.atan2(sdz, sdx), opacity: 0.17 },
         { x: postCenter.x, z: postCenter.z, width: postSize.x + 0.55, depth: postSize.z + 0.55, opacity: 0.82 },
-      ], heightAt, signMatrix.invert())
+      ]
+      placeContactShadow(poc.signShadow, signPatches, heightAt, signMatrix.invert())
+      shadowAnchors = {
+        x: fc.x, z: fc.z, width: fw * 1.06, depth: fd * 0.96, height: tableH,
+        feet: patches.slice(1), stand: [patches[0]], sign: [signPatches[0]],
+        postX: postCenter.x, postZ: postCenter.z, boardHeight: sign.group.children[0].position.y,
+        inverse: signMatrix, heightAt,
+      }
       if (poc.tableShadowLine) {
         const lp = poc.tableShadowLine.geometry.attributes.position
         lp.setXYZ(0, fc.x, terrainY + 0.02, fc.z)
@@ -1701,7 +1708,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         lp.needsUpdate = true
       }
       if (!poc.tankBlob) {
-        poc.tankBlob = contactDisc(0.5, 0.22)
+        poc.tankBlob = contactDisc(0.5, 0.22, blobMap)
         tg.add(poc.tankBlob)
       }
       poc.tankBlob.position.set(
@@ -1789,13 +1796,61 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       }
     }
 
+    const updateWorldLighting = () => {
+      const state = worldLighting
+      if (state.minutes === environment.minutes && state.aspect === camera.aspect &&
+        state.anchors === shadowAnchors && state.sampler === poc.terrainHeightAt) return
+      const sky = poc.proceduralSky, u = sky.material.uniforms, key = worldLights.key
+      key.target.getWorldPosition(state.target)
+      state.sun.copy(u.uSun.value).multiplyScalar(sky.geometry.parameters.radius)
+      sky.mesh.localToWorld(state.sun).sub(state.target).normalize()
+      state.moon.copy(u.uMoon.value).multiplyScalar(sky.geometry.parameters.radius)
+      sky.mesh.localToWorld(state.moon).sub(state.target).normalize()
+      const sunWeight = 0.5 * u.uSunVisible.value, moonWeight = 0.15 * u.uMoonVisible.value
+      const total = sunWeight + moonWeight, sunShare = sunWeight / total
+      const sunHeight = Math.min(1, Math.max(0, environment.sunDirection[1] * Math.hypot(1, 0.35)))
+      const moonHeight = Math.min(1, Math.max(0, environment.moonDirection[1] * Math.hypot(1, 0.35)))
+      const elevation = ((12 + 53 * sunHeight) * sunWeight + (12 + 23 * moonHeight) * moonWeight) / total * Math.PI / 180
+      state.direction.copy(state.sun).multiplyScalar(sunWeight).addScaledVector(state.moon, moonWeight)
+      state.direction.y = 0
+      state.direction.normalize().multiplyScalar(Math.cos(elevation))
+      state.direction.y = Math.sin(elevation)
+      // Radius 30 covers the existing near casters/receivers within the unchanged frustum.
+      key.position.copy(state.target).addScaledVector(state.direction, 30)
+      key.shadow.intensity = environment.shadowFactor
+      state.color.fromArray(environment.keyColor).lerp(state.warm.fromArray(environment.skyGlow),
+        0.65 * (1 - sunHeight) ** 2 * sunShare)
+      if (shadowAnchors) {
+        const a = shadowAnchors
+        key.getWorldPosition(state.direction).sub(state.target)
+        const horizontal = Math.hypot(state.direction.x, state.direction.z)
+        const dx = -state.direction.x / horizontal, dz = -state.direction.z / horizontal
+        const standLength = Math.min(Math.max(a.height * 0.6 / Math.tan(elevation), 0.25), 0.6 + 1.8 * sunShare)
+        const signLength = Math.min(Math.max(a.boardHeight * 0.4 / Math.tan(elevation), 0.2), 0.45 + 0.85 * sunShare)
+        const stand = a.stand[0], signPatch = a.sign[0]
+        stand.x = a.x + dx * standLength * 0.5
+        stand.z = a.z + dz * standLength * 0.5
+        stand.width = a.width + Math.abs(dx) * standLength
+        stand.depth = a.depth + Math.abs(dz) * standLength
+        stand.opacity = 0.2 - 0.14 * environment.darkness
+        signPatch.x = a.postX + dx * signLength * 0.5
+        signPatch.z = a.postZ + dz * signLength * 0.5
+        signPatch.width = 0.55 + signLength
+        signPatch.angle = Math.atan2(dz, dx)
+        signPatch.opacity = 0.17 - 0.12 * environment.darkness
+        placeContactShadow(poc.tableShadowFoot, a.stand, a.heightAt, null, state.point)
+        placeContactShadow(poc.signShadow, a.sign, a.heightAt, a.inverse, state.point)
+      }
+      state.minutes = environment.minutes
+      state.aspect = camera.aspect
+      state.anchors = shadowAnchors
+      state.sampler = poc.terrainHeightAt
+    }
+
     const updateOutdoor = (dt, p, tSec, snap) => {
-      if (!poc.skyDayMat || !poc.skyNightMat) return
+      if (!poc.proceduralSky) return
       if (!snap && Number.isFinite(tSec)) shadeU.uTime.value = tSec % 3600
-      if (snap) poc.k = poc.tgt
-      else poc.k += (poc.tgt - poc.k) * (1 - Math.exp(-dt / 0.35))
-      if (Math.abs(poc.tgt - poc.k) < 0.001) poc.k = poc.tgt
-      const k = poc.k
+      const k = environment.darkness
       for (let i = 0; i < nightLiftMaterials.length; i++) {
         const [material, baseColor, factor] = nightLiftMaterials[i]
         material.color.copy(baseColor).multiplyScalar(1 + (factor - 1) * k)
@@ -1803,35 +1858,31 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       const kEnter = smooth(Math.min(Math.max((p - 0.75) / 0.25, 0), 1))
       const kReveal = revealK(p)
       const veil = 1 - 0.12 * kEnter
-      poc.skyDayMat.opacity = (1 - k) * veil
-      poc.skyNightMat.opacity = k * veil
+      poc.proceduralSky.update(environment, veil, camera.aspect,
+        !snap && !reduced && qState.mode === 'normal' ? dt : 0, worldTime.getSnapshot().mode)
       horizonU.k.value = k
-      _pocC.setRGB(1, 1, 1).lerp(POC_SKY_DIM, kEnter * 0.5)
-      poc.skyDayMat.color.copy(_pocC)
-      poc.skyNightMat.color.copy(_pocC)
+      horizonU.day.value.fromArray(environment.skyHorizon)
+      horizonU.night.value.fromArray(environment.skyHorizon)
       const dim = (1 - 0.45 * kReveal) * (1 - 0.25 * kEnter)
-      const sun = lightsBase[0][0]
-      const hemi = lightsBase[1][0]
-      const ambient = lightsBase[2][0]
-      const fill = lightsBase[3][0]
-      sun.color.copy(POC_DAY.sun[0]).lerp(POC_NIGHT.sun[0], k)
-      sun.intensity = lerp(POC_DAY.sun[1], POC_NIGHT.sun[1], k) * dim
-      hemi.color.copy(POC_DAY.hemiSky).lerp(POC_NIGHT.hemiSky, k)
-      hemi.groundColor.copy(POC_DAY.hemiGround).lerp(POC_NIGHT.hemiGround, k)
-      hemi.intensity = lerp(POC_DAY.hemi, POC_NIGHT.hemi, k) * dim
-      ambient.color.copy(POC_DAY.amb[0]).lerp(POC_NIGHT.amb[0], k)
-      ambient.intensity = lerp(POC_DAY.amb[1], POC_NIGHT.amb[1], k) * dim
-      fill.color.copy(POC_DAY.fill[0]).lerp(POC_NIGHT.fill[0], k)
-      fill.intensity = lerp(POC_DAY.fill[1], POC_NIGHT.fill[1], k) * dim
-      if (renderer) renderer.toneMappingExposure = lerp(POC_DAY.exposure, POC_NIGHT.exposure, k)
-      _pocD.copy(POC_DAY.fog).lerp(POC_NIGHT.fog, k).lerp(POC_DEEP, kEnter)
+      updateWorldLighting()
+      worldLights.ambient.color.fromArray(environment.ambientColor)
+      worldLights.ambient.intensity = environment.ambientIntensity * dim
+      worldLights.hemi.color.fromArray(environment.hemiSky)
+      worldLights.hemi.groundColor.fromArray(environment.hemiGround)
+      worldLights.hemi.intensity = environment.hemiIntensity * dim
+      worldLights.key.color.copy(worldLighting.color)
+      worldLights.key.intensity = environment.keyIntensity * dim
+      worldLights.fill.color.fromArray(environment.fillColor)
+      worldLights.fill.intensity = environment.fillIntensity * dim
+      renderer.toneMappingExposure = environment.exposure
+      _pocD.fromArray(environment.fog).lerp(POC_DEEP, kEnter)
       scene.fog.color.copy(_pocD)
       if (poc.aquaRect) {
-        const themeMult = lerp(1.0, 0.8, k)
+        const nightMult = lerp(1.0, 0.8, k)
         const ledK =
           1 - 0.02 * smooth(Math.min(Math.max((p - 0.63) / 0.07, 0), 1)) -
           0.13 * smooth(Math.min(Math.max((p - 0.7) / 0.15, 0), 1))
-        const aquaMult = themeMult * ledK * (1 - 0.2 * kReveal)
+        const aquaMult = nightMult * ledK * (1 - 0.2 * kReveal)
         poc.aquaRect.intensity = 5 * aquaMult
         poc.aquaRect.color.copy(AQUA_WARM).lerp(AQUA_COOL, Math.min(1, k * 0.5 + kEnter * 0.5))
         if (poc.aquaSpot) {
@@ -1855,9 +1906,10 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         _titleC.copy(TITLE_LIGHT).lerp(TITLE_DARK, k)
         titleState.mat.color.copy(_titleC)
         titleState.mat.emissive.copy(_titleC)
+        titleState.mat.emissiveIntensity = 0.13 + 0.35 * k
       }
       if (waterVolMat && !WATER_DEBUG) {
-        _waterC.copy(WATER_VOL_LIGHT).lerp(WATER_VOL_DARK, k)
+        _waterC.fromArray(environment.waterVolume)
         waterVolMat.color.copy(_waterC)
       }
       const swimOne = (rec, tSec, snap) => {
@@ -2081,75 +2133,12 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         pocSun.shadow.camera.updateProjectionMatrix()
       }
 
-      const SKY_IMG_ASPECT = 1672 / 941
-      const SKY_ARC_R = 90
-      const SKY_ARC = 2.531 // ~145 deg arc; length 228, height 128 (aspect-matched, no distortion)
-      const SKY_ARC_H = 128
-      poc.skyAspect = SKY_IMG_ASPECT
-      poc.skyArcR = SKY_ARC_R
-      poc.skyArc = SKY_ARC
-      poc.skyArcH = SKY_ARC_H
-      const skySeg = qState.runtime.waterHigh ? [160, 28] : [48, 8]
-      const skyArcGeo = new THREE.CylinderGeometry(SKY_ARC_R, SKY_ARC_R, SKY_ARC_H, skySeg[0], skySeg[1], true, Math.PI - SKY_ARC / 2, SKY_ARC)
-      const mkSkyMat = (op) => new THREE.MeshBasicMaterial({
-        transparent: true, opacity: op,
-        depthTest: true, depthWrite: false,
-        side: THREE.BackSide, fog: false, toneMapped: false,
-      })
-      poc.skyDayMat = mkSkyMat(1)
-      poc.skyNightMat = mkSkyMat(0)
-      poc.skyDay = new THREE.Mesh(skyArcGeo, poc.skyDayMat)
-      poc.skyNight = new THREE.Mesh(skyArcGeo, poc.skyNightMat)
-      poc.skyDay.renderOrder = 0
-      poc.skyNight.renderOrder = 1
-      poc.skyDay.frustumCulled = false
-      poc.skyNight.frustumCulled = false
+      poc.proceduralSky = createMinecraftSky(environment)
       poc.worldSky = new THREE.Group()
       poc.worldSky.name = 'WorldSky'
-      poc.worldSky.add(poc.skyDay, poc.skyNight)
+      poc.worldSky.add(poc.proceduralSky.mesh)
       scene.add(poc.worldSky)
-      disposables.push(skyArcGeo, poc.skyDayMat, poc.skyNightMat)
-
-      const skyLoader = new THREE.TextureLoader()
-      const loadSky = (url, mat) => {
-        track(
-          skyLoader.loadAsync(url).then((tex) => {
-          if (cancelled) return
-          const cap = qState.runtime.texCap
-          const sw = tex.image ? tex.image.width : 0
-          const sh = tex.image ? tex.image.height : 0
-          if (sw && sh && Math.max(sw, sh) > cap) {
-            const s = cap / Math.max(sw, sh)
-            const cv = document.createElement('canvas')
-            cv.width = Math.max(1, Math.round(sw * s))
-            cv.height = Math.max(1, Math.round(sh * s))
-            cv.getContext('2d').drawImage(tex.image, 0, 0, cv.width, cv.height)
-            const nt = new THREE.CanvasTexture(cv)
-            tex.dispose()
-            tex = nt
-          }
-          tex.colorSpace = THREE.SRGBColorSpace
-          tex.minFilter = THREE.LinearMipmapLinearFilter
-          tex.magFilter = THREE.LinearFilter
-          tex.generateMipmaps = true
-          tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping
-          tex.repeat.x = -1
-          tex.offset.x = 1
-          mat.map = tex
-          mat.needsUpdate = true
-          disposables.push(tex)
-          if (SKY_DEBUG) {
-            const iw = tex.image ? tex.image.width : 0
-            const ih = tex.image ? tex.image.height : 0
-            flog('sky tex ' + url + ' ' + iw + 'x' + ih + ' aspect=' + (ih ? (iw / ih).toFixed(4) : '?'))
-          }
-          if (reduced) rerender()
-        }, () => { /* sky stays on fallback background */ }),
-        url.split('/').pop()
-        )
-      }
-      loadSky('/aquarium/sky/sky-morning.png', poc.skyDayMat)
-      loadSky('/aquarium/sky/sky-night.png', poc.skyNightMat)
+      disposables.push(poc.proceduralSky.geometry, poc.proceduralSky.material)
 
       const hillSeg = qState.runtime.waterHigh ? 64 : 24
       const hillGeo = new THREE.PlaneGeometry(120, 120, hillSeg, hillSeg)
@@ -2296,7 +2285,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
               disposables.push(finalTex)
               hillMat.needsUpdate = true
               if (reduced) rerender()
-            } catch (err) {
+            } catch {
             }
           }, () => {
           }),
@@ -2312,7 +2301,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
             tb.getCenter(c)
             tankC = `(${c.x.toFixed(2)}, ${c.z.toFixed(2)})`
           }
-        } catch (err) {
+        } catch {
         }
         console.log(
           `[hilltop] plateau x±8 z±6 blend 10, height [${hillMin.toFixed(2)}, ${hillMax.toFixed(2)}], tankCenter(x,z)=${tankC}`
@@ -2398,19 +2387,11 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         'font-title'
       )
 
-      const readTheme = () => (document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light')
-      const applyThemeTarget = () => {
-        poc.tgt = readTheme() === 'dark' ? 1 : 0
-        if (reduced) {
-          poc.k = poc.tgt
-          updateOutdoor(0, 1, 0, true)
-          rerender()
-        }
-      }
-      poc.tgt = readTheme() === 'dark' ? 1 : 0
-      poc.k = poc.tgt
-      themeObs = new MutationObserver(() => applyThemeTarget())
-      themeObs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+      environment = worldTime.getSnapshot().environment
+      unsubscribeWorld = worldTime.subscribe(() => {
+        environment = worldTime.getSnapshot().environment
+        if (reduced && !document.hidden) sceneCommandRef.current?.(lastP)
+      })
 
       const roomTableUrl = qState.runtime.extras
         ? '/aquarium/room/props/side_table/side_table_01_4k.gltf'
@@ -2582,7 +2563,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       const rockVar = [1.0, 1.07, 0.93]
       let rockIdx = 0
       rockDefs.forEach(({ p, s, far }) => {
-        if (far && !backdropRef.current) return // Open-air dive: external rocks removed
+        if (far && !backdropRef.current) return
         const c = root.clone()
         c.scale.setScalar(f.s * s)
         c.updateMatrixWorld(true)
@@ -2609,7 +2590,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
           n.castShadow = !far
           n.receiveShadow = true
         })
-        const disc = contactDisc(s * 0.62, 0.22)
+        const disc = contactDisc(s * 0.62, 0.22, blobMap)
         disc.position.set(p[0], 0.006, p[2])
         group.add(disc)
         group.add(c)
@@ -2646,7 +2627,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
           }
           n.material = Array.isArray(n.material) ? n.material.map(tune) : tune(n.material)
         })
-        const disc = contactDisc(0.3, 0.2)
+        const disc = contactDisc(0.3, 0.2, blobMap)
         disc.position.set(x, 0.006, z)
         group.add(disc)
         const pivot = new THREE.Group()
@@ -2698,7 +2679,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         c.position.x += x - (cb.min.x + cb.max.x) / 2
         c.position.z += z - (cb.min.z + cb.max.z) / 2
         c.position.y += y - cb.min.y
-        const disc = contactDisc(s * 0.4, 0.2)
+        const disc = contactDisc(s * 0.4, 0.2, blobMap)
         disc.position.set(x, 0.006, z)
         group.add(disc)
         group.add(c)
@@ -3531,22 +3512,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       camera.fov = camera.aspect < 1 ? 62 : 45
       camera.updateProjectionMatrix()
       renderer.setSize(w, h)
-      if (poc.skyDay && poc.skyAspect) {
-        if (SKY_DEBUG && !poc.skyLogged) {
-          poc.skyLogged = true
-          flog('sky active=' + (poc.k > 0.5 ? 'night' : 'day') + ' arcR=' + poc.skyArcR + ' arc=' + poc.skyArc.toFixed(3) + ' arcH=' + poc.skyArcH + ' viewport=' + camera.aspect.toFixed(3))
-        }
-        if (HORIZON_DEBUG && !poc.horizonLogged) {
-          poc.horizonLogged = true
-          const fd = scene.fog && scene.fog.density ? scene.fog.density : 0
-          const blend = 1 - Math.exp(-Math.pow(60 * fd, 2))
-          const dNear = camera.position.distanceTo(_horC.set(0, -1.65, 0))
-          const dFar = camera.position.distanceTo(_horC.set(60, -1.65, 60))
-          const bAt = (d) => smooth(Math.min(Math.max((d - HORIZON_START) / (HORIZON_END - HORIZON_START), 0), 1)) * HORIZON_CAP
-          flog('horizon skyAspect=' + poc.skyAspect.toFixed(4) + ' viewport=' + camera.aspect.toFixed(3) + ' hillY=[' + (poc.hillMin != null ? poc.hillMin.toFixed(2) : '?') + ',' + (poc.hillMax != null ? poc.hillMax.toFixed(2) : '?') + '] blend60=' + blend.toFixed(3))
-          flog('horizon range=[' + HORIZON_START + ',' + HORIZON_END + '] camDist=[' + dNear.toFixed(1) + ',' + dFar.toFixed(1) + '] tintDay=#' + horizonU.day.value.getHexString() + ' tintNight=#' + horizonU.night.value.getHexString() + ' blend=[' + bAt(dNear).toFixed(2) + ',' + bAt(dFar).toFixed(2) + ']')
-        }
-      }
+
       if (trans) {
         const s = renderer.getDrawingBufferSize(new THREE.Vector2())
         trans.sceneRT.setSize(s.x, s.y)
@@ -3782,10 +3748,27 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       cbRef.current.onBackdropPaused?.(false)
       ro.disconnect()
       charRigs.forEach((c) => { c.mixer.stopAllAction(); c.mixer.uncacheRoot(c.root) })
-      if (themeObs) themeObs.disconnect()
-      disposables.forEach((d) => d.dispose && d.dispose())
-      waterMat.dispose()
+      unsubscribeWorld?.()
+      // Final teardown only: parked/replay renderers keep their resources.
+      const owned = new Set(disposables)
+      scene.traverse((n) => {
+        if (n.geometry) owned.add(n.geometry)
+        if (n.isInstancedMesh) owned.add(n)
+        for (const material of n.material ? [].concat(n.material) : []) {
+          owned.add(material)
+          for (const value of Object.values(material)) if (value?.isTexture) owned.add(value)
+          const lookup = renderer.properties.get(material).uniforms?.dfgLUT?.value
+          if (lookup && renderer.properties.has(lookup)) owned.add(lookup)
+        }
+      })
+      // Dive is the sole area-light consumer; release its shared lookup uploads/listeners.
+      for (const key of ['LTC_FLOAT_1', 'LTC_FLOAT_2', 'LTC_HALF_1', 'LTC_HALF_2']) {
+        const texture = THREE.UniformsLib[key]
+        if (texture && renderer.properties.has(texture)) owned.add(texture)
+      }
+      owned.forEach((resource) => resource.dispose?.())
       renderer.dispose()
+      renderer.forceContextLoss()
       if (renderer.domElement.parentNode === mount) {
         mount.removeChild(renderer.domElement)
       }

@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { gsap, useGSAP } from '../animation/gsap.js'
 import { subscribeProgressFrame } from '../hooks/useSectionProgress.js'
+import { worldTime, environmentCSS } from '../animation/worldTime.js'
 
 export default function HeroAquarium({ enabled, preview = false, sceneReady, prewarm = false, performanceMode, onVisibilityChange }) {
   const surfaceRef = useRef(null)
@@ -105,9 +106,30 @@ export default function HeroAquarium({ enabled, preview = false, sceneReady, pre
   useEffect(() => { loopRef.current?.() }, [prewarm, ready])
 
   useEffect(() => {
+
+    const host = hostRef.current, surface = surfaceRef.current
+    const update = () => {
+      const sample = worldTime.getSnapshot().environment
+      surface.style.setProperty('--surface-light', environmentCSS(sample.waterLight))
+      surface.style.setProperty('--surface-shadow', environmentCSS(sample.waterDeep))
+      host.style.setProperty('--world-poster-tint', `color-mix(in srgb, ${environmentCSS(sample.waterLight)} 14%, transparent)`)
+      host.dataset.worldTime = String(sample.minutes)
+    }
+    update()
+    const unsubscribe = worldTime.subscribe(update)
+    return () => {
+      unsubscribe()
+      surface.style.removeProperty('--surface-light')
+      surface.style.removeProperty('--surface-shadow')
+      host.style.removeProperty('--world-poster-tint')
+      delete host.dataset.worldTime
+    }
+  }, [])
+
+  useEffect(() => {
     if (!enabled || !sceneReady || !near || staticMode || failed) return
     const host = hostRef.current
-    let cancelled = false, frame = 0, scene, resize, theme
+    let cancelled = false, frame = 0, scene, resize, unsubscribeWorld
     const contextLost = event => {
       event.preventDefault()
       setFailed(true)
@@ -118,17 +140,18 @@ export default function HeroAquarium({ enabled, preview = false, sceneReady, pre
       sceneRef.current = scene
       scene.setApproach(approachRef.current.value)
       scene.canvas.addEventListener('webglcontextlost', contextLost)
-      const render = () => scene.render(clockRef.current)
+      let environment = worldTime.getSnapshot().environment
+      unsubscribeWorld = worldTime.subscribe(() => { environment = worldTime.getSnapshot().environment })
+      const render = () => {
+        scene.setEnvironment(environment)
+        scene.render(clockRef.current)
+      }
       resize = new ResizeObserver(() => {
         scene.resize(host.clientWidth, host.clientHeight)
         if (!document.hidden) render()
       })
       resize.observe(host)
-      theme = new MutationObserver(() => {
-        scene.setTheme(document.documentElement.dataset.theme === 'dark')
-        if (!document.hidden) render()
-      })
-      theme.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+
       render()
       if (preview && clockRef.current === 18) {
         scene.canvas.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 220, easing: 'ease-out' })
@@ -168,7 +191,7 @@ export default function HeroAquarium({ enabled, preview = false, sceneReady, pre
       sceneRef.current = null
       cancelAnimationFrame(frame)
       resize?.disconnect()
-      theme?.disconnect()
+      unsubscribeWorld?.()
       scene?.canvas.removeEventListener('webglcontextlost', contextLost)
       scene?.dispose()
       setReady(false)

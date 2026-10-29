@@ -16,6 +16,7 @@ try{
   const initial=await sample('initial'),ids=initial.mixers.map(m=>m.root).sort();assert.deepEqual(initial.terrain.repeat,[124,124])
   const shadowState=()=>evaluate(`(()=>{const scene=window.__audit.renderers.find(m=>m.scene?.deref()?.getObjectByName('HilltopGround')).scene.deref();return ['StandContactShadow','SignContactShadow'].map(name=>{const m=scene.getObjectByName(name);return {name,geometry:m.geometry.uuid,material:m.material.uuid,map:m.material.map.uuid,parentVisible:m.parent.visible,opacity:m.material.opacity}})})()`)
   const originalShadows=await shadowState();assert.equal(originalShadows[0].map,originalShadows[1].map)
+  await evaluate(`(()=>{const meta=window.__audit.renderers.find(m=>m.scene?.deref()?.getObjectByName('HilltopGround')),r=meta.ref.deref(),key=meta.scene.deref().children.find(n=>n.isDirectionalLight),map=key.shadow.map,depth=map.depthTexture,gl=r.getContext(),handle=r.properties.get(depth).__webglTexture;window.__keyCleanup={target:0,depth:0,id:map.texture.uuid};map.addEventListener('dispose',()=>window.__keyCleanup.target++);depth.addEventListener('dispose',()=>window.__keyCleanup.depth++);window.__readKeyCleanup=()=>({...window.__keyCleanup,sameMap:key.shadow.map?.texture.uuid===map.texture.uuid,alive:gl.isTexture(handle),lost:gl.isContextLost()})})()`)
   await evaluate(`(()=>{const scene=window.__audit.renderers.find(m=>m.scene?.deref()?.getObjectByName('HilltopGround')).scene.deref();window.__shadowDisposed=[];const a=scene.getObjectByName('StandContactShadow'),b=scene.getObjectByName('SignContactShadow');for(const r of [a.geometry,b.geometry,a.material,b.material,a.material.map])r.addEventListener('dispose',()=>window.__shadowDisposed.push(r.uuid))})()`)
   for(let i=1;i<=3;i++){
     await approach();await activate();await until(unlocked,25000)
@@ -30,6 +31,7 @@ try{
     assert.deepEqual(resumed.terrain,initial.terrain)
     assert.deepEqual((await shadowState()).map(({parentVisible,opacity,...s})=>s),originalShadows.map(({parentVisible,opacity,...s})=>s))
     assert.equal((await shadowState())[1].parentVisible,false)
+    const key=await evaluate('window.__readKeyCleanup()');assert.deepEqual([key.target,key.depth,key.sameMap,key.alive,key.lost],[0,0,true,true,false]);rows.push({name:`key-replay-${i}`,...key})
   }
   const replayCounts=rows.filter(r=>r.name.startsWith('replay-')).map(r=>r.memory)
   assert.ok(replayCounts.every(r=>r.geometries===replayCounts[0].geometries&&r.textures===replayCounts[0].textures))
@@ -38,6 +40,7 @@ try{
   await until('window.__shadowDisposed.length===5')
   const disposal=await evaluate('window.__shadowDisposed');assert.equal(new Set(disposal).size,5)
   rows.push({name:'live-reduced-shadow-disposal',disposed:disposal})
+  const key=await evaluate('window.__readKeyCleanup()');assert.deepEqual([key.target,key.depth,key.alive,key.lost],[1,1,false,true]);rows.push({name:'key-final-disposal',...key})
   const liteStart=requests.length
   await fresh({width:390,height:844,lite:true})
   await delay(1000)

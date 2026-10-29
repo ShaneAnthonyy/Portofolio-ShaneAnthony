@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import {fresh,approach,activate,unlocked,send,evaluate,until,delay,close,errors,warnings} from './browser.mjs'
+import {fresh,approach,activate,unlocked,send,evaluate,until,delay,close,errors,warnings,setWorldTime} from './browser.mjs'
 await fresh()
 await approach()
 await activate()
@@ -62,30 +62,32 @@ try {
  await send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]})
  for(const [width,height] of [[375,812],[390,844],[768,1024],[1024,768],[1440,900],[1920,1080],[375,568],[390,320]]) {
   await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:false})
-  for(const theme of ['light','dark']) for(const perf of ['normal','lite']) {
-   await evaluate(`document.documentElement.dataset.theme='${theme}';document.documentElement.dataset.perf='${perf}'`)
+  await delay(300)
+  for(const minutes of [720,0]) for(const perf of ['normal','lite']) {
+   await setWorldTime(minutes)
+   await evaluate(`document.documentElement.dataset.perf='${perf}'`)
    for(let project=0;project<6;project++) {
     await evaluate(`${query(next)}.click()`);await delay(50)
     const measured=await evaluate(`(()=>{const card=${query(featured)}, body=card.querySelector('.tidal-card__body'),title=card.querySelector('h3'),action=card.querySelector('.tidal-card__action');const rect=card.getBoundingClientRect(),ar=action.getBoundingClientRect();return {active:card.dataset.projectIndex,overflow:document.documentElement.scrollWidth>innerWidth,bodyOverflow:body.scrollHeight>body.clientHeight+1,titleOverflow:title.scrollHeight>title.clientHeight+1,actionFits:ar.bottom<=rect.bottom+1,featureWidth:rect.width,previewWidth:document.querySelector('.tidal-card[data-position="1"]').getBoundingClientRect().width,controls:[...document.querySelectorAll('.slider-control')].map(e=>({width:e.offsetWidth,height:e.offsetHeight})),iframes:document.querySelectorAll('.tidal-stage iframe').length}})()`)
-    assert.equal(measured.overflow,false,`${width}/${theme}/${perf} horizontal overflow`)
-    assert.equal(measured.bodyOverflow,false,`${width}/${theme}/${perf}/${measured.active} body overflow`)
+    assert.equal(measured.overflow,false,`${width}/${minutes}/${perf} horizontal overflow`)
+    assert.equal(measured.bodyOverflow,false,`${width}/${minutes}/${perf}/${measured.active} body overflow`)
     assert.equal(measured.titleOverflow,false,'title overflow')
-    assert.ok(measured.actionFits,`${width}/${theme}/${perf}/${measured.active} action fits`)
+    assert.ok(measured.actionFits,`${width}/${minutes}/${perf}/${measured.active} action fits`)
     assert.ok(measured.controls.every(r=>r.width>=44&&r.height>=44))
     assert.equal(measured.iframes,0)
     if(width>900) assert.ok(measured.featureWidth>measured.previewWidth*3)
-    results.push({width,height,theme,perf,...measured})
+    results.push({width,height,minutes,perf,...measured})
    }
   }
   await evaluate(`document.querySelector('#projects').scrollIntoView({block:'start',behavior:'instant'})`)
   await delay(200)
  }
- pass(`${results.length} responsive/project/theme/performance combinations`)
+ pass(`${results.length} responsive/project/time/performance combinations`)
 
  await send('Emulation.setDeviceMetricsOverride',{width:1440,height:900,deviceScaleFactor:1,mobile:false})
  await send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'no-preference'}]})
  await delay(500)
- await evaluate(`document.documentElement.dataset.theme='dark';document.documentElement.dataset.perf='normal';${q('.tidal-stage')}.scrollIntoView({block:'center',behavior:'instant'})`)
+ await evaluate(`document.documentElement.dataset.perf='normal';${q('.tidal-stage')}.scrollIntoView({block:'center',behavior:'instant'})`)
  await delay(500)
  let before=await active()
  await evaluate(`${q(next)}.click();${q(next)}.click();${q(previous)}.click()`)

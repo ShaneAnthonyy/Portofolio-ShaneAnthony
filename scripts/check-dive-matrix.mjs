@@ -7,9 +7,9 @@ const results = []
 const sizes = [[375, 812], [390, 844], [768, 1024], [1024, 768], [1440, 900], [1920, 1080], [390, 500], [1440, 540]]
 try {
   for (const [width, height] of sizes) {
-    for (const mode of ['dark', 'light', 'lite', 'reduced']) {
+    for (const mode of ['daytime', 'night', 'lite', 'reduced']) {
       const name = `${width}x${height}-${mode}`
-      await fresh({ width, height, theme: mode === 'light' ? 'light' : 'dark', lite: mode === 'lite', reduced: mode === 'reduced' })
+      await fresh({ width, height, minutes: mode === 'night' ? 0 : 720, lite: mode === 'lite', reduced: mode === 'reduced' })
       if (mode !== 'reduced') await approach()
       const before = await snap()
       await startFrames()

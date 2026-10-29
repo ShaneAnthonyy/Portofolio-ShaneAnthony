@@ -4,6 +4,7 @@ import { scrollToSection } from '../animation/scrollTo.js'
 import { gsap, useGSAP } from '../animation/gsap.js'
 import { nudgeActiveLabel, playNavEntry, syncIndicator } from '../animation/navbar.js'
 import { dockProgress } from '../animation/diveArrival.js'
+import WorldTimeController from './WorldTimeController.jsx'
 
 const LINKS = [
   { id: 'about', label: 'About' },
@@ -12,49 +13,6 @@ const LINKS = [
   { id: 'certificates', label: 'Certifications' },
   { id: 'contact', label: 'Contact' },
 ]
-
-function getInitialTheme() {
-  if (typeof window === 'undefined') return 'light'
-  const stored = window.localStorage.getItem('shane-theme')
-  if (stored === 'light' || stored === 'dark') return stored
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-}
-
-function SunIcon() {
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      aria-hidden="true"
-    >
-      <circle cx="12" cy="12" r="4" />
-      <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
-    </svg>
-  )
-}
-
-function MoonIcon() {
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" />
-    </svg>
-  )
-}
 
 function SpeakerOnIcon() {
   return (
@@ -96,8 +54,7 @@ function SpeakerOffIcon() {
 
 export default function Navbar({ diveActive = false, entered = true, diveProgress = 1, arrivalRef, performanceMode = 'normal', onPerformanceModeChange = null, musicOn = false, musicLoading = false, musicFailed = false, onMusicToggle = null }) {
   const [open, setOpen] = useState(false)
-  const [theme, setTheme] = useState(getInitialTheme)
-  const themeToggleRef = useRef(null)
+  const worldTimeRef = useRef(null)
   const dockRef = useRef(null)
   const dockSourceRef = useRef(null)
   const headerRef = useRef(null)
@@ -116,11 +73,6 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
   const scrolled = entered && scrollY > 12
   const introHidden = diveActive && !entered
   const holdNavbarPosition = diveActive && diveProgress < 1
-  
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme
-    window.localStorage.setItem('shane-theme', theme)
-  }, [theme])
 
   useEffect(() => {
     if (!holdNavbarPosition) return
@@ -232,7 +184,7 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
         header,
         logo: logoRef.current,
         items: linkRefs.current.filter(Boolean),
-        toggle: themeToggleRef.current,
+        toggle: worldTimeRef.current,
       })
       tl.eventCallback('onComplete', () => {
         entryPlayedRef.current = true
@@ -266,7 +218,6 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
     { scope: headerRef, dependencies: [displayedActiveId, reduced, entered] }
   )
 
-  const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))
   const lite = performanceMode === 'lite'
 
   return (
@@ -274,6 +225,7 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
       ref={headerRef}
       className={`navbar ${scrolled ? 'is-scrolled' : ''}`}
       data-intro-hidden={introHidden || undefined}
+
     >
       <div className="navbar__inner">
         <a
@@ -344,17 +296,7 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
           >
             {musicOn ? <SpeakerOnIcon /> : <SpeakerOffIcon />}
           </button>
-          <button
-            type="button"
-            className="theme-toggle"
-            ref={themeToggleRef}
-            onClick={toggleTheme}
-            aria-pressed={theme === 'dark'}
-            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-          >
-            {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
-          </button>
+          <WorldTimeController triggerRef={worldTimeRef} />
           </div>
           <button
             type="button"

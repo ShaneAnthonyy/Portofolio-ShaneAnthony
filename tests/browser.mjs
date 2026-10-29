@@ -83,13 +83,13 @@ await send('Log.enable')
 export const url = process.env.DIVE_URL || 'http://127.0.0.1:4173/'
 export const unlocked = `document.querySelector('.aqua-root')?.classList.contains('is-portfolio-unlocked')`
 export const active = `document.querySelector('.aqua-root')?.dataset.landingActive === 'true'`
-export async function fresh({ width = 1440, height = 900, theme = 'dark', lite = false, reduced = false, mobile = width < 500, beforeEnter } = {}) {
+export async function fresh({ width = 1440, height = 900, minutes, legacyTheme, colorScheme, lite = false, reduced = false, mobile = width < 500, beforeEnter } = {}) {
   await send('Page.bringToFront')
   await send('Emulation.setFocusEmulationEnabled', { enabled: true })
   await send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: mobile ? 2 : 1, mobile })
   await send('Emulation.setTouchEmulationEnabled', { enabled: mobile, maxTouchPoints: 1 })
-  await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: reduced ? 'reduce' : 'no-preference' }] })
-  const seed = await send('Page.addScriptToEvaluateOnNewDocument', { source: `localStorage.setItem('shane-theme', '${theme}'); localStorage.setItem('shane-performance-mode', '${lite ? 'lite' : 'normal'}')` })
+  await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: reduced ? 'reduce' : 'no-preference' }, ...(colorScheme ? [{ name: 'prefers-color-scheme', value: colorScheme }] : [])] })
+  const seed = await send('Page.addScriptToEvaluateOnNewDocument', { source: `${legacyTheme === undefined ? '' : `localStorage.setItem('shane-theme', ${JSON.stringify(legacyTheme)});`} localStorage.setItem('shane-performance-mode', '${lite ? 'lite' : 'normal'}')` })
   await send('Page.navigate', { url })
   await until(`!!document.querySelector('.loading-screen__enter:not(:disabled)')`, 90000)
   await evaluate('document.fonts.ready.then(() => true)')
@@ -98,6 +98,21 @@ export async function fresh({ width = 1440, height = 900, theme = 'dark', lite =
   await until(`!document.querySelector('.loading-screen')`, 10000)
   await send('Page.removeScriptToEvaluateOnNewDocument', { identifier: seed.identifier })
   await delay(300)
+  if (minutes !== undefined) await setWorldTime(minutes)
+}
+
+export async function setWorldTime(minutes) {
+  const open = await evaluate(`!!document.querySelector('.world-time-panel')`)
+  if (!open) await evaluate(`document.querySelector('.world-time-trigger').click()`)
+  await until(`!!document.querySelector('.world-time-panel input')`)
+  await evaluate(`(()=>{const input=document.querySelector('.world-time-panel input');Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(input,${(minutes - 300 + 1440) % 1440});input.dispatchEvent(new Event('input',{bubbles:true}))})()`)
+  await delay(150)
+  await until(`Number(document.querySelector('.hero-aquarium')?.dataset.worldTime)===${(minutes + 1440) % 1440}`)
+  // A pending viewport resize can legitimately close the controller during setup.
+  if (!open) {
+    await evaluate(`document.querySelector('.world-time-panel__head button')?.click()`)
+    await until(`!document.querySelector('.world-time-panel')`)
+  }
 }
 
 export function readFrame() {
@@ -120,7 +135,7 @@ export function readFrame() {
     aquarium: document.querySelector('.hero-aquarium')?.dataset.state,
     heroCanvas: !!document.querySelector('.hero-aquarium canvas'),
     aboutBelow: document.querySelector('#about').contains(bottom),
-    controls: [document.querySelectorAll('.audio-toggle').length, document.querySelectorAll('.theme-toggle').length],
+    controls: [document.querySelectorAll('.audio-toggle').length, document.querySelectorAll('.world-time-trigger').length],
     overflow: document.body.style.overflow,
   }
 }

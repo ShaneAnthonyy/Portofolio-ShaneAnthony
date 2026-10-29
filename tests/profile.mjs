@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict'
 import {readFile,writeFile,mkdir} from 'node:fs/promises'
 import {fresh,send,socket,evaluate,until,delay,close,errors,warnings} from './browser.mjs'
-const phase=process.argv[2]||'baseline',width=Number(process.argv[3]||1440),height=Number(process.argv[4]||(width<500?844:900)),lite=process.argv.includes('--lite'),light=process.argv.includes('--light'),quick=process.argv.includes('--quick')
+const phase=process.argv[2]||'baseline',width=Number(process.argv[3]||1440),height=Number(process.argv[4]||(width<500?844:900)),lite=process.argv.includes('--lite'),night=process.argv.includes('--night'),quick=process.argv.includes('--quick')
 const inactive=process.argv.includes('--inactive'),isolateVars=process.argv.includes('--isolate-vars'),gpuTiming=process.argv.includes('--gpu'),noTrace=process.argv.includes('--no-trace')
-const label=`${width}x${height}-${lite?'lite':'normal'}-${light?'light':'dark'}${inactive?'-inactive':''}${isolateVars?'-vars-held':''}${gpuTiming?'-gpu':''}${noTrace?'-untraced':''}`,out=new URL(`./${phase}/`,import.meta.url)
+const label=`${width}x${height}-${lite?'lite':'normal'}-${night?'night':'daytime'}${inactive?'-inactive':''}${isolateVars?'-vars-held':''}${gpuTiming?'-gpu':''}${noTrace?'-untraced':''}`,out=new URL(`./${phase}/`,import.meta.url)
 await mkdir(out,{recursive:true});await send('Network.enable');await send('Network.clearBrowserCache');await send('Performance.enable')
 const network=[],traces=[];let trace=[]
 socket.addEventListener('message',e=>{const m=JSON.parse(e.data);if(m.method==='Tracing.dataCollected')trace.push(...m.params.value);if(m.method==='Network.responseReceived')network.push({url:m.params.response.url,status:m.params.response.status,time:m.params.timestamp})})
@@ -30,10 +30,10 @@ async function run(name,kind,direction){
   await endTrace(name);const after=await metric();const data=await evaluate(`({frames:window.__scrollProfile.frames,mixers:window.__qa.mixers.length,mixerCpu:window.__qa.mixerCpu-${mixerBefore},actors:window.__qa.snapshot().actors,events:window.__early.events.slice(${eventIndex}),longTasks:window.__early.longTasks,longFrames:window.__early.longFrames,contexts:window.__early.contexts,lost:window.__early.contextLost,commits:window.__early.commits,gpu:window.__scrollProfile.gpu||[]})`)
   const intervals=data.frames.slice(1).map((f,i)=>f.now-data.frames[i].now),sorted=[...intervals].sort((a,b)=>a-b)
   const row={name,kind,direction,...data,metrics:{frames:data.frames.length,medianMs:sorted[Math.floor(sorted.length*.5)],p95Ms:sorted[Math.floor(sorted.length*.95)],maxMs:Math.max(...intervals),over50:intervals.filter(d=>d>50).length,over100:intervals.filter(d=>d>100).length,scriptMs:(after.ScriptDuration-before.ScriptDuration)*1000,layoutMs:(after.LayoutDuration-before.LayoutDuration)*1000,styleMs:(after.RecalcStyleDuration-before.RecalcStyleDuration)*1000,heapDeltaBytes:after.JSHeapUsedSize-before.JSHeapUsedSize},trace:traces.at(-1)}
-  results.push(row);await writeFile(new URL(`${label}-profile.json`,out),JSON.stringify({label,width,height,lite,light,results,network,errors,warnings},null,2));console.log('PASS',phase,label,name,JSON.stringify(row.metrics))
+  results.push(row);await writeFile(new URL(`${label}-profile.json`,out),JSON.stringify({label,width,height,lite,night,results,network,errors,warnings},null,2));console.log('PASS',phase,label,name,JSON.stringify(row.metrics))
 }
 try{
-  await fresh({width,height,lite,theme:light?'light':'dark',beforeEnter:async()=>{await evaluate(await readFile(new URL('fixtures/instrument.js',import.meta.url),'utf8'));await until('!!window.__qa.renderer');if(inactive)await evaluate(`window.__qa.inactive=true;window.__qa.actors().forEach(a=>a.root.visible=false)`)}})
+  await fresh({width,height,lite,minutes:night?0:720,beforeEnter:async()=>{await evaluate(await readFile(new URL('fixtures/instrument.js',import.meta.url),'utf8'));await until('!!window.__qa.renderer');if(inactive)await evaluate(`window.__qa.inactive=true;window.__qa.actors().forEach(a=>a.root.visible=false)`)}})
   if(isolateVars)await evaluate(`(()=>{const root=document.querySelector('.aqua-root'),style=root.style,original=CSSStyleDeclaration.prototype.setProperty;const names=new Set(['--bubble-background-opacity','--bubble-midground-opacity','--bubble-foreground-opacity','--aqua-sat','--aqua-top-a','--aqua-mid-a','--aqua-deep-a']);CSSStyleDeclaration.prototype.setProperty=function(name,...args){if(this===style&&names.has(name)&&!root.classList.contains('is-entered'))return;return original.call(this,name,...args)}})()`)
   await evaluate(`(async()=>{
     const url=performance.getEntriesByType('resource').map(r=>r.name).find(n=>n.includes('BufferGeometryUtils-')&&n.endsWith('.js')),module=await import(url),T=Object.values(module).find(v=>v&&typeof v==='object'&&v.Object3D&&v.WebGLRenderer);
