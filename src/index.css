@@ -1455,6 +1455,25 @@ a.contact__item:hover {
   pointer-events: none;
 }
 
+/* Keep frame-level arrival updates out of the offscreen portfolio subtree. */
+@property --arrival-progress {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+
+.aqua-root > main,
+.aqua-root .hero-reveal,
+.aqua-root #home,
+.aqua-root #home *,
+.aqua-root #home::before,
+.aqua-root #home::after,
+.aqua-root #home *::before,
+.aqua-root #home *::after,
+.aqua-root .navbar * {
+  --arrival-progress: inherit;
+}
+
 .aqua-root[data-dive-arrival] {
   --arrival-progress: 0;
   overflow-anchor: none;
@@ -1729,8 +1748,7 @@ html[data-perf='lite'] #about {
 }
 
 html[data-perf='lite'] .aqua-root.is-portfolio-unlocked #home.hero {
-  background: var(--lite-top);
-  background: var(--lite-hero);
+  background: transparent;
   max-width: none;
   margin-left: 0;
   margin-right: 0;

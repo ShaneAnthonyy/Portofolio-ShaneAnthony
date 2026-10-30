@@ -656,7 +656,7 @@ function buildScene({ hideFarRocks, liteWater = false } = {}) {
   return { scene, water, waterMat, waterVolMat, disposables, temp, rockDefs, kelpDefs, trackLoaded, retireTemp, lightsBase }
 }
 
-export default function AquariumDivePrototype({ backdrop = false, integrated = false, onHealthy, onFail, onReturnComplete, onProgress, onBackdropPaused, onArrivalProgress, pauseBackdrop = false, presentationReady = true, probeRef = null, children, diveProgress, introComplete = false, magneticLanding = false, landingRef, returningToP0 = false, qualityMode = 'normal' } = {}) {
+export default function AquariumDivePrototype({ backdrop = false, integrated = false, onHealthy, onFail, onReturnComplete, onProgress, onBackdropPaused, onArrivalProgress, pauseBackdrop = false, presentationReady = true, probeRef = null, children, diveProgress, introComplete = false, magneticLanding = false, landingRef, returningToP0 = false, qualityMode = 'normal', backdropStyle } = {}) {
   const mountRef = useRef(null)
   const heroRevealRef = useRef(null)
   const [debug, setDebug] = useState({ p: 0, phase: 'FRONT' })
@@ -828,7 +828,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
     sign.group.rotation.y = sign.base.yaw
     scene.add(sign.group)
     const updateSign = (tSec, diveP) => {
-      const wide = mount.clientWidth >= 720
+      const wide = qState.lastW >= 720
       if (backdropRef.current) {
         sign.group.visible = wide
 
@@ -1195,7 +1195,16 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       renderer.render(scene, camera)
       setInstallVisible(false)
       renderer.setRenderTarget(tr.skyRT)
-      renderer.render(scene, camera)
+      const matrixAutoUpdate = scene.matrixWorldAutoUpdate
+      const shadowAutoUpdate = renderer.shadowMap.autoUpdate
+      scene.matrixWorldAutoUpdate = false
+      renderer.shadowMap.autoUpdate = false
+      try {
+        renderer.render(scene, camera)
+      } finally {
+        scene.matrixWorldAutoUpdate = matrixAutoUpdate
+        renderer.shadowMap.autoUpdate = shadowAutoUpdate
+      }
       setInstallVisible(true)
       renderer.setRenderTarget(null)
       renderer.render(tr.quadScene, tr.quadCam)
@@ -1473,7 +1482,10 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       nightLiftMaterials.push([material, material.color.clone(), factor])
     }
 
+    let tankBoundsRoot, tankBounds, innerBoundsSource, innerBounds
     const tankOuterBox = () => {
+      const root = loadedGroups.tank || temp.tank
+      if (root === tankBoundsRoot && tankBounds) return tankBounds
       const box = new THREE.Box3()
       let found = false
       const consider = (o) => {
@@ -1484,11 +1496,14 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       }
       if (loadedGroups.tank) consider(loadedGroups.tank)
       else (temp.tank || []).forEach(consider)
-      return found ? box : null
+      tankBoundsRoot = root
+      tankBounds = found ? box : null
+      return tankBounds
     }
     const tankInnerBox = () => {
       const b = tankOuterBox()
       if (!b) return null
+      if (b === innerBoundsSource) return innerBounds
       const inset = new THREE.Vector3(0.15, 0.19, 0.14)
       const inner = b.clone()
       inner.min.x += inset.x
@@ -1497,7 +1512,9 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       inner.max.z -= inset.z
       inner.min.y += inset.y
       inner.max.y -= inset.y
-      return inner
+      innerBoundsSource = b
+      innerBounds = inner
+      return innerBounds
     }
     {
       const tb = tankOuterBox()
@@ -3522,7 +3539,6 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       layoutCharacters(w, h)
     }
     const rerender = () => {
-      onFrame(mount.clientWidth, mount.clientHeight)
       renderer.render(scene, camera)
     }
     const syncReducedScene = (p) => {
@@ -3680,7 +3696,6 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         updateSign(now / 1000, displayed)
         lastP = displayed
         if (!integratedRef.current && displayed > 0.96) setHeroMounted(true)
-        onFrame(mount.clientWidth, mount.clientHeight)
         renderFrame(displayed, now / 1000)
         markHealthy()
         if (probeActive && probeRef) {
@@ -3712,7 +3727,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
           pr.ready = `${Math.min(readiness.settled, Math.max(readiness.total, 1))}/${Math.max(readiness.total, 1)}`
           pr.frames = readiness.frames
         }
-        {
+        if (!integratedRef.current) {
           const phase = phaseOf(displayed)
           if (phase !== qState.lastDebugPhase || now - qState.lastDebugAt >= qState.runtime.debugThrottleMs) {
             qState.lastDebugPhase = phase
@@ -3729,6 +3744,8 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
     if (!backdropRef.current && !reduced && qState.mode === 'normal') {
       track(Promise.allSettled([...pendingStarts.keys()]).then(prepareTransition), 'transition')
     }
+    // ResizeObserver owns dimensions; render ticks do not force layout reads.
+    onFrame(mount.clientWidth, mount.clientHeight)
     document.addEventListener('visibilitychange', syncLoop)
     syncLoop()
 
@@ -3780,7 +3797,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
   }, [qualityMode])
 
   const revealProgress = integratedRef.current
-    ? returningToP0 ? debug.p : diveProgress ?? prog.dive
+    ? returningToP0 ? 0 : diveProgress ?? prog.dive
     : debug.p
   const revealed = revealProgress >= 0.94
   const rp = smooth(Math.min(Math.max((revealProgress - 0.94) / 0.06, 0), 1))
@@ -3801,7 +3818,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
             ref={mountRef}
             aria-hidden="true"
             className="webgl-backdrop"
-            style={{ position: 'fixed', inset: 0, zIndex: -1, overflow: 'hidden', background: '#06121f' }}
+            style={{ ...backdropStyle, position: 'fixed', inset: 0, zIndex: -1, overflow: 'hidden', background: '#06121f' }}
           />
         </div>
         <div
@@ -3821,7 +3838,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
   }
 
   if (backdropRef.current) {
-    return <div ref={mountRef} className="webgl-backdrop" aria-hidden="true" />
+    return <div ref={mountRef} className="webgl-backdrop" aria-hidden="true" style={backdropStyle} />
   }
 
   return (

@@ -51,6 +51,8 @@ Each suite is also runnable individually with `node tests/<filename>`.
 | `check-ground-lifecycle.mjs` | Replay resource identity, paused drawing, exact shadow disposal, Lite assets and Reduced Motion bypass. |
 | `check-context-lifecycle.mjs` | Three Reduced Motion roundtrips, final GPU release, exact scene-resource disposal, Lite reuse, visibility/resume, parking/replay, public React root unmount and fresh re-entry. Test-only response instrumentation captures the root; production has no debug API. |
 | `check-hero-readability.mjs` | Rendered title contrast with a 3.2:1 safety margin and subtitle 4.5:1 at all seven times on desktop/mobile; stable typography bounds and frameless replay. |
+| `check-handoff-styles.mjs` | Exact Hero/navbar arrival values during landing/replay, isolated offscreen sections and local bubble/backdrop optics on desktop/mobile in Normal/Lite. |
+| `check-lite-background-seam.mjs` | Actual screenshot pixels across the Lite Hero/About boundary on desktop/mobile, four World Time presets, forward/reverse scrolling and continuous Manual scrubbing; shared environment ownership and frameless replay. |
 | `check-forest-lifecycle.mjs` | Tree counts, shared geometry/materials, responsive resizing, asset requests and replay reuse. |
 | `check-dive-landing.mjs` | Precise magnetic landing, stable centered Hero, navbar docking and continuous frame geometry. |
 | `check-dive-interruptions.mjs` | Touch/keyboard direction, navigation ownership, resize, page visibility, live Reduced Motion and re-entry. |

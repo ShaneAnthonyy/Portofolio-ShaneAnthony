@@ -420,21 +420,14 @@ export default function App() {
       data-world-environment={true}
       data-content-background={contentBackgroundActive || undefined}
       className={`aqua-root${visualEntered ? ' is-entered' : ''}${portfolioUnlocked ? ' is-portfolio-unlocked' : ''}${webglHealthy ? ' has-webgl' : ''}`}
-      style={{
-        '--intro-background-blur': `${backgroundBlur}px`,
-        '--aqua-atmosphere-blur': `${atmosphereBlur}px`,
-        '--bubble-background-opacity': 0.14 + bubbleDepth * 0.06,
-        '--bubble-midground-opacity': 0.22 + bubbleDepth * 0.1,
-        '--bubble-foreground-opacity': 0.18 + bubbleDepth * 0.08,
-        '--aqua-sat': 0.58 - bubbleDepth * 0.08,
-        '--aqua-top-a': 0.3 - bubbleDepth * 0.06,
-        '--aqua-mid-a': 0.48 + bubbleDepth * 0.12,
-        '--aqua-deep-a': 0.58 + bubbleDepth * 0.12,
-      }}
     >
       <WorldEnvironment enabled={gateEntered && portfolioUnlocked} diveActive={shouldDive} onOwnershipChange={setContentBackgroundActive} />
       <Navbar diveActive={shouldDive} entered={portfolioUnlocked} diveProgress={diveProgress ?? progress.dive} performanceMode={performanceMode} onPerformanceModeChange={setPerformanceMode} musicOn={music.on} musicLoading={music.loading} musicFailed={music.failed} onMusicToggle={music.toggle} arrivalRef={arrivalRef} />
-      <div className={`aqua-bubble-layer${isBubbleDebug ? ' bubble-debug' : ''}`} aria-hidden="true">
+      <div className={`aqua-bubble-layer${isBubbleDebug ? ' bubble-debug' : ''}`} aria-hidden="true" style={{
+        '--bubble-background-opacity': 0.14 + bubbleDepth * 0.06,
+        '--bubble-midground-opacity': 0.22 + bubbleDepth * 0.1,
+        '--bubble-foreground-opacity': 0.18 + bubbleDepth * 0.08,
+      }}>
         {activeBubbles.map((bubble) => (
           <span
             key={`${bubble.depth}-${bubble.x}`}
@@ -473,6 +466,14 @@ export default function App() {
               landingRef={landingRef}
               returningToP0={returningToP0}
               qualityMode={performanceMode}
+              backdropStyle={{
+                '--intro-background-blur': `${backgroundBlur}px`,
+                '--aqua-atmosphere-blur': `${atmosphereBlur}px`,
+                '--aqua-sat': 0.58 - bubbleDepth * 0.08,
+                '--aqua-top-a': 0.3 - bubbleDepth * 0.06,
+                '--aqua-mid-a': 0.48 + bubbleDepth * 0.12,
+                '--aqua-deep-a': 0.58 + bubbleDepth * 0.12,
+              }}
               pauseBackdrop={portfolioUnlocked && (heroActive || contentBackgroundActive)}
               onBackdropPaused={setBackdropPaused}
               onArrivalProgress={updateArrival}
