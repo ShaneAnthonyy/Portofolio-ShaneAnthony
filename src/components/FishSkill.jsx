@@ -11,11 +11,13 @@ export default function FishSkill({ fish, hovered, held, below, selected, outerR
           <img
             loading="lazy"
             decoding="async"
+            width="240"
+            height="160"
             src={fish.img}
             alt=""
             className="pixelated"
             draggable="false"
-            style={{ width: '100%', display: 'block' }}
+            style={{ width: '100%', height: 'auto', display: 'block' }}
           />
         </span>
       </span>

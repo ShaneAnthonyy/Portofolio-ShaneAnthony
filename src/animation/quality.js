@@ -1,9 +1,9 @@
 
 import { useCallback, useEffect, useState } from 'react'
 
-export const PERFORMANCE_KEY = 'shane-performance-mode'
+const PERFORMANCE_KEY = 'shane-performance-mode'
 
-export function detectConstrainedDevice() {
+function detectConstrainedDevice() {
   if (typeof window === 'undefined' || typeof navigator === 'undefined') return false
   try {
     const touch =
@@ -20,9 +20,9 @@ export function detectConstrainedDevice() {
     const small =
       typeof window.matchMedia === 'function' &&
       window.matchMedia('(max-width: 720px)').matches
-    if (!touch && !small) return false
     if (cores != null && cores <= 4) return true
     if (mem != null && mem <= 4) return true
+    if (!touch && !small) return false
     if (small && dpr >= 2.5) return true
     if (small && touch) return true
     return false
@@ -31,7 +31,7 @@ export function detectConstrainedDevice() {
   }
 }
 
-export function readStoredMode() {
+function readStoredMode() {
   try {
     const v = window.localStorage.getItem(PERFORMANCE_KEY)
     return v === 'lite' || v === 'normal' ? v : null
@@ -40,7 +40,7 @@ export function readStoredMode() {
   }
 }
 
-export function getInitialPerformanceMode() {
+function getInitialPerformanceMode() {
   const stored = typeof window !== 'undefined' ? readStoredMode() : null
   const constrained =
     typeof window !== 'undefined' ? detectConstrainedDevice() : false
@@ -53,25 +53,25 @@ const QUALITY = {
   normal: {
     init: { antialias: true, powerPreference: 'high-performance' },
     runtime: {
-      pixelRatioCap: 1.5,
+      pixelRatioCap: 1.25,
       renderScale: 1,
       shadows: true,
       shadowSize: 1024,
-      transitionSamples: 2,
-      transitionScale: 1,
+      transitionSamples: 0,
+      transitionScale: 0.75,
       extras: true,
       animationFull: true,
       fishTickEvery: 1,
       debugThrottleMs: 250,
-      texCap: 2048,
+      texCap: 1024,
       waterHigh: true,
     },
   },
   lite: {
-    init: { antialias: false, powerPreference: 'low-power' },
+    init: { antialias: false, powerPreference: 'default' },
     runtime: {
-      pixelRatioCap: 1,
-      renderScale: 0.75,
+      pixelRatioCap: 1.5,
+      renderScale: 1,
       shadows: false,
       shadowSize: 0,
       transitionSamples: 0,
@@ -80,7 +80,7 @@ const QUALITY = {
       animationFull: false,
       fishTickEvery: 2,
       debugThrottleMs: 500,
-      texCap: 512,
+      texCap: 1024,
       waterHigh: false,
     },
   },

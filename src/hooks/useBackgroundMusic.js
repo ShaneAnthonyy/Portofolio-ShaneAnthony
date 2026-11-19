@@ -3,11 +3,6 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 const SRC = '/audio/song.mp3'
 const VOLUME = 0.3
 
-// Minimal background-music controller: one lazily-created HTMLAudioElement
-// per mounted app, native `loop` for indefinite replay from 0. No storage
-// (always boots Off), no polling loops, no Web Audio. Rapid toggles are
-// serialized with a generation counter so stale play() promises can never
-// start audio after a cancel, and only one element/listeners ever exist.
 export default function useBackgroundMusic() {
   const audioRef = useRef(null)
   const genRef = useRef(0)
@@ -42,12 +37,8 @@ export default function useBackgroundMusic() {
       el.loop = true
       el.src = SRC
       audioRef.current = el
-      // DEV-only handle so automated checks can observe real playback
-      // (position, loop wrap) without waiting out the full track.
-      // Statically stripped from production builds.
       if (import.meta.env.DEV) window.__musicAudio = el
     }
-    // Off, or cancel a pending start: invalidate in-flight work first.
     if (on || loading) {
       genRef.current += 1
       removerRef.current?.()

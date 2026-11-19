@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { memo, useEffect, useRef, useState } from 'react'
 import { profile } from '../data/content.js'
 import { FOOTER_FISH } from '../data/fauna.js'
 import CategoryCard from './CategoryCard.jsx'
@@ -7,7 +7,7 @@ import AmbientFish from './AmbientFish.jsx'
 import { typeTimelines, useTypeReveal } from '../animation/typography.js'
 import { choreographyBuilders, useSectionChoreography } from '../animation/sectionChoreography.js'
 
-export default function Footer({ hidden = false }) {
+export default memo(function Footer({ hidden = false }) {
   const year = new Date().getFullYear()
   const footRef = useRef(null)
   const typeRef = useTypeReveal(typeTimelines.footer, 'footer')
@@ -61,4 +61,4 @@ export default function Footer({ hidden = false }) {
       </CategoryCard>
     </footer>
   )
-}
+})

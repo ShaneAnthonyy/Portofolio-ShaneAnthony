@@ -4,16 +4,6 @@ import { ScrollToPlugin } from 'gsap/ScrollToPlugin.js'
 
 gsap.registerPlugin(ScrollToPlugin)
 
-const navDebug =
-  typeof window !== 'undefined' &&
-  new URLSearchParams(window.location.search).has('nav-debug')
-
-function nlog(...args) {
-  if (navDebug) {
-    console.log('[NAV]', ...args)
-  }
-}
-
 export function scrollToSection(targetId) {
   const target = document.getElementById(targetId)
   if (!target) return
@@ -27,7 +17,6 @@ export function scrollToSection(targetId) {
   const done = () => {
     root.style.scrollBehavior = prev
   }
-  nlog('SCROLL START target=', targetId)
   gsap.to(window, {
     duration: 0.9,
     overwrite: 'auto',
@@ -37,13 +26,7 @@ export function scrollToSection(targetId) {
       autoKill: true,
     },
     ease: 'power3.inOut',
-    onComplete: () => {
-      done()
-      nlog('SCROLL COMPLETE target=', targetId, 'scrollY=', Math.round(window.scrollY))
-    },
-    onInterrupt: () => {
-      done()
-      nlog('SCROLL INTERRUPTED target=', targetId, 'scrollY=', Math.round(window.scrollY))
-    },
+    onComplete: done,
+    onInterrupt: done,
   })
 }

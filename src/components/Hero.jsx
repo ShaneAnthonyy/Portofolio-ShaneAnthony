@@ -1,8 +1,9 @@
+import { memo } from 'react'
 import { profile } from '../data/content.js'
 import { typeTimelines, useTypeReveal } from '../animation/typography.js'
 import HeroAquarium from './HeroAquarium.jsx'
 
-export default function Hero({ onDiveAgain, aquariumEnabled = false, aquariumPreview = false, aquariumReady = false, aquariumPrewarm = false, performanceMode = 'normal', onAquariumVisibilityChange }) {
+export default memo(function Hero({ onDiveAgain, aquariumEnabled = false, aquariumPreview = false, aquariumReady = false, aquariumPrewarm = false, performanceMode = 'normal', onAquariumVisibilityChange }) {
   const typeRef = useTypeReveal(typeTimelines.hero, 'hero')
   return (
     <section id="home" className={`section hero${aquariumEnabled || aquariumPreview ? ' hero--aquarium' : ''}`} ref={typeRef}>
@@ -36,4 +37,4 @@ export default function Hero({ onDiveAgain, aquariumEnabled = false, aquariumPre
       )}
     </section>
   )
-}
+})

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import { about, contact, profile, stats } from '../data/content.js'
 import { ABOUT_FISH } from '../data/fauna.js'
 import AmbientFish from './AmbientFish.jsx'
@@ -46,7 +46,7 @@ function ToolkitIcon({ kind }) {
   )
 }
 
-export default function About({ unlocked = true }) {
+export default memo(function About({ unlocked = true }) {
   const [notesOpen, setNotesOpen] = useState(false)
   const typeRef = useTypeReveal(typeTimelines.about, 'about')
   const choreoRef = useSectionChoreography(choreographyBuilders.about, 'choreo-about')
@@ -74,7 +74,7 @@ export default function About({ unlocked = true }) {
         <div className="about-bento" ref={choreoRef}>
           <article className="about-card about-card--identity" aria-label="Identity" ref={identityRef}>
             <figure className="about-identity__portrait">
-              <img src="/photo.png" alt={profile.name} className="about-identity__photo" />
+              <img src="/photo-opt.jpg" alt={profile.name} width="448" height="800" loading="lazy" decoding="async" className="about-identity__photo" />
             </figure>
             <h3 className="about-identity__name">{profile.name}</h3>
             <p className="about-identity__role">{profile.role}</p>
@@ -193,4 +193,4 @@ export default function About({ unlocked = true }) {
       </div>
     </section>
   )
-}
+})

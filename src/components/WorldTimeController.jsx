@@ -1,25 +1,16 @@
-import { useEffect, useId, useRef, useState, useSyncExternalStore } from 'react'
+import { memo, useEffect, useId, useRef, useState, useSyncExternalStore } from 'react'
 import { createPortal } from 'react-dom'
 import { formatWorldTime, PRESETS, worldTime } from '../animation/worldTime.js'
 import './world-time.css'
 
-export default function WorldTimeController({ triggerRef }) {
+function WorldTimePanel({ id, triggerRef, close }) {
   const snapshot = useSyncExternalStore(worldTime.subscribe, worldTime.getSnapshot)
-  const [open, setOpen] = useState(false)
   const [position, setPosition] = useState({ top: 16, left: 16 })
   const panelRef = useRef(null)
-  const id = useId()
   const nextDay = snapshot.sliderOffset >= 1140
   const time = formatWorldTime(snapshot.minutes)
 
-  const close = (restore = false) => {
-    worldTime.flushInput()
-    setOpen(false)
-    if (restore) triggerRef.current?.focus({ preventScroll: true })
-  }
-
   useEffect(() => {
-    if (!open) return
     const panel = panelRef.current
     const trigger = triggerRef.current.getBoundingClientRect()
     const width = panel.offsetWidth, height = panel.offsetHeight
@@ -45,7 +36,42 @@ export default function WorldTimeController({ triggerRef }) {
       panel.removeEventListener('keydown', key)
       window.removeEventListener('resize', resized)
     }
-  }, [open, triggerRef])
+  }, [triggerRef, close])
+
+  return createPortal(<div id={id} ref={panelRef} role="dialog" aria-modal="false" aria-labelledby={`${id}-title`}
+    className="world-time-panel" style={position}>
+    <div className="world-time-panel__head">
+      <strong id={`${id}-title`}>World Time</strong>
+      <button type="button" aria-label="Close World Time" onClick={() => close(true)}>×</button>
+    </div>
+    <div className="world-time-panel__modes" role="group" aria-label="Time mode">
+      {['live', 'manual'].map(mode => <button key={mode} type="button" aria-pressed={snapshot.mode === mode}
+        onClick={() => worldTime.setMode(mode)}>{mode === 'live' ? 'Live' : 'Manual'}</button>)}
+    </div>
+    <div className="world-time-panel__readout"><output htmlFor={`${id}-range`} aria-live="off">{time}</output><span>{snapshot.environment.label}</span></div>
+    <label htmlFor={`${id}-range`}>Time of day{nextDay ? ' · next day' : ''}</label>
+    <input id={`${id}-range`} type="range" min="0" max="1440" step="1" value={snapshot.sliderOffset}
+      aria-valuetext={`${time}${nextDay ? ', next day' : ''}`}
+      onChange={event => worldTime.setTimeline(Number(event.target.value))} />
+    <div className="world-time-panel__ends"><span>05:00</span><span>05:00 +1 day</span></div>
+    <div className="world-time-panel__presets" role="group" aria-label="Time presets">
+      {Object.entries(PRESETS).map(([label, minutes]) => <button key={label} type="button"
+        onClick={() => worldTime.setPreset(label)}>{label}<small>{formatWorldTime(minutes)}</small></button>)}
+    </div>
+    <p>Live follows your device clock. Manual holds the selected time.</p>
+  </div>, document.body)
+}
+
+export default memo(function WorldTimeController({ triggerRef }) {
+  const [open, setOpen] = useState(false)
+  const id = useId()
+  const closeRef = useRef(null)
+  closeRef.current = (restore = false) => {
+    worldTime.flushInput()
+    setOpen(false)
+    if (restore) triggerRef.current?.focus({ preventScroll: true })
+  }
+  const close = useRef((restore = false) => closeRef.current(restore)).current
 
   return <>
     <button ref={triggerRef} type="button" className="world-time-trigger"
@@ -55,27 +81,6 @@ export default function WorldTimeController({ triggerRef }) {
         <circle cx="12" cy="12" r="9" /><path d="M12 6v6l4 2" />
       </svg>
     </button>
-    {open && createPortal(<div id={id} ref={panelRef} role="dialog" aria-modal="false" aria-labelledby={`${id}-title`}
-      className="world-time-panel" style={position}>
-      <div className="world-time-panel__head">
-        <strong id={`${id}-title`}>World Time</strong>
-        <button type="button" aria-label="Close World Time" onClick={() => close(true)}>×</button>
-      </div>
-      <div className="world-time-panel__modes" role="group" aria-label="Time mode">
-        {['live', 'manual'].map(mode => <button key={mode} type="button" aria-pressed={snapshot.mode === mode}
-          onClick={() => worldTime.setMode(mode)}>{mode === 'live' ? 'Live' : 'Manual'}</button>)}
-      </div>
-      <div className="world-time-panel__readout"><output htmlFor={`${id}-range`} aria-live="off">{time}</output><span>{snapshot.environment.label}</span></div>
-      <label htmlFor={`${id}-range`}>Time of day{nextDay ? ' · next day' : ''}</label>
-      <input id={`${id}-range`} type="range" min="0" max="1440" step="1" value={snapshot.sliderOffset}
-        aria-valuetext={`${time}${nextDay ? ', next day' : ''}`}
-        onChange={event => worldTime.setTimeline(Number(event.target.value))} />
-      <div className="world-time-panel__ends"><span>05:00</span><span>05:00 +1 day</span></div>
-      <div className="world-time-panel__presets" role="group" aria-label="Time presets">
-        {Object.entries(PRESETS).map(([label, minutes]) => <button key={label} type="button"
-          onClick={() => worldTime.setPreset(label)}>{label}<small>{formatWorldTime(minutes)}</small></button>)}
-      </div>
-      <p>Live follows your device clock. Manual holds the selected time.</p>
-    </div>, document.body)}
+    {open && <WorldTimePanel id={id} triggerRef={triggerRef} close={close} />}
   </>
-}
+})

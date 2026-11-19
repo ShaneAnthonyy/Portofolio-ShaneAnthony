@@ -89,7 +89,6 @@ export function createMinecraftSky(environment) {
 
         if (ray.y > .075) {
           vec2 cloudUV = ray.xz / ray.y * 10. + vec2(5., 9.);
-          // Keep the approved title lane fixed while complete cloud silhouettes translate.
           vec2 cloudMask = vec2(0.);
           if (!(abs(cloudUV.x - 5.) < 16. && cloudUV.y > -36. && cloudUV.y < -9.)) {
             cloudMask = cloud(cloudUV + vec2(uCloudOffset.x + uCloudOffset.y, 0.));
@@ -112,7 +111,6 @@ export function createMinecraftSky(environment) {
   })
   const mesh = new THREE.Mesh(geometry, material)
   mesh.name = 'MinecraftSky'
-  // Draw last among opaque objects so terrain depth rejects hidden sky pixels.
   mesh.renderOrder = 1000
   mesh.frustumCulled = false
   const place = (target, direction, spread) => {
@@ -132,7 +130,6 @@ export function createMinecraftSky(environment) {
   const wrap = value => THREE.MathUtils.euclideanModulo(value, CLOUD_PERIOD)
   const update = (sample, veil = 1, aspect = 1.6, delta = 0, mode = 'manual') => {
     uniforms.uVeil.value = veil
-    // Keep ambient seconds independent of civil time and bounded for long sessions.
     wind = wrap(wind + Math.min(Math.max(delta, 0), .1) * .03)
     if (previousMode === 'manual' && mode === 'live') {
       modeOffset = wrap(modeOffset + (previousSample.minutes - sample.minutes) / 1440 * CLOUD_PERIOD)

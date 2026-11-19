@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { certificates } from '../data/content.js'
 import { typeTimelines, useTypeReveal } from '../animation/typography.js'
 import { choreographyBuilders, useSectionChoreography } from '../animation/sectionChoreography.js'
@@ -22,7 +23,7 @@ function ExternalIcon() {
   )
 }
 
-export default function Certificates() {
+export default memo(function Certificates() {
   const total = certificates.length
   const typeRef = useTypeReveal(typeTimelines.certificates, 'certificates')
   const choreoRef = useSectionChoreography(choreographyBuilders.certificates, 'choreo-certificates')
@@ -71,4 +72,4 @@ export default function Certificates() {
       </div>
     </section>
   )
-}
+})

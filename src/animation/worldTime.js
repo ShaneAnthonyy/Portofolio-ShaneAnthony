@@ -37,7 +37,6 @@ export function environmentCSS(color) {
   return `rgb(${channels.join(' ')})`
 }
 
-// Keep the audited ambient/key mapping in linear RGB.
 const DAY = {
   skyTop: rgb(0x65a8ff), skyHorizon: rgb(0xc4e1ff), skyBottom: rgb(0xd0e7ef),
   ambientColor: rgb(0xffe8c8), ambientIntensity: 2.2,
@@ -58,7 +57,6 @@ const NIGHT = {
   waterLight: rgb(0x76c4cc), waterRock: rgb(0x527e89), waterVolume: rgb(0x24586d),
   waterSunIntensity: 1.1, cloudTint: rgb(0x8397c8), skyTint: rgb(0xffffff),
 }
-// Sky-only art direction at the same anchors; existing lighting/water values stay intact.
 const SKY = [
   [0x09162e, 0x192c49, 0x344b67, 0x42516b, 0xffdfaf],
   [0x14294b, 0x5c607f, 0xd39985, 0xffb780, 0xffd099],
@@ -136,7 +134,7 @@ export function createWorldTimeStore({ now = () => new Date(), host = globalThis
   const scheduleClock = () => {
     cancelTimer()
     if (!disposed && listeners.size && snapshot.mode === 'live' && !page?.hidden) {
-      timer = host.setTimeout(() => { timer = null; publish('live', clock()); scheduleClock() }, 1000)
+      timer = host.setTimeout(() => { timer = null; publish('live', clock()); scheduleClock() }, 10000)
     }
   }
   const flushInput = () => {

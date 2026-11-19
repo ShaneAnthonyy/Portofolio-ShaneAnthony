@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { memo, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { projects } from '../data/content.js'
 import { PROJECTS_FISH } from '../data/fauna.js'
 import AmbientFish from './AmbientFish.jsx'
@@ -326,8 +326,6 @@ function ProjectDetail({ project, detailRef, onClose }) {
         justifyContent: 'center',
         padding: 'var(--project-detail-gap)',
         background: 'rgba(3, 11, 20, 0.58)',
-        backdropFilter: 'blur(10px) saturate(0.9)',
-        WebkitBackdropFilter: 'blur(10px) saturate(0.9)',
       }}
     >
       <div
@@ -516,11 +514,26 @@ function geometry(position, layout) {
   }
 }
 
+const cardPartsCache = new WeakMap()
+function getCardParts(card) {
+  let parts = cardPartsCache.get(card)
+  if (!parts) {
+    parts = {
+      media: card.querySelector('.tidal-card__media'),
+      body: card.querySelector('.tidal-card__body'),
+      content: card.querySelector('.tidal-card__content'),
+      preview: card.querySelector('.tidal-card__preview'),
+    }
+    cardPartsCache.set(card, parts)
+  }
+  return parts
+}
+
 function paintCard(card, frame, layout) {
   if (!card) return
   const { x, y, width, height, mediaWidth, mediaHeight, reveal, alpha } = frame
   const visible = alpha > 0.003
-  card.style.visibility = visible ? 'visible' : 'hidden'
+  card.style.visibility = visible ? '' : 'hidden'
   card.style.pointerEvents = visible ? 'auto' : 'none'
   if (!visible) return
   card.style.opacity = String(alpha)
@@ -528,10 +541,7 @@ function paintCard(card, frame, layout) {
   card.style.width = `${width}px`
   card.style.height = `${height}px`
   card.style.setProperty('--tidal-feature', String(reveal))
-  const media = card.querySelector('.tidal-card__media')
-  const body = card.querySelector('.tidal-card__body')
-  const content = card.querySelector('.tidal-card__content')
-  const preview = card.querySelector('.tidal-card__preview')
+  const { media, body, content, preview } = getCardParts(card)
   if (media) {
     media.style.width = `${mediaWidth}px`
     media.style.height = `${mediaHeight}px`
@@ -545,7 +555,7 @@ function paintCard(card, frame, layout) {
     body.style.top = layout.mobile ? `${mediaHeight - (1 - reveal) * layout.bodyHeight}px` : '0px'
     content.style.width = `${layout.bodyWidth}px`
     content.style.height = `${layout.bodyHeight}px`
-    body.style.visibility = reveal < 0.005 ? 'hidden' : 'visible'
+    body.style.visibility = reveal < 0.005 ? 'hidden' : ''
   }
   if (preview) {
     preview.style.opacity = String(frame.labelOpacity ?? (1 - reveal))
@@ -555,7 +565,7 @@ function paintCard(card, frame, layout) {
   }
 }
 
-export default function Projects() {
+export default memo(function Projects() {
   const [active, setActive] = useState(0)
   const [detailOpen, setDetailOpen] = useState(false)
   const activeRef = useRef(0)
@@ -931,4 +941,4 @@ export default function Projects() {
       </div>
     </section>
   )
-}
+})

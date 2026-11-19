@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { portfolioSectionIds } from '../data/content.js'
 
 const IDS = portfolioSectionIds
-const HYST = 24 // px hysteresis around section boundaries
+const HYST = 24
 
 function measure() {
   const centers = []
@@ -62,6 +62,10 @@ function initialState() {
 }
 
 let centers = []
+let introEl = null
+let introTop = 0
+let introHeight = 0
+let maxScroll = 0
 let prevIdx = null
 let lastY = typeof window !== 'undefined' ? window.scrollY : 0
 let lastTime = 0
@@ -69,38 +73,62 @@ let raf = 0
 let queued = false
 let current = initialState()
 const subscribers = new Set()
-// Frame-level subscribers: called on every rAF-throttled scroll update with
-// raw geometry (no React state involved), so cinematic scrubbing can write
-// DOM vars directly without re-rendering. Shares the existing scroll
-// listener and rAF loop — no additional global listeners are created.
 const frameSubscribers = new Set()
 export function subscribeProgressFrame(fn) {
   frameSubscribers.add(fn)
   ensureListening()
-  fn({ scrollY: window.scrollY, viewportH: window.innerHeight })
+  fn({ scrollY: window.scrollY, viewportH: window.innerHeight, progress: current })
   return () => {
     frameSubscribers.delete(fn)
     releaseListening()
   }
 }
+export function getSectionProgress() {
+  return current
+}
 let listening = false
 let motionPreference
+
+function measureLayout() {
+  centers = measure()
+  introEl = document.getElementById('portfolio-dive')
+  introTop = introEl ? introEl.getBoundingClientRect().top + window.scrollY : 0
+  introHeight = introEl ? introEl.offsetHeight : 0
+  maxScroll = document.documentElement.scrollHeight - window.innerHeight
+}
 
 function snapshot() {
   return current
 }
 
+function shallowEqual(a, b) {
+  if (Object.is(a, b)) return true
+  if (!a || !b || typeof a !== 'object' || typeof b !== 'object') return false
+  const keysA = Object.keys(a)
+  const keysB = Object.keys(b)
+  if (keysA.length !== keysB.length) return false
+  for (let i = 0; i < keysA.length; i++) {
+    const k = keysA[i]
+    if (!Object.prototype.hasOwnProperty.call(b, k) || !Object.is(a[k], b[k])) return false
+  }
+  return true
+}
+
 function compute() {
   queued = false
-  if (centers.length === 0) centers = measure()
+  if (centers.length === 0) measureLayout()
+  if (introEl && !introEl.isConnected) measureLayout()
   const { t, mid } = interpolate(centers)
-  const intro = document.getElementById('portfolio-dive')
-  const introTop = intro ? intro.getBoundingClientRect().top + window.scrollY : 0
-  const maxScroll = document.documentElement.scrollHeight - window.innerHeight
+  const intro = introEl
+  const h = intro
+    ? intro.style.height === '0px'
+      ? 0
+      : introHeight || (introHeight = intro.offsetHeight)
+    : 0
   const dive = intro
     ? intro.dataset.diveProgress !== undefined ? Number(intro.dataset.diveProgress)
-      : intro.offsetHeight === 0 ? 1
-        : Math.min(Math.max((window.scrollY - introTop) / intro.offsetHeight, 0), 1)
+      : h === 0 ? 1
+        : Math.min(Math.max((window.scrollY - introTop) / h, 0), 1)
     : maxScroll > 0 ? Math.min(Math.max(window.scrollY / maxScroll, 0), 1) : 0
   const idx = activeWithHyst(centers, mid, prevIdx)
   prevIdx = idx
@@ -117,7 +145,7 @@ function compute() {
     scrollY: y,
     dir,
     velocity,
-    reduced: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+    reduced: motionPreference ? motionPreference.matches : current.reduced,
   }
   if (
     current.t !== next.t ||
@@ -133,7 +161,7 @@ function compute() {
       subscribers.forEach((notify) => notify(next))
     }
   }
-  frameSubscribers.forEach((fn) => fn({ scrollY: y, viewportH: window.innerHeight }))
+  frameSubscribers.forEach((fn) => fn({ scrollY: y, viewportH: window.innerHeight, progress: next }))
 }
 
 function schedule() {
@@ -143,7 +171,7 @@ function schedule() {
 }
 
 function remeasure() {
-  centers = measure()
+  measureLayout()
   schedule()
 }
 
@@ -154,12 +182,12 @@ export function refreshSectionProgress() {
 function ensureListening() {
   if (listening || typeof window === 'undefined') return
   listening = true
-  centers = measure()
+  motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)')
+  measureLayout()
   compute()
   window.addEventListener('scroll', schedule, { passive: true })
   window.addEventListener('resize', remeasure)
   window.addEventListener('load', remeasure)
-  motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)')
   motionPreference.addEventListener('change', remeasure)
 }
 
@@ -174,18 +202,26 @@ function releaseListening() {
   cancelAnimationFrame(raf)
 }
 
-export default function useSectionProgress() {
-  const [state, setState] = useState(snapshot)
+export default function useSectionProgress(selector) {
+  const [state, setState] = useState(() => (selector ? selector(snapshot()) : snapshot()))
 
   useEffect(() => {
-    const notify = (next) => setState(next)
+    const notify = (next) => {
+      if (!selector) {
+        setState(next)
+        return
+      }
+      const selected = selector(next)
+      setState((prev) => (shallowEqual(prev, selected) ? prev : selected))
+    }
     subscribers.add(notify)
     ensureListening()
-    setState((s) => (s === current ? s : current))
+    notify(current)
     return () => {
       subscribers.delete(notify)
       releaseListening()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return state

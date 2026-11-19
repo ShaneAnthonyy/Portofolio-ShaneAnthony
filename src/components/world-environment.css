@@ -29,7 +29,6 @@
 html[data-perf='lite'] .world-environment__wind { animation-play-state: paused; will-change: auto; }
 @media (prefers-reduced-motion: reduce) { .world-environment__wind { animation-play-state: paused; will-change: auto; } }
 
-/* Semantic aliases stay on presentation islands, never html/body or the app root. */
 [data-world-ui='true'] {
   --world-solid: rgb(var(--world-rgb));
   --world-surface: rgb(var(--world-rgb) / var(--world-alpha));
@@ -94,8 +93,7 @@ html[data-perf='lite'] .world-environment__wind { animation-play-state: paused; 
 #home[data-world-ui='true'] .hero__replay { text-shadow: 0 0 1px rgb(0 18 28), 0 1px 4px rgb(0 18 28 / .95); }
 [data-world-ui='true'] .hero__replay-label { opacity: .9; }
 .world-time-panel[data-world-ui='true'], .guide-pop--mobile[data-world-ui='true'] { background: var(--world-panel); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
-/* The sampled palette already interpolates; retain motion without retargeting color tweens. */
-.aqua-root:is(:not([data-dive-arrival]), [data-arrival-state='settled']) .navbar[data-world-ui='true'] { transition: padding .4s var(--ease-water), opacity .4s var(--ease-water), backdrop-filter .4s var(--ease-water), -webkit-backdrop-filter .4s var(--ease-water); }
+.aqua-root:is(:not([data-dive-arrival]), [data-arrival-state='settled']) .navbar[data-world-ui='true'] { transition: padding .4s var(--ease-water), opacity .4s var(--ease-water); }
 [data-world-ui='true'] .navbar__link { transition: transform .18s ease; }
 .aqua-root:is(:not([data-dive-arrival]), [data-arrival-state='settled']) .navbar[data-world-ui='true'] :is(.world-time-trigger, .audio-toggle) { transition: opacity .2s ease; }
 .aqua-root [data-world-ui='true'] :is(.btn, .guide-btn, .depth-zone__skill, .specimen-panel__close, .cabinet-record__link, .contact__item, .field input, .field textarea, .cabinet-record:not(.reveal)) { transition: none; }

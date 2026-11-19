@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { skillGroups } from '../data/content.js'
 import FishSkill from './FishSkill.jsx'
@@ -7,12 +7,12 @@ import { typeTimelines, useTypeReveal } from '../animation/typography.js'
 import { choreographyBuilders, useSectionChoreography } from '../animation/sectionChoreography.js'
 
 const FISH_DEFS = [
-  { img: '/skill/intermediate1.png', skill: 'HTML', tier: 'intermediate', depth: 'back', zone: 'surface', w: 66 },
-  { img: '/skill/intermediate2.png', skill: 'CSS', tier: 'intermediate', depth: 'back', zone: 'surface', w: 60 },
-  { img: '/skill/intermediate6.png', skill: 'React', tier: 'intermediate', depth: 'front', zone: 'surface', w: 100 },
-  { img: '/skill/intermediate7.png', skill: 'Visual Studio Code', tier: 'intermediate', depth: 'front', zone: 'surface', w: 56 },
-  { img: '/skill/intermediate4.png', skill: 'Python', tier: 'intermediate', depth: 'front', zone: 'mid', w: 88 },
-  { img: '/skill/intermediate5.png', skill: 'C', tier: 'intermediate', depth: 'back', zone: 'lower', w: 68 },
+  { img: '/skill/opt/intermediate1.png', skill: 'HTML', tier: 'intermediate', depth: 'back', zone: 'surface', w: 66 },
+  { img: '/skill/opt/intermediate2.png', skill: 'CSS', tier: 'intermediate', depth: 'back', zone: 'surface', w: 60 },
+  { img: '/skill/opt/intermediate6.png', skill: 'React', tier: 'intermediate', depth: 'front', zone: 'surface', w: 100 },
+  { img: '/skill/opt/intermediate7.png', skill: 'Visual Studio Code', tier: 'intermediate', depth: 'front', zone: 'surface', w: 56 },
+  { img: '/skill/opt/intermediate4.png', skill: 'Python', tier: 'intermediate', depth: 'front', zone: 'mid', w: 88 },
+  { img: '/skill/opt/intermediate5.png', skill: 'C', tier: 'intermediate', depth: 'back', zone: 'lower', w: 68 },
 ]
 
 const ZONES = [
@@ -71,7 +71,7 @@ function TierLabel({ tier }) {
   return <span className={`tier tier--${tier}`}>{label}</span>
 }
 
-export default function Skills() {
+export default memo(function Skills() {
   const sectionRef = useRef(null)
   const typeRef = useTypeReveal(typeTimelines.skills, 'skills')
   const choreoRef = useSectionChoreography(choreographyBuilders.skills, 'choreo-skills')
@@ -307,17 +307,11 @@ export default function Skills() {
           onPointerCancel={() => release(i)}
           onClick={() => selectFish(i)}
         >
-          <img loading="lazy" decoding="async" src={d.img} alt="" aria-hidden="true" draggable="false" />
+          <span className="fish-hit__box" aria-hidden="true" />
         </button>
       )
     })
   }
-
-  const [debugBubbles] = useState(
-    () =>
-      typeof window !== 'undefined' &&
-      new URLSearchParams(window.location.search).has('bubble-debug')
-  )
 
   return (
     <section
@@ -326,7 +320,7 @@ export default function Skills() {
         sectionRef.current = el
         typeRef.current = el
       }}
-      className={`section skills${debugBubbles ? ' bubble-debug' : ''}`}
+      className="section skills"
       style={{ position: 'relative', overflow: 'hidden' }}
     >
       <div ref={layerBackRef} className="fish-layer fish-layer--back" aria-hidden="true">
@@ -435,4 +429,4 @@ export default function Skills() {
       {compactGuide ? guideOpen && createPortal(guidePanel, document.body) : guidePanel}
     </section>
   )
-}
+})

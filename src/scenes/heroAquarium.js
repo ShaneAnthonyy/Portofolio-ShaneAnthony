@@ -20,10 +20,6 @@ const waterMath = `
     return mix(mix(hash(i), hash(i + vec2(1,0)), f.x), mix(hash(i + vec2(0,1)), hash(i + 1.0), f.x), f.y);
   }
   float caustic(vec2 p) {
-    // Organic water-light: low-frequency domain warp breaks the sine
-    // lattice into irregular filaments; a slow noise mask keeps patches
-    // faintly visible instead of a full-screen web. Exponents are soft
-    // (8/10 vs 18/22) to avoid sharp crossing lines.
     vec2 warp = vec2(
       noise(p * 0.32 + vec2(uTime * 0.030, -uTime * 0.022)),
       noise(p * 0.32 + vec2(5.2, 1.3) + vec2(-uTime * 0.020, uTime * 0.026))
@@ -35,13 +31,11 @@ const waterMath = `
     float mask = smoothstep(0.28, 0.75, noise(p * 0.27 + warp * 0.6 + uTime * 0.015));
     return filaments * (0.25 + 0.75 * mask);
   }
-  // Two counter-drifting procedural normal layers over a low-frequency
-  // calm mask. UVs are noise-warped so no sine lattice or stripe
-  // repetition shows. Returns surface slope (not a unit normal).
-  float wHeight(vec2 v) {
-    return sin(dot(v, vec2(1.1, 0.6)) + uTime * 0.35) * 0.50
-         + sin(dot(v, vec2(-0.7, 1.3)) + 1.7 - uTime * 0.27) * 0.35
-         + sin(dot(v, vec2(0.5, -1.1)) * 1.7 + 0.6 + uTime * 0.22) * 0.15;
+  vec2 wGrad(vec2 v) {
+    float c1 = cos(dot(v, vec2(1.1, 0.6)) + uTime * 0.35) * 0.50;
+    float c2 = cos(dot(v, vec2(-0.7, 1.3)) + 1.7 - uTime * 0.27) * 0.35;
+    float c3 = cos(dot(v, vec2(0.85, -1.87)) + 0.6 + uTime * 0.22) * 0.15;
+    return vec2(1.1, 0.6) * c1 + vec2(-0.7, 1.3) * c2 + vec2(0.85, -1.87) * c3;
   }
   float calmMask(vec2 p) {
     return smoothstep(0.30, 0.70, noise(p * 0.16 - vec2(uTime * 0.012, uTime * 0.008)));
@@ -52,16 +46,9 @@ const waterMath = `
       noise(p * 0.25 + vec2(3.7, 9.1) - vec2(uTime * 0.017, -uTime * 0.011))
     ) - 0.5;
     vec2 q = p * 0.55 + w * 1.4;
-    float e = 0.35;
     float s = 0.35 + 0.65 * calmMask(p);
-    vec2 g = vec2(
-      wHeight(q + vec2(e, 0.0)) - wHeight(q - vec2(e, 0.0)),
-      wHeight(q + vec2(0.0, e)) - wHeight(q - vec2(0.0, e))
-    ) / (2.0 * e);
-    return g * 0.18 * s;
+    return wGrad(q) * 0.18 * s;
   }
-  // Sun azimuth (scene sun sits at (-4, 6, 10)): soft broad glints where
-  // slopes face the sun, plus a faint sharp accent. Restrained by design.
   float sunGlint(vec2 slope) {
     return pow(clamp(0.5 + dot(slope, vec2(-0.573, 0.819)) * 3.0, 0.0, 1.0), 6.0);
   }
@@ -105,7 +92,7 @@ function fishGeometry() {
   return geometry
 }
 
-export function fishPose(index, time, width, height, compact = width < height) {
+function fishPose(index, time, width, height, compact = width < height) {
   const direction = index % 2 ? -1 : 1
   const speed = direction * (0.028 + random(index + 5) * 0.018)
   const phase = time * speed + index * 2.39996 + 0.6
@@ -159,8 +146,6 @@ export function createHeroAquarium(host) {
         color = mix(color, uSand, bank * 0.36 * (1.0 - center));
         float grain = hash(floor(p * 110.0)) - 0.5;
         color += grain * 0.012 * (1.0 - uDark * 0.7);
-        // Caustic lookup rides the surface slope (light coupled to the same
-        // field that shades the surface) + normal-driven sun glints.
         vec2 slope = waterSlope(p);
         float cl = caustic(p * 0.9 + slope * 1.5);
         float cmask = smoothstep(0.30, 0.75, noise(p * 0.30 + uTime * 0.020));
@@ -203,9 +188,6 @@ export function createHeroAquarium(host) {
       varying vec3 vPosition, vNormal;
       varying float vPart, vSeed, vDepth;
       varying vec2 vWaters;
-      // Single-pass approximation, NOT true refraction — the fish tint
-      // breathes with the same slow field that moves the surface, so fish
-      // read as seen through moving water. Subtle by design (±0.05 mix).
       float fishHash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
       float fishNoise(vec2 p) {
         vec2 i = floor(p), f = fract(p);
@@ -309,8 +291,6 @@ export function createHeroAquarium(host) {
         vec2 p = (vUv - 0.5) * uSize;
         float center = smoothstep(0.1, 0.38, length((vUv - 0.5) * vec2(0.8, 1.8)));
         float rings = ripple(p, uSize * vec2(-0.29, 0.27), 0.0) + ripple(p, uSize * vec2(0.3, -0.29), 7.0);
-        // Surface sheen follows the same normal field as the floor glints,
-        // so highlights sit on the same moving water.
         vec2 slope = waterSlope(p);
         float glint = sunGlint(slope);
         float accent = sunAccent(slope);

@@ -1,4 +1,4 @@
-import { Suspense, lazy, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { Suspense, lazy, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import Navbar from './components/Navbar.jsx'
 import Hero from './components/Hero.jsx'
 import About from './components/About.jsx'
@@ -10,7 +10,7 @@ import Footer from './components/Footer.jsx'
 import Separator from './components/Separator.jsx'
 import LoadingScreen from './components/LoadingScreen.jsx'
 import DiveProbe, { isProbeEnabled } from './components/DiveProbe.jsx'
-import useSectionProgress, { refreshSectionProgress } from './hooks/useSectionProgress.js'
+import useSectionProgress, { getSectionProgress, refreshSectionProgress, subscribeProgressFrame } from './hooks/useSectionProgress.js'
 import useBackgroundMusic from './hooks/useBackgroundMusic.js'
 import { usePerformanceMode } from './animation/quality.js'
 import { gsap } from './animation/gsap.js'
@@ -23,9 +23,27 @@ const isDivePoc =
   typeof window !== 'undefined' &&
   new URLSearchParams(window.location.search).get('webgl-poc') === '1'
 
-const isBubbleDebug =
-  typeof window !== 'undefined' &&
-  new URLSearchParams(window.location.search).has('bubble-debug')
+const INITIAL_BUBBLE_STYLE = {
+  '--bubble-background-opacity': 0.14,
+  '--bubble-midground-opacity': 0.22,
+  '--bubble-foreground-opacity': 0.18,
+}
+
+const INITIAL_BACKDROP_STYLE = {
+  '--intro-background-blur': '0px',
+  '--aqua-atmosphere-blur': '2px',
+  '--aqua-sat': 0.58,
+  '--aqua-top-a': 0.3,
+  '--aqua-mid-a': 0.48,
+  '--aqua-deep-a': 0.58,
+}
+
+const selectAppProgress = (s) => ({
+  reduced: s.reduced,
+  dive94: s.dive >= 0.94,
+  dive995: s.dive >= 0.995,
+  dive1: s.dive >= 1,
+})
 
 const BUBBLES = [
   { depth: 'background', x: '12%', rest: '10vh', size: 7, duration: 30, delay: -12, sway: 10 },
@@ -47,11 +65,11 @@ const BUBBLES = [
 ]
 
 export default function App() {
-  const progress = useSectionProgress()
+  const { reduced, dive94, dive995, dive1 } = useSectionProgress(selectAppProgress)
   const music = useBackgroundMusic()
   const [performanceMode, setPerformanceMode] = usePerformanceMode()
   const lite = performanceMode === 'lite'
-  const activeBubbles = lite ? BUBBLES.filter((_, i) => i % 3 === 0) : BUBBLES
+  const activeBubbles = useMemo(() => (lite ? BUBBLES.filter((_, i) => i % 3 === 0) : BUBBLES), [lite])
   const [webglFailed, setWebglFailed] = useState(false)
   const [webglHealthy, setWebglHealthy] = useState(false)
   const [introComplete, setIntroComplete] = useState(false)
@@ -68,11 +86,19 @@ export default function App() {
   const landingRef = useRef({ active: false, dive: null, start: null, finish: null, cancel: null, blocked: false, touchDown: false })
   const magneticTween = useRef(null)
   const rootRef = useRef(null)
-  const updateArrival = useCallback((value) => {
+  const heroRevealElRef = useRef(null)
+  const bubbleLayerRef = useRef(null)
+  const justReturnedRef = useRef(false)
+  const updateArrival = useCallback((value, heroRevealEl) => {
     const root = rootRef.current
+    if (heroRevealEl) heroRevealElRef.current = heroRevealEl
     if (!root || value === arrivalRef.current.progress && root.dataset.arrivalState) return
     arrivalRef.current.progress = value
     root.style.setProperty('--arrival-progress', value)
+    const revealEl = heroRevealElRef.current?.isConnected
+      ? heroRevealElRef.current
+      : (heroRevealElRef.current = root.querySelector('.hero-reveal'))
+    if (revealEl) revealEl.style.setProperty('--arrival-progress', value)
     const state = value === 1 ? 'settled' : value === 0 ? 'dive' : 'transition'
     if (root.dataset.arrivalState !== state) root.dataset.arrivalState = state
     arrivalRef.current.update?.(value)
@@ -90,17 +116,51 @@ export default function App() {
   const showProbe = isProbeEnabled()
   const diveProbeRef = useRef(null)
   const canReplay = !isDivePoc && !webglFailed
-  const shouldDive = canReplay && !progress.reduced
-  const entered = !shouldDive || introComplete || progress.dive >= 0.995
+  const shouldDive = canReplay && !reduced
+  const entered = !shouldDive || introComplete || dive995
   const portfolioUnlocked = !shouldDive || (introComplete && !returningToP0)
-  const visualEntered = entered || magneticLanding || shouldDive && progress.dive >= 0.94
-  const bubbleDepth = visualEntered ? Math.min(Math.max(progress.t, 0), 1) : 0
+  const visualEntered = entered || magneticLanding || (shouldDive && dive94)
   const diveProgress = (introComplete && !returningToP0) ? 1 : undefined
-  // Warm behind the loading gate and retain across reverse scrolling/replay.
-  const heroPrewarm = shouldDive && loadProgress >= 1 && performanceMode !== 'lite' && !progress.reduced
-  const reveal = Math.min(Math.max((progress.dive - 0.94) / 0.06, 0), 1)
-  const backgroundBlur = introComplete || progress.dive < 0.94 ? 0 : (1 - reveal) * 1.5
-  const atmosphereBlur = shouldDive && progress.dive >= 0.94 ? 2 + (1 - reveal) * 2 : 2
+  const heroPrewarm = shouldDive && loadProgress >= 1 && performanceMode !== 'lite' && !reduced
+
+  useLayoutEffect(() => {
+    const root = rootRef.current
+    const bubbleLayer = bubbleLayerRef.current
+    let backdropEl = root?.querySelector('.webgl-backdrop') ?? null
+    const lastBubble = {}
+    let lastBackdrop = {}
+    const setVar = (el, cache, key, value) => {
+      const str = String(value)
+      if (cache[key] === str) return
+      cache[key] = str
+      el.style.setProperty(key, str)
+    }
+    const syncOptics = ({ progress: p } = {}) => {
+      const cur = p || getSectionProgress()
+      const bubbleDepth = visualEntered ? Math.min(Math.max(cur.t, 0), 1) : 0
+      if (bubbleLayer) {
+        setVar(bubbleLayer, lastBubble, '--bubble-background-opacity', 0.14 + bubbleDepth * 0.06)
+        setVar(bubbleLayer, lastBubble, '--bubble-midground-opacity', 0.22 + bubbleDepth * 0.1)
+        setVar(bubbleLayer, lastBubble, '--bubble-foreground-opacity', 0.18 + bubbleDepth * 0.08)
+      }
+      if (!backdropEl?.isConnected) {
+        backdropEl = root?.querySelector('.webgl-backdrop') ?? null
+        lastBackdrop = {}
+      }
+      if (backdropEl) {
+        const reveal = Math.min(Math.max((cur.dive - 0.94) / 0.06, 0), 1)
+        const backgroundBlur = introComplete || cur.dive < 0.94 ? 0 : (1 - reveal) * 1.5
+        const atmosphereBlur = shouldDive && cur.dive >= 0.94 ? 2 + (1 - reveal) * 2 : 2
+        setVar(backdropEl, lastBackdrop, '--intro-background-blur', `${backgroundBlur}px`)
+        setVar(backdropEl, lastBackdrop, '--aqua-atmosphere-blur', `${atmosphereBlur}px`)
+        setVar(backdropEl, lastBackdrop, '--aqua-sat', 0.58 - bubbleDepth * 0.08)
+        setVar(backdropEl, lastBackdrop, '--aqua-top-a', 0.3 - bubbleDepth * 0.06)
+        setVar(backdropEl, lastBackdrop, '--aqua-mid-a', 0.48 + bubbleDepth * 0.12)
+        setVar(backdropEl, lastBackdrop, '--aqua-deep-a', 0.58 + bubbleDepth * 0.12)
+      }
+    }
+    return subscribeProgressFrame(syncOptics)
+  }, [visualEntered, introComplete, shouldDive, webglHealthy])
 
   useLayoutEffect(() => {
     if (!shouldDive) updateArrival(1)
@@ -124,100 +184,96 @@ export default function App() {
   }, [gateEntered])
 
   const loadReady = loadProgress >= 1 || webglFailed || !shouldDive
-  const enterPortfolio = () => {
+  const enterPortfolio = useCallback(() => {
     setGateEntered(true)
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
     requestAnimationFrame(refreshSectionProgress)
-  }
-  const handleDiveProgress = (p) => {
+  }, [])
+  const handleDiveProgress = useCallback((p) => {
     setLoadProgress((prev) => Math.max(prev, Math.min(Math.max(p, 0), 1)))
-  }
-
-  useEffect(() => {
-    if (!isBubbleDebug) return
-    const layerEl = document.querySelector('.aqua-bubble-layer')
-    const sampleEl = document.querySelector('.aqua-bubble-layer .aqua-bubble-layer__bubble--midground')
-    const layerCounts = {}
-    document.querySelectorAll('.aqua-bubble-layer .aqua-bubble-layer__bubble').forEach((b) => {
-      const depth = b.className.includes('--background')
-        ? 'background'
-        : b.className.includes('--foreground')
-          ? 'foreground'
-          : 'midground'
-      layerCounts[depth] = (layerCounts[depth] || 0) + 1
-    })
-    // eslint-disable-next-line no-console
-    console.log(
-      '[bubble-debug]',
-      'count:', activeBubbles.length,
-      'live-layers:', layerCounts,
-      'layer-opacity:', layerEl ? getComputedStyle(layerEl).opacity : null,
-      'entered:', visualEntered,
-      'unlocked:', portfolioUnlocked,
-      'reduced-motion:', window.matchMedia('(prefers-reduced-motion: reduce)').matches,
-      'sample-opacity:', sampleEl ? getComputedStyle(sampleEl).opacity : null,
-      'sample-rect:', sampleEl ? JSON.stringify(sampleEl.getBoundingClientRect().toJSON()) : null
-    )
-  }, [isBubbleDebug])
+  }, [])
+  const handleWebglHealthy = useCallback(() => {
+    setWebglHealthy(true)
+    setLoadProgress(1)
+  }, [])
+  const handleWebglFail = useCallback(() => {
+    setWebglHealthy(false)
+    setWebglFailed(true)
+    setLoadProgress(1)
+  }, [])
 
   useLayoutEffect(() => {
-    if (!progress.reduced || introComplete) return
+    if (!reduced || introComplete) return
     landingRef.current.finish?.()
     setIntroComplete(true)
     setReturningToP0(false)
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
     updateArrival(1)
     refreshSectionProgress()
-  }, [progress.reduced, introComplete, updateArrival])
+  }, [reduced, introComplete, updateArrival])
 
-  const diveAgain = () => {
-    if (progress.reduced) {
+  const diveAgain = useCallback(() => {
+    if (reduced) {
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
     } else if (introComplete && !returningToP0) {
       landingRef.current.dive = null
       setReturnParked(false)
       setReturningToP0(true)
     }
-  }
+  }, [reduced, introComplete, returningToP0])
 
-  const handleReturnComplete = () => {
+  const handleReturnComplete = useCallback(() => {
+    justReturnedRef.current = true
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
     refreshSectionProgress()
     setReturnParked(true)
-  }
+  }, [])
 
   useLayoutEffect(() => {
     if (!returningToP0 || !introComplete || !returnParked) return
     setReturnParked(false)
     setReturningToP0(false)
     setIntroComplete(false)
-  }, [returningToP0, introComplete, returnParked, progress.dive])
+  }, [returningToP0, introComplete, returnParked])
 
   useLayoutEffect(() => {
     if (returningToP0 || introComplete) return
+    if (justReturnedRef.current) {
+      justReturnedRef.current = false
+      if (window.scrollY !== 0) window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+    }
     refreshSectionProgress()
   }, [returningToP0, introComplete])
 
   useEffect(() => {
     const landing = landingRef.current
     landing.start = null
-    if (landing.active || introComplete || !shouldDive || returningToP0 || !gateEntered) return
-    if (progress.dive < 0.93) landing.blocked = false
-    if (progress.dive < 0.93 || progress.dir !== 'down' || landing.blocked) return
-    const intro = document.getElementById('portfolio-dive')
-    if (!intro || intro.offsetHeight < 1) return
-    landing.start = () => {
+    if (introComplete || !shouldDive || returningToP0 || !gateEntered) return
+    const check = ({ progress: p } = {}) => {
+      const cur = p || getSectionProgress()
       landing.start = null
-      landing.active = true
-      landing.dive = 0.93 + arrivalRef.current.progress * 0.0695
-      landing.height = intro.offsetHeight
-      landing.distance = Math.max(0, landing.height - window.scrollY)
-      landing.velocity = progress.velocity
-      setMagneticLanding(true)
+      if (landing.active) return
+      if (cur.dive < 0.93) landing.blocked = false
+      if (cur.dive < 0.93 || cur.dir !== 'down' || landing.blocked) return
+      const intro = document.getElementById('portfolio-dive')
+      if (!intro || intro.offsetHeight < 1) return
+      landing.start = () => {
+        landing.start = null
+        landing.active = true
+        landing.dive = 0.93 + arrivalRef.current.progress * 0.0695
+        landing.height = intro.offsetHeight
+        landing.distance = Math.max(0, landing.height - window.scrollY)
+        landing.velocity = cur.velocity
+        setMagneticLanding(true)
+      }
+      if (arrivalRef.current.progress > 0) landing.start()
     }
-    if (arrivalRef.current.progress > 0) landing.start()
-    return () => { landing.start = null }
-  }, [shouldDive, introComplete, returningToP0, gateEntered, progress.dive, progress.dir])
+    const unsub = subscribeProgressFrame(check)
+    return () => {
+      unsub()
+      landing.start = null
+    }
+  }, [shouldDive, introComplete, returningToP0, gateEntered])
 
   useLayoutEffect(() => {
     const landing = landingRef.current
@@ -237,17 +293,22 @@ export default function App() {
     const prev = root.style.scrollBehavior
     const anchor = root.style.overflowAnchor
     const overflow = root.style.overflow
+    const locksOverflow = window.innerWidth === root.clientWidth
     root.style.scrollBehavior = 'auto'
     root.style.overflowAnchor = 'none'
-    root.style.overflow = 'hidden'
+    if (locksOverflow) root.style.overflow = 'hidden'
     intro.dataset.diveProgress = landing.dive
     window.scrollTo({ top: landing.distance, left: 0, behavior: 'instant' })
+    let completed = false
     const restore = () => {
       root.style.scrollBehavior = prev
       root.style.overflowAnchor = anchor
-      root.style.overflow = overflow
+      if (locksOverflow) root.style.overflow = overflow
+      if (completed && window.scrollY !== 0) {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+      }
       delete intro.dataset.diveProgress
-      window.removeEventListener('resize', cancel)
+      window.removeEventListener('resize', onResize)
       document.removeEventListener('visibilitychange', onVisibility)
     }
     const cancel = () => {
@@ -261,6 +322,7 @@ export default function App() {
       setMagneticLanding(false)
     }
     const finish = () => {
+      completed = true
       magneticTween.current?.kill()
       magneticTween.current = null
       landing.dive = 1
@@ -274,8 +336,12 @@ export default function App() {
     }
     landing.cancel = cancel
     landing.finish = finish
+    const startWidth = window.innerWidth
+    const onResize = () => {
+      if (window.innerWidth !== startWidth) cancel()
+    }
     const onVisibility = () => { if (document.hidden) cancel() }
-    window.addEventListener('resize', cancel)
+    window.addEventListener('resize', onResize)
     document.addEventListener('visibilitychange', onVisibility)
     magneticTween.current = gsap.timeline({
       defaults: { duration: lite ? Math.min(duration, 0.55) : duration, ease },
@@ -354,7 +420,7 @@ export default function App() {
   }, [shouldDive, introComplete])
 
   useEffect(() => {
-    if (!returningToP0 || progress.reduced) return
+    if (!returningToP0 || reduced) return
     const preventScroll = (event) => event.preventDefault()
     const preventScrollKeys = (event) => {
       if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(event.key)) {
@@ -369,7 +435,7 @@ export default function App() {
       window.removeEventListener('touchmove', preventScroll, true)
       window.removeEventListener('keydown', preventScrollKeys, true)
     }
-  }, [returningToP0, progress.reduced])
+  }, [returningToP0, reduced])
 
   useEffect(() => {
     if (isDivePoc || !portfolioUnlocked) return
@@ -416,18 +482,16 @@ export default function App() {
     <div
       ref={rootRef}
       data-dive-arrival={shouldDive || undefined}
+      data-dive-returning={returningToP0 || undefined}
+      data-prewarm-gate={(!gateEntered && !isDivePoc && shouldDive) || undefined}
       data-landing-active={magneticLanding || undefined}
       data-world-environment={true}
       data-content-background={contentBackgroundActive || undefined}
       className={`aqua-root${visualEntered ? ' is-entered' : ''}${portfolioUnlocked ? ' is-portfolio-unlocked' : ''}${webglHealthy ? ' has-webgl' : ''}`}
     >
       <WorldEnvironment enabled={gateEntered && portfolioUnlocked} diveActive={shouldDive} onOwnershipChange={setContentBackgroundActive} />
-      <Navbar diveActive={shouldDive} entered={portfolioUnlocked} diveProgress={diveProgress ?? progress.dive} performanceMode={performanceMode} onPerformanceModeChange={setPerformanceMode} musicOn={music.on} musicLoading={music.loading} musicFailed={music.failed} onMusicToggle={music.toggle} arrivalRef={arrivalRef} />
-      <div className={`aqua-bubble-layer${isBubbleDebug ? ' bubble-debug' : ''}`} aria-hidden="true" style={{
-        '--bubble-background-opacity': 0.14 + bubbleDepth * 0.06,
-        '--bubble-midground-opacity': 0.22 + bubbleDepth * 0.1,
-        '--bubble-foreground-opacity': 0.18 + bubbleDepth * 0.08,
-      }}>
+      <Navbar diveActive={shouldDive} entered={portfolioUnlocked} diveProgress={diveProgress ?? (dive1 ? 1 : 0)} performanceMode={performanceMode} onPerformanceModeChange={setPerformanceMode} musicOn={music.on} musicLoading={music.loading} musicFailed={music.failed} onMusicToggle={music.toggle} arrivalRef={arrivalRef} />
+      <div ref={bubbleLayerRef} className="aqua-bubble-layer" aria-hidden="true" style={INITIAL_BUBBLE_STYLE}>
         {activeBubbles.map((bubble) => (
           <span
             key={`${bubble.depth}-${bubble.x}`}
@@ -466,29 +530,15 @@ export default function App() {
               landingRef={landingRef}
               returningToP0={returningToP0}
               qualityMode={performanceMode}
-              backdropStyle={{
-                '--intro-background-blur': `${backgroundBlur}px`,
-                '--aqua-atmosphere-blur': `${atmosphereBlur}px`,
-                '--aqua-sat': 0.58 - bubbleDepth * 0.08,
-                '--aqua-top-a': 0.3 - bubbleDepth * 0.06,
-                '--aqua-mid-a': 0.48 + bubbleDepth * 0.12,
-                '--aqua-deep-a': 0.58 + bubbleDepth * 0.12,
-              }}
+              backdropStyle={INITIAL_BACKDROP_STYLE}
               pauseBackdrop={portfolioUnlocked && (heroActive || contentBackgroundActive)}
               onBackdropPaused={setBackdropPaused}
               onArrivalProgress={updateArrival}
               onReturnComplete={handleReturnComplete}
               onProgress={handleDiveProgress}
               probeRef={showProbe ? diveProbeRef : null}
-              onHealthy={() => {
-                setWebglHealthy(true)
-                setLoadProgress(1)
-              }}
-              onFail={() => {
-                setWebglHealthy(false)
-                setWebglFailed(true)
-                setLoadProgress(1)
-              }}
+              onHealthy={handleWebglHealthy}
+              onFail={handleWebglFail}
             >
               <Hero
                 onDiveAgain={canReplay ? diveAgain : undefined}

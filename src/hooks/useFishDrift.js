@@ -15,15 +15,26 @@ export default function useFishDrift({
 }) {
   const ents = useRef([])
   const visuals = useRef({})
-  const visibleRef = useRef(true)
+  const visibleRef = useRef(false)
+  const sizeRef = useRef({ w: 800, h: 500 })
   const rafRef = useRef(0)
   const frameRef = useRef(0)
   const cfgRef = useRef(null)
+  const syncRef = useRef(null)
   const [ready, setReady] = useState(false)
   cfgRef.current = { defs, bandFor, xRangeFor, speedFor, scaleFor, spread, extraPaint, onHidden }
 
   const registerVisual = (id) => (el) => {
-    if (el) visuals.current[id] = el
+    if (el) {
+      visuals.current[id] = el
+      const e = ents.current[id]
+      if (e) {
+        const dir = e.vx >= 0 ? 1 : -1
+        el.style.transform = `translate3d(${e.x}px, ${e.y}px, 0)`
+        el.style.setProperty('--fish-dir', String(dir))
+        e.lastDir = dir
+      }
+    }
   }
 
   const paint = () => {
@@ -33,7 +44,10 @@ export default function useFishDrift({
       const v = visuals.current[e.id]
       if (v) {
         v.style.transform = `translate3d(${e.x}px, ${e.y}px, 0)`
-        v.style.setProperty('--fish-dir', String(dir))
+        if (e.lastDir !== dir) {
+          v.style.setProperty('--fish-dir', String(dir))
+          e.lastDir = dir
+        }
       }
       if (cfg.extraPaint) cfg.extraPaint(e)
     }
@@ -45,6 +59,7 @@ export default function useFishDrift({
     if (!layer) return
     const W = layer.clientWidth || 800
     const H = layer.clientHeight || 500
+    sizeRef.current = { w: W, h: H }
     const scale = cfg.scaleFor ? cfg.scaleFor(W) : 1
     const reduced =
       typeof window !== 'undefined' &&
@@ -67,6 +82,7 @@ export default function useFishDrift({
         y: Math.min(Math.max(mid, yMin), yMax),
         vx: reduced ? 0 : v.vx,
         vy: reduced ? 0 : v.vy,
+        lastDir: null,
         saved: null,
       }
     })
@@ -76,59 +92,98 @@ export default function useFishDrift({
   }, [])
 
   useEffect(() => {
+    const layer = layerRef.current
+    if (!layer) return
+    const reduced =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const updateSize = () => {
+      if (layer.clientWidth > 0 && layer.clientHeight > 0) {
+        sizeRef.current = { w: layer.clientWidth, h: layer.clientHeight }
+      }
+    }
+    updateSize()
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(updateSize) : null
+    ro?.observe(layer)
+
     const step = () => {
+      rafRef.current = 0
+      if (!visibleRef.current || document.hidden || reduced) return
       frameRef.current += 1
       const cfg = cfgRef.current
-      const layer = layerRef.current
       const liteNow =
         typeof document !== 'undefined' &&
         document.documentElement.dataset.perf === 'lite'
-      if (layer && visibleRef.current && (!liteNow || frameRef.current % 2 === 0)) {
-        const W = layer.clientWidth
-        const H = layer.clientHeight
-        for (const e of ents.current) {
-          const [yMin, yMax] = cfg.bandFor(e, W, H)
-          const [xMin, xMax] = cfg.xRangeFor(e, W, H, e.w)
-          e.x += e.vx
-          e.y += e.vy
-          if (e.x <= xMin) {
-            e.x = xMin
-            e.vx = Math.abs(e.vx)
-          } else if (e.x >= xMax) {
-            e.x = xMax
-            e.vx = -Math.abs(e.vx)
+      if (!liteNow || frameRef.current % 2 === 0) {
+        const { w: W, h: H } = sizeRef.current
+        if (W > 0 && H > 0) {
+          for (const e of ents.current) {
+            const [yMin, yMax] = cfg.bandFor(e, W, H)
+            const [xMin, xMax] = cfg.xRangeFor(e, W, H, e.w)
+            e.x += e.vx
+            e.y += e.vy
+            if (e.x <= xMin) {
+              e.x = xMin
+              e.vx = Math.abs(e.vx)
+            } else if (e.x >= xMax) {
+              e.x = xMax
+              e.vx = -Math.abs(e.vx)
+            }
+            if (e.y <= yMin) {
+              e.y = yMin
+              e.vy = Math.abs(e.vy)
+            } else if (e.y >= yMax) {
+              e.y = yMax
+              e.vy = -Math.abs(e.vy)
+            }
           }
-          if (e.y <= yMin) {
-            e.y = yMin
-            e.vy = Math.abs(e.vy)
-          } else if (e.y >= yMax) {
-            e.y = yMax
-            e.vy = -Math.abs(e.vy)
-          }
+          paint()
         }
-        paint()
       }
       rafRef.current = requestAnimationFrame(step)
     }
-    rafRef.current = requestAnimationFrame(step)
-    return () => cancelAnimationFrame(rafRef.current)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
-  useEffect(() => {
+    const syncLoop = () => {
+      if (!reduced && visibleRef.current && !document.hidden) {
+        if (!rafRef.current) rafRef.current = requestAnimationFrame(step)
+      } else if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current)
+        rafRef.current = 0
+      }
+    }
+    syncRef.current = syncLoop
+
     const sec =
       (sectionRef && sectionRef.current) ||
       (sectionId ? document.getElementById(sectionId) : null)
-    if (!sec || !('IntersectionObserver' in window)) return
-    const obs = new IntersectionObserver(
-      ([entry]) => {
-        visibleRef.current = entry.isIntersecting
-        if (!entry.isIntersecting && cfgRef.current.onHidden) cfgRef.current.onHidden()
-      },
-      { threshold: 0.05 }
-    )
-    obs.observe(sec)
-    return () => obs.disconnect()
+    let obs = null
+    if (sec && 'IntersectionObserver' in window) {
+      obs = new IntersectionObserver(
+        ([entry]) => {
+          visibleRef.current = entry.isIntersecting
+          if (entry.isIntersecting) updateSize()
+          else if (cfgRef.current.onHidden) cfgRef.current.onHidden()
+          syncLoop()
+        },
+        { threshold: 0.05 }
+      )
+      obs.observe(sec)
+    } else {
+      visibleRef.current = true
+      syncLoop()
+    }
+
+    document.addEventListener('visibilitychange', syncLoop)
+    return () => {
+      syncRef.current = null
+      document.removeEventListener('visibilitychange', syncLoop)
+      obs?.disconnect()
+      ro?.disconnect()
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current)
+        rafRef.current = 0
+      }
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

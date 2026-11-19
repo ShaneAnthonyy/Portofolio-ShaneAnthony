@@ -19,33 +19,41 @@ export default memo(function WorldEnvironment({ enabled, diveActive, onOwnership
     if (!enabled) return
     const home = document.getElementById('home'), sun = host.querySelector('[data-sun]'), moon = host.querySelector('[data-moon]'), clouds = host.querySelector('.world-environment__wind svg')
     let { environment: sample, mode } = worldTime.getSnapshot(), applied, width, height, surfaceWidth, frame = 0, opacity = 0, owned = false, backdrop
+    const written = {}
+    const setVar = (name, value) => {
+      const str = String(value)
+      if (written[name] === str) return
+      written[name] = str
+      host.style.setProperty(name, str)
+    }
     const apply = () => {
       const w = window.innerWidth, h = window.innerHeight, planeWidth = host.clientWidth
       if (sample === applied && width === w && height === h && surfaceWidth === planeWidth) return
       width = w; height = h; surfaceWidth = planeWidth; applied = sample
       for (const [name, color] of [['top', sample.skyZenith], ['middle', sample.skyMiddle], ['horizon', sample.skyLine], ['glow', sample.skyLine.map((v, i) => v * .68 + sample.skyGlow[i] * .32)], ['sun', sample.skySun], ['cloud', sample.cloudTint.map((v, i) => v + (sample.skyLine[i] - v) * sample.darkness * .55)]]) {
-        host.style.setProperty(`--world-${name}`, environmentCSS(color))
+        setVar(`--world-${name}`, environmentCSS(color))
       }
-      host.style.setProperty('--world-stars', sample.starVisibility * .8)
-      host.style.setProperty('--world-cloud-opacity', .88 - .5 * sample.darkness)
+      setVar('--world-stars', sample.starVisibility * .8)
+      setVar('--world-cloud-opacity', .88 - .5 * sample.darkness)
       const optics = underwaterColors(sample)
-      host.style.setProperty('--world-water-rgb', optics.water)
-      host.style.setProperty('--world-depth-rgb', optics.depth)
-      host.style.setProperty('--world-reflection-rgb', optics.reflection)
+      setVar('--world-water-rgb', optics.water)
+      setVar('--world-depth-rgb', optics.depth)
+      setVar('--world-reflection-rgb', optics.reflection)
       const spread = Math.max(.5, Math.min(1, w / h / .9))
       for (const [node, direction] of [[sun, sample.sunDirection], [moon, sample.moonDirection]]) {
-        // Same artistic projection and visibility as the existing 3D sky, adapted to a flat viewport.
         const x = (direction[0] * .57 - direction[1] * .44) * spread
         const y = Math.sign(direction[1]) * smooth(0, .35, Math.abs(direction[1])) * .425 + .02
         const top = Math.max((.86 - y * 1.7) * h, Math.min(h * .28, 125))
-        node.style.transform = `translate3d(${(.5 + x * .6 / Math.min(w / h, 1)) * w}px,${top}px,0) translate(-50%,-50%)`
-        node.style.opacity = smooth(-.06, .06, direction[1])
+        const transform = `translate3d(${(.5 + x * .6 / Math.min(w / h, 1)) * w}px,${top}px,0) translate(-50%,-50%)`
+        const vis = String(smooth(-.06, .06, direction[1]))
+        if (node.style.transform !== transform) node.style.transform = transform
+        if (node.style.opacity !== vis) node.style.opacity = vis
       }
       const cloud = cloudRef.current
-      // Keep cloud position continuous when Live resamples the clock, as in the 3D sky.
       if (cloud.mode === 'manual' && mode === 'live') cloud.offset = ((cloud.offset + (cloud.minutes - sample.minutes) / 1440 * 500) % 500 + 500) % 500
       const phase = ((((sample.minutes - 720) / 1440 * 500 + cloud.offset) % 500) + 500) % 500
-      clouds.style.transform = `translate3d(${-phase * planeWidth / 1000}px,0,0)`
+      const cloudTransform = `translate3d(${-phase * planeWidth / 1000}px,0,0)`
+      if (clouds.style.transform !== cloudTransform) clouds.style.transform = cloudTransform
       cloud.mode = mode; cloud.minutes = sample.minutes
       host.dataset.minutes = String(sample.minutes)
     }

@@ -12,7 +12,6 @@ export default function useScrollReveal({ threshold = 0.15, rootMargin = '0px 0p
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     if (!('IntersectionObserver' in window)) return
     el.classList.add('about-rv')
-    void el.offsetHeight
     el.style.willChange = 'opacity, transform'
     const onEnd = (event) => {
       if (event.target !== el) return

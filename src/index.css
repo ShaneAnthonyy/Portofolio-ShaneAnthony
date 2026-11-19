@@ -1284,8 +1284,7 @@ a.contact__item:hover {
 }
 
 .webgl-backdrop canvas {
-  filter: blur(var(--intro-background-blur, 0px));
-  transition: filter 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.8s var(--ease-water);
+  transition: opacity 0.8s var(--ease-water);
 }
 
 .webgl-backdrop::after {
@@ -1295,15 +1294,13 @@ a.contact__item:hover {
   z-index: 1;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.8s var(--ease-water), background 0.8s var(--ease-water), backdrop-filter 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: opacity 0.8s var(--ease-water);
 }
 
 :root .webgl-backdrop::after {
   background:
     radial-gradient(ellipse at center, transparent 38%, rgba(1, 10, 19, 0.36) 100%),
     linear-gradient(180deg, rgba(10, 52, 70, 0.4), rgba(7, 38, 55, 0.5) 52%, rgba(5, 22, 38, 0.62));
-  -webkit-backdrop-filter: blur(var(--aqua-atmosphere-blur, 4px)) saturate(0.65) contrast(0.88) brightness(0.93);
-  backdrop-filter: blur(var(--aqua-atmosphere-blur, 4px)) saturate(0.65) contrast(0.88) brightness(0.93);
 }
 
 .aqua-root.is-entered .webgl-backdrop::after {
@@ -1312,15 +1309,12 @@ a.contact__item:hover {
 
 :root .aqua-root.is-portfolio-unlocked .webgl-backdrop canvas {
   opacity: 0.72;
-  filter: blur(3px) saturate(var(--aqua-sat, 0.58)) hue-rotate(-10deg) contrast(0.82) brightness(0.84);
 }
 
 :root .aqua-root.is-portfolio-unlocked .webgl-backdrop::after {
   background:
     radial-gradient(ellipse at 50% 42%, transparent 36%, rgba(0, 8, 19, 0.3) 100%),
     linear-gradient(180deg, rgba(8, 39, 60, var(--aqua-top-a, 0.3)) 0%, rgba(10, 80, 96, var(--aqua-mid-a, 0.42)) 52%, rgba(2, 18, 30, var(--aqua-deep-a, 0.56)) 100%);
-  -webkit-backdrop-filter: blur(1px) saturate(0.78) contrast(0.92) brightness(0.9);
-  backdrop-filter: blur(1px) saturate(0.78) contrast(0.92) brightness(0.9);
 }
 
 .aqua-bubble-layer {
@@ -1330,6 +1324,7 @@ a.contact__item:hover {
   height: 100%;
   z-index: 15;
   overflow: hidden;
+  contain: strict;
   opacity: 1;
   visibility: visible;
   pointer-events: none;
@@ -1355,7 +1350,7 @@ a.contact__item:hover {
   will-change: transform, opacity;
 }
 
-.aqua-root.is-entered:not(.is-replaying) .aqua-bubble-layer__bubble {
+.aqua-root.is-entered .aqua-bubble-layer__bubble {
   animation: aqua-bubble-rise var(--bubble-duration) linear var(--bubble-delay) infinite;
 }
 
@@ -1372,7 +1367,6 @@ a.contact__item:hover {
 
 .aqua-bubble-layer__bubble--background {
   --bubble-opacity: var(--bubble-background-opacity, 0.14);
-  filter: blur(0.45px);
 }
 
 .aqua-bubble-layer__bubble--midground {
@@ -1381,22 +1375,6 @@ a.contact__item:hover {
 
 .aqua-bubble-layer__bubble--foreground {
   --bubble-opacity: var(--bubble-foreground-opacity, 0.18);
-}
-
-.aqua-bubble-layer.bubble-debug {
-  opacity: 1 !important;
-  visibility: visible !important;
-  outline: 2px dashed rgba(255, 255, 255, 0.8);
-  outline-offset: -2px;
-}
-
-.aqua-root.is-entered:not(.is-replaying) .aqua-bubble-layer.bubble-debug .aqua-bubble-layer__bubble {
-  opacity: 1 !important;
-  animation: none !important;
-  background: rgba(255, 255, 255, 0.8) !important;
-  border: 2px solid white !important;
-  width: calc(var(--bubble-size) * 1.5);
-  height: calc(var(--bubble-size) * 1.5);
 }
 
 @keyframes aqua-bubble-rise {
@@ -1427,7 +1405,6 @@ a.contact__item:hover {
   padding: 108px 32px;
 }
 
-/* Hero-only surface observatory. Posters are captures of the same scene. */
 .hero-aquarium {
   position: absolute;
   inset: 0;
@@ -1455,7 +1432,6 @@ a.contact__item:hover {
   pointer-events: none;
 }
 
-/* Keep frame-level arrival updates out of the offscreen portfolio subtree. */
 @property --arrival-progress {
   syntax: '<number>';
   inherits: false;
@@ -1479,11 +1455,11 @@ a.contact__item:hover {
   overflow-anchor: none;
 }
 
-.aqua-root[data-arrival-state='transition'] .hero-reveal {
+.aqua-root[data-dive-arrival]:not([data-arrival-state='settled']) .hero-reveal {
   will-change: opacity;
 }
 
-.aqua-root[data-arrival-state='transition'] :is(.hero-arrival-water, .navbar__dock) {
+.aqua-root[data-dive-arrival]:not([data-arrival-state='settled']) :is(.hero-arrival-water, .navbar__dock) {
   will-change: transform;
 }
 
@@ -1491,12 +1467,17 @@ a.contact__item:hover {
   opacity: var(--arrival-progress);
 }
 
-.aqua-root[data-dive-arrival] :is(.hero__title, .hero__role) {
-  animation: none !important;
+.aqua-root[data-dive-arrival][data-arrival-state='settled'] .hero-reveal {
+  opacity: 1;
+  visibility: visible;
 }
 
-.aqua-root[data-arrival-state='dive'] .hero-reveal {
-  visibility: hidden;
+.aqua-root[data-dive-arrival][data-prewarm-gate='true'] :is(.hero-reveal, .hero-arrival-water::after, .webgl-backdrop::after, .aqua-bubble-layer__bubble) {
+  opacity: 0.002;
+}
+
+.aqua-root[data-dive-arrival] :is(.hero__title, .hero__role) {
+  animation: none !important;
 }
 
 .aqua-root[data-dive-arrival]:not([data-arrival-state='settled']) .hero-arrival-water {
@@ -1588,6 +1569,7 @@ a.contact__item:hover {
 
 .hero-surface__reflection {
   opacity: 0;
+  visibility: hidden;
   background:
     radial-gradient(ellipse at 20% 0%, color-mix(in srgb, var(--surface-light) 22%, transparent), transparent 64%),
     linear-gradient(165deg, transparent 22%, color-mix(in srgb, var(--surface-light) 10%, transparent) 43%, transparent 61%);
@@ -1596,6 +1578,7 @@ a.contact__item:hover {
 .hero-surface__meniscus {
   overflow: visible;
   opacity: 0;
+  visibility: hidden;
 }
 
 .hero-surface__meniscus svg {
@@ -1885,9 +1868,7 @@ html[data-perf='lite'] .aqua-root .footer {
     border-color 0.4s var(--ease-water),
     padding 0.4s var(--ease-water),
     box-shadow 0.4s var(--ease-water),
-    opacity 0.4s var(--ease-water),
-    backdrop-filter 0.4s var(--ease-water),
-    -webkit-backdrop-filter 0.4s var(--ease-water);
+    opacity 0.4s var(--ease-water);
 }
 
 .navbar__logo,
@@ -1958,8 +1939,19 @@ html[data-perf='lite'] .aqua-root .footer {
   transition: none;
 }
 
-.aqua-root[data-dive-arrival] .navbar .lite-toggle {
+.aqua-root[data-dive-arrival] .navbar :is(.lite-toggle, .navbar__toggle) {
   opacity: clamp(0, (var(--arrival-progress) - 0.97) / 0.03, 1);
+}
+
+.aqua-root[data-dive-arrival]:is([data-arrival-state='dive'], [data-dive-returning='true']) .navbar :is(.navbar__logo, .navbar__links, .navbar__toggle, .lite-toggle) {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.aqua-root[data-dive-arrival][data-arrival-state='settled'] .navbar :is(.navbar__logo, .navbar__links, .navbar__toggle, .lite-toggle) {
+  visibility: visible;
+  opacity: 1;
 }
 
 .aqua-root .navbar {
@@ -2150,6 +2142,12 @@ html[data-perf='lite'] .aqua-root .footer {
   width: 100%;
   display: block;
   opacity: 0;
+}
+
+.fish-hit__box {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 2;
 }
 
 .fish-hit:hover,
@@ -2436,8 +2434,7 @@ html[data-perf='lite'] .aqua-root .footer {
   .fish__wiggle { animation: none !important; }
   .webgl-backdrop::after { transition: none !important; }
   .aqua-bubble-layer { transition: none !important; }
-  .aqua-root.is-entered:not(.is-replaying) .aqua-bubble-layer__bubble { animation: none !important; opacity: var(--bubble-opacity); }
-  .aqua-root.is-entered:not(.is-replaying) .aqua-bubble-layer.bubble-debug .aqua-bubble-layer__bubble { animation: none !important; opacity: 1; }
+  .aqua-root.is-entered .aqua-bubble-layer__bubble { animation: none !important; opacity: var(--bubble-opacity); }
   .navbar,
   .fish__visual,
   .specimen-panel,
@@ -2803,19 +2800,6 @@ html[data-perf='lite'] .aqua-root .footer {
     opacity: 0;
     transform: translate3d(4px, -30px, 0) scale(1.05);
   }
-}
-
-.bubble-debug .fish.is-held .capture-bubble {
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  background: rgba(210, 245, 255, 0.2);
-  border: 2px solid rgba(235, 250, 255, 0.9);
-  box-shadow: 0 0 12px rgba(210, 245, 255, 0.45);
-  opacity: 1;
-  animation: none;
-  z-index: 2;
-  pointer-events: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -3623,7 +3607,7 @@ html[data-perf='lite'] .slider-detail {
   border-color: var(--aqua-card-border-hover);
 }
 
-/* ---------- Phase 7: unique section title systems ---------- */
+/* ---------- Section title systems ---------- */
 @keyframes rail-rise {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: none; }
@@ -3788,7 +3772,7 @@ a.contact__item:hover .contact__link {
   }
 }
 
-/* ---------- Phase 11B: GSAP typography handoff ---------- */
+/* ---------- GSAP typography handoff ---------- */
 .depth-zone__label {
   display: inline-block;
 }
@@ -3802,7 +3786,7 @@ a.contact__item:hover .contact__link {
   animation: none !important;
 }
 
-/* ---------- Phase 11C: micro-interactions (CSS-only) ---------- */
+/* ---------- Micro-interactions (CSS-only) ---------- */
 
 .depth-zone__skill {
   transition: border-color 0.2s ease, background 0.2s ease;
@@ -3998,8 +3982,8 @@ html:not([data-perf='lite']) .about-identity__portrait::after {
 }
 
 @keyframes about-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(127, 199, 154, 0.55); }
-  50% { box-shadow: 0 0 0 7px rgba(127, 199, 154, 0); }
+  0%, 100% { transform: scale(1); opacity: 0.55; }
+  50% { transform: scale(2.55); opacity: 0; }
 }
 
 .about-intro__lead {
@@ -4198,7 +4182,14 @@ html:not([data-perf='lite']) .about-identity__portrait::after {
   border-color: #7fc79a;
 }
 
-html:not([data-perf='lite']) .about-edu__stop--live .about-edu__dot {
+html:not([data-perf='lite']) .about-edu__stop--live .about-edu__dot::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 50%;
+  background: #7fc79a;
+  pointer-events: none;
+  will-change: transform, opacity;
   animation: about-pulse 2.2s ease-in-out infinite;
 }
 
@@ -4360,23 +4351,23 @@ html[data-perf='lite'] .about-card {
 }
 
 html[data-perf='lite'] .about-identity__portrait::before,
-html[data-perf='lite'] .about-identity__portrait::after,
-html[data-perf='lite'] .about-edu__stop--live .about-edu__dot {
+html[data-perf='lite'] .about-identity__portrait::after {
   animation: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .about-identity__portrait::before,
-  .about-identity__portrait::after,
-  .about-edu__stop--live .about-edu__dot {
+  .about-identity__portrait::after {
     animation: none;
+  }
+
+  .about-edu__stop--live .about-edu__dot::after {
+    animation: none;
+    display: none;
   }
 }
 
-/* ---------- About scroll reveal (per-card IO via useScrollReveal) ----------
-   Hidden state exists ONLY under .about-rv, which JS adds when observing —
-   no-JS / no-IO / reduced-motion never get the class, so content stays
-   visible. Transform + opacity only, no layout effect. */
+/* ---------- About scroll reveal ---------- */
 .about-rv {
   opacity: 0;
   transform: translateY(20px);
@@ -4396,10 +4387,7 @@ html[data-perf='lite'] .about-edu__stop--live .about-edu__dot {
   transition: none;
 }
 
-/* ---------- About reveal choreography (reading-order stagger) ----------
-   Desktop: title → photo → profile → toolkit → education (max delay 400ms).
-   Mobile: each card reveals on its own entry; delays are small enough to
-   stay responsive. Inner elements ride on the card's .is-visible. */
+/* ---------- About reveal choreography ---------- */
 .about-bento__head.about-rv { transition-delay: 0ms; }
 .about-card--identity.about-rv { transition-delay: 80ms; }
 .about-card--intro.about-rv { transition-delay: 170ms; }

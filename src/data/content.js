@@ -1,9 +1,9 @@
-import cryptoNerBanner from "../assets/project-banners/crypto-ner/heuristic.png";
-import EmotNLPBanner from "../assets/project-banners/emotion-classification/emotion.png";
-import footfitBanner from "../assets/project-banners/footfit/footfit.png";
-import DevPathBanner from "../assets/project-banners/devpath/devpath.png";
-import TixConzerBanner from "../assets/project-banners/tixconser/tixconzer.png";
-import SinefolisBanner from "../assets/project-banners/sinefolis/Sinefolis.png";
+const cryptoNerBanner = "/projects/heuristic-960.webp";
+const EmotNLPBanner = "/projects/emotion-960.webp";
+const footfitBanner = "/projects/footfit-960.webp";
+const DevPathBanner = "/projects/devpath-960.webp";
+const TixConzerBanner = "/projects/tixconzer-960.webp";
+const SinefolisBanner = "/projects/sinefolis-960.webp";
 
 export const profile = {
   name: 'Shane Anthony',

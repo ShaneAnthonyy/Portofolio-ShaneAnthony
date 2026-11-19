@@ -1,5 +1,11 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { memo, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import useSectionProgress from '../hooks/useSectionProgress.js'
+
+const selectNavProgress = (s) => ({
+  activeId: s.activeId,
+  scrolledRaw: s.scrollY > 12,
+  reduced: s.reduced,
+})
 import { scrollToSection } from '../animation/scrollTo.js'
 import { gsap, useGSAP } from '../animation/gsap.js'
 import { nudgeActiveLabel, playNavEntry, syncIndicator } from '../animation/navbar.js'
@@ -52,7 +58,7 @@ function SpeakerOffIcon() {
   )
 }
 
-export default function Navbar({ diveActive = false, entered = true, diveProgress = 1, arrivalRef, performanceMode = 'normal', onPerformanceModeChange = null, musicOn = false, musicLoading = false, musicFailed = false, onMusicToggle = null }) {
+export default memo(function Navbar({ diveActive = false, entered = true, diveProgress = 1, arrivalRef, performanceMode = 'normal', onPerformanceModeChange = null, musicOn = false, musicLoading = false, musicFailed = false, onMusicToggle = null }) {
   const [open, setOpen] = useState(false)
   const worldTimeRef = useRef(null)
   const dockRef = useRef(null)
@@ -65,12 +71,9 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
   const prevActiveRef = useRef(null)
   const [travelOn, setTravelOn] = useState(false)
   const [pendingNavId, setPendingNavId] = useState(null)
-  const isNavDebug =
-    typeof window !== 'undefined' &&
-    new URLSearchParams(window.location.search).has('nav-debug')
-  const { activeId, scrollY, reduced } = useSectionProgress()
+  const { activeId, scrolledRaw, reduced } = useSectionProgress(selectNavProgress)
   const displayedActiveId = pendingNavId ?? activeId
-  const scrolled = entered && scrollY > 12
+  const scrolled = entered && scrolledRaw
   const introHidden = diveActive && !entered
   const holdNavbarPosition = diveActive && diveProgress < 1
 
@@ -122,39 +125,12 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
     if (introHidden) return
     setOpen(false)
     setPendingNavId(id)
-    if (isNavDebug) {
-      const target = document.getElementById(id)
-      const targetTop = target ? Math.round(target.getBoundingClientRect().top + window.scrollY) : null
-      // eslint-disable-next-line no-console
-      console.log(
-        '[NAV]',
-        'CLICK',
-        `target=${id}`,
-        `pending=${id}`,
-        `active=${activeId}`,
-        `displayed=${id}`,
-        `targetElement=#${id}`,
-        `targetTop=${targetTop}`
-      )
-    }
     scrollToSection(id)
   }
 
   useEffect(() => {
     if (!pendingNavId) return
-    if (isNavDebug) {
-      // eslint-disable-next-line no-console
-      console.log('[NAV]', 'ACTIVE', `active=${activeId}`, `pending=${pendingNavId}`, `displayed=${pendingNavId}`)
-    }
-  }, [activeId, pendingNavId, isNavDebug])
-
-  useEffect(() => {
-    if (!pendingNavId) return
     const cancel = () => {
-      if (isNavDebug) {
-        // eslint-disable-next-line no-console
-        console.log('[NAV]', 'USER-INPUT', 'pending=null', `displayed follows shared activeId`)
-      }
       setPendingNavId(null)
     }
     const onKey = (event) => {
@@ -172,7 +148,7 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
       window.removeEventListener('touchmove', cancel)
       window.removeEventListener('keydown', onKey)
     }
-  }, [pendingNavId, isNavDebug])
+  }, [pendingNavId])
 
   useGSAP(
     () => {
@@ -345,4 +321,4 @@ export default function Navbar({ diveActive = false, entered = true, diveProgres
       </div>
     </header>
   )
-}
+})

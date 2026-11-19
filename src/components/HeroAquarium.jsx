@@ -37,17 +37,24 @@ export default function HeroAquarium({ enabled, preview = false, sceneReady, pre
       const travel = { progress: 0 }
       timeline.to(travel, { progress: 1, duration: 1 }, 0)
       if (!simple) {
-        timeline.fromTo(approachRef.current, { value: 0 }, { value: 1, duration: .62, ease: 'sine.inOut' }, 0)
-        timeline.fromTo(hostRef.current, { scaleX: 1, scaleY: 1, yPercent: 0 }, {
-          scaleX: compact ? 1.012 : 1.025, scaleY: compact ? 1.035 : 1.065,
-          yPercent: compact ? -1 : -2, duration: .62, ease: 'sine.inOut',
-        }, 0)
-        timeline.fromTo(reflection, { opacity: 0, yPercent: 5 }, { opacity: .6, yPercent: -8, duration: .32, ease: 'sine.inOut' }, .04)
-        timeline.to(reflection, { opacity: 0, yPercent: -18, duration: .38 }, .36)
-        timeline.fromTo(clip, { attr: { transform: `translate(0 1.08) scale(1 ${curveScale})` } }, { attr: { transform: `translate(0 -0.12) scale(1 ${curveScale})` }, duration: .68, ease: 'sine.inOut' }, .1)
-        timeline.fromTo(meniscus, { yPercent: 108 }, { yPercent: -12, duration: .68, ease: 'sine.inOut' }, .1)
-        timeline.fromTo(meniscus, { opacity: 0 }, { opacity: 1, duration: .12 }, .2)
-        timeline.to(meniscus, { opacity: 0, duration: .14 }, .64)
+        if (staticMode) {
+          timeline.fromTo(scene, { yPercent: 0 }, { yPercent: -112, duration: .68, ease: 'sine.inOut' }, .1)
+          timeline.fromTo(meniscus, { yPercent: 108 }, { yPercent: -12, duration: .68, ease: 'sine.inOut' }, .1)
+          timeline.fromTo(meniscus, { opacity: 0 }, { opacity: 1, duration: .12 }, .2)
+          timeline.to(meniscus, { opacity: 0, duration: .14 }, .64)
+        } else {
+          timeline.fromTo(approachRef.current, { value: 0 }, { value: 1, duration: .62, ease: 'sine.inOut' }, 0)
+          timeline.fromTo(hostRef.current, { scaleX: 1, scaleY: 1, yPercent: 0 }, {
+            scaleX: compact ? 1.012 : 1.025, scaleY: compact ? 1.035 : 1.065,
+            yPercent: compact ? -1 : -2, duration: .62, ease: 'sine.inOut',
+          }, 0)
+          timeline.fromTo(reflection, { opacity: 0, yPercent: 5 }, { opacity: .6, yPercent: -8, duration: .32, ease: 'sine.inOut' }, .04)
+          timeline.to(reflection, { opacity: 0, yPercent: -18, duration: .38 }, .36)
+          timeline.fromTo(clip, { attr: { transform: `translate(0 1.08) scale(1 ${curveScale})` } }, { attr: { transform: `translate(0 -0.12) scale(1 ${curveScale})` }, duration: .68, ease: 'sine.inOut' }, .1)
+          timeline.fromTo(meniscus, { yPercent: 108 }, { yPercent: -12, duration: .68, ease: 'sine.inOut' }, .1)
+          timeline.fromTo(meniscus, { opacity: 0 }, { opacity: 1, duration: .12 }, .2)
+          timeline.to(meniscus, { opacity: 0, duration: .14 }, .64)
+        }
       }
       let previous = -1
       let resident = surface.dataset.resident !== 'false'
@@ -76,6 +83,13 @@ export default function HeroAquarium({ enabled, preview = false, sceneReady, pre
         surface.dataset.surfaceState = p === 0 ? 'surface' : p >= .8 ? 'submerged' : 'crossing'
         surface.style.visibility = !simple && p >= .8 ? 'hidden' : ''
         scene.style.visibility = !simple && p >= .76 ? 'hidden' : ''
+        const crossing = !simple && p > .01 && p < .78
+        const nextClip = !simple && !staticMode && p > .01 && p < .76 ? `url(#surface-${id})` : 'none'
+        if (scene.style.clipPath !== nextClip) scene.style.clipPath = nextClip
+        const reflVis = crossing && !staticMode ? 'visible' : 'hidden'
+        const menVis = crossing ? 'visible' : 'hidden'
+        if (reflection.style.visibility !== reflVis) reflection.style.visibility = reflVis
+        if (meniscus.style.visibility !== menVis) meniscus.style.visibility = menVis
         loopRef.current?.()
       }
       const unsubscribe = subscribeProgressFrame(update)
@@ -86,10 +100,13 @@ export default function HeroAquarium({ enabled, preview = false, sceneReady, pre
         resize.disconnect()
         surface.style.visibility = ''
         scene.style.visibility = ''
+        scene.style.clipPath = 'none'
+        reflection.style.visibility = ''
+        meniscus.style.visibility = ''
       }
     })
     return () => media.revert()
-  }, { scope: surfaceRef, dependencies: [enabled], revertOnUpdate: true })
+  }, { scope: surfaceRef, dependencies: [enabled, staticMode], revertOnUpdate: true })
 
   useEffect(() => {
     const media = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -106,13 +123,16 @@ export default function HeroAquarium({ enabled, preview = false, sceneReady, pre
   useEffect(() => { loopRef.current?.() }, [prewarm, ready])
 
   useEffect(() => {
-
     const host = hostRef.current, surface = surfaceRef.current
+    let lastLight = '', lastShadow = '', lastTint = ''
     const update = () => {
       const sample = worldTime.getSnapshot().environment
-      surface.style.setProperty('--surface-light', environmentCSS(sample.waterLight))
-      surface.style.setProperty('--surface-shadow', environmentCSS(sample.waterDeep))
-      host.style.setProperty('--world-poster-tint', `color-mix(in srgb, ${environmentCSS(sample.waterLight)} 14%, transparent)`)
+      const light = environmentCSS(sample.waterLight)
+      const shadow = environmentCSS(sample.waterDeep)
+      const tint = `color-mix(in srgb, ${light} 14%, transparent)`
+      if (light !== lastLight) { lastLight = light; surface.style.setProperty('--surface-light', light) }
+      if (shadow !== lastShadow) { lastShadow = shadow; surface.style.setProperty('--surface-shadow', shadow) }
+      if (tint !== lastTint) { lastTint = tint; host.style.setProperty('--world-poster-tint', tint) }
       host.dataset.worldTime = String(sample.minutes)
     }
     update()
@@ -141,9 +161,13 @@ export default function HeroAquarium({ enabled, preview = false, sceneReady, pre
       scene.setApproach(approachRef.current.value)
       scene.canvas.addEventListener('webglcontextlost', contextLost)
       let environment = worldTime.getSnapshot().environment
+      let appliedEnv = null
       unsubscribeWorld = worldTime.subscribe(() => { environment = worldTime.getSnapshot().environment })
       const render = () => {
-        scene.setEnvironment(environment)
+        if (environment !== appliedEnv) {
+          appliedEnv = environment
+          scene.setEnvironment(environment)
+        }
         scene.render(clockRef.current)
       }
       resize = new ResizeObserver(() => {
@@ -216,7 +240,7 @@ export default function HeroAquarium({ enabled, preview = false, sceneReady, pre
           </linearGradient>
         </defs>
       </svg>
-      <div className="hero-surface__scene" style={{ clipPath: `url(#surface-${id})` }}>
+      <div className="hero-surface__scene" style={{ clipPath: 'none' }}>
         <div
           ref={hostRef}
           className="hero-aquarium"

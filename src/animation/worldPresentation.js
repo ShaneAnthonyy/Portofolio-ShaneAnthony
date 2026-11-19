@@ -5,7 +5,6 @@ const linear = v => v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4
 const rgb = hex => [16, 8, 0].map(shift => linear(((hex >> shift) & 255) / 255))
 const channels = color => environmentCSS(color).slice(4, -1)
 
-// Optical color grading consumes the existing water/sky sample, never another clock.
 export function underwaterColors(sample) {
   const warm = Math.max(0, sample.skyLine[0] - sample.skyLine[2])
   const lightWarmth = Math.max(0, sample.skyGlow[0] - sample.skyGlow[2])
@@ -35,7 +34,6 @@ export function worldPresentation(sample) {
   }
 }
 
-// Only visible presentation islands inherit palette changes; the app/body never do.
 export function bindWorldPresentation(root) {
   const selector = '.navbar, #home, .portfolio-sections > .section, .footer, .world-time-panel, .guide-pop--mobile'
   const islands = new Map()

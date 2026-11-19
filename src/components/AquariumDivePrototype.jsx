@@ -1,12 +1,17 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { memo, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { FontLoader } from 'three/addons/loaders/FontLoader.js'
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js'
-import { RectAreaLightUniformsLib } from 'three/addons/lights/RectAreaLightUniformsLib.js'
 import Hero from './Hero.jsx'
 import { createScrollSign } from './MinecraftScrollSign.js'
-import useSectionProgress from '../hooks/useSectionProgress.js'
+import useSectionProgress, { getSectionProgress } from '../hooks/useSectionProgress.js'
+
+const selectDiveProgress = (s) => ({
+  reduced: s.reduced,
+  dive94: s.dive >= 0.94,
+  reducedDive: s.reduced ? s.dive : 0,
+})
 import { resolveQuality, effectivePixelRatio } from '../animation/quality.js'
 import { arrivalProgress } from '../animation/diveArrival.js'
 import { worldTime } from '../animation/worldTime.js'
@@ -46,19 +51,6 @@ function phaseOf(p) {
   return 'REVEAL'
 }
 
-const FISH_BACKDROP_SCALE = 0.6;
-
-const SECTION_MOD = {
-  home: { d: [0, 0.9, 6.0], fog: 1.0, light: 1.0 },
-  about: { d: [0, 0.3, 0.6], fog: 0.9, light: 1.0 },
-  skills: { d: [0, 0, -0.4], fog: 1.1, light: 1.0 },
-  projects: { d: [0, 0, -0.6], fog: 1.15, light: 0.95 },
-  certificates: { d: [0, 0, 0.3], fog: 1.0, light: 0.9 },
-  contact: { d: [0, 0.2, 0.5], fog: 0.95, light: 0.85 },
-}
-const P4_POS = [0, 2.5, 0.5]
-const P4_TGT = [0, 2.0, -6]
-
 function downscaleTextures(root, maxDim, disposables) {
   const seen = new Set()
   try {
@@ -96,7 +88,6 @@ function downscaleTextures(root, maxDim, disposables) {
   }
 }
 
-// ---- Open-air dive environment (sky dome + ground + table) ----
 function measureRoot(root) {
   root.updateMatrixWorld(true)
   const box = new THREE.Box3().setFromObject(root)
@@ -138,12 +129,6 @@ const waterU = {
   topY: { value: 4 },
   botY: { value: 0 },
 }
-const WATER_DEBUG =
-  import.meta.env.DEV &&
-  typeof window !== 'undefined' &&
-  new URLSearchParams(window.location.search).has('water-debug')
-    ? 1
-    : 0
 const horizonU = {
   day: { value: new THREE.Color(0xf7c787) },
   night: { value: new THREE.Color(0x6070b4) },
@@ -179,10 +164,6 @@ function shadeMat(mat, { caustic = 0, fresnel = 0, fresnelColor = [0.45, 0.65, 0
         '#include <map_fragment>',
         `#include <map_fragment>
         {
-          // Terrain-local atmospheric blend (hill only): distance × low-
-          // height gate, smoothstepped, dithered against banding. Mixes
-          // albedo toward the sampled horizon tint pre-lighting so the haze
-          // stays sun-coherent instead of glowing.
           float hdist = distance(cameraPosition, vShadeW);
           float hdf = smoothstep(${horizon.start.toFixed(1)}, ${horizon.end.toFixed(1)}, hdist);
           float hhf = 1.0 - 0.65 * smoothstep(-1.0, 1.5, vShadeW.y);
@@ -265,7 +246,6 @@ function shadeWater(mat) {
         vec2 wuv = vShadeW.xz * 0.45 + vec2(uShadeTime * 0.020, -uShadeTime * 0.014);
         float ws = sin(wuv.x * 2.3 + uShadeTime * 0.07) * sin(wuv.y * 1.9 - uShadeTime * 0.05);
         diffuseColor.rgb += vec3(0.10, 0.22, 0.26) * (smoothstep(0.2, 1.0, abs(ws)) * 0.10);
-        // Soft optical edge near the inner walls, strongest at grazing angles.
         vec2 ew = min(vShadeW.xz - uWaterRect.xy, uWaterRect.zw - vShadeW.xz);
         float edgeMask = 1.0 - smoothstep(0.0, 0.28, min(ew.x, ew.y));
         vec3 we2 = normalize(cameraPosition - vShadeW);
@@ -300,8 +280,6 @@ function shadeVolume(mat) {
         float wdepth = clamp((uVolTop - vShadeW.y) / max(uVolTop - uVolBot, 0.001), 0.0, 1.0);
         float wshape = smoothstep(0.0, 1.0, wdepth);
         diffuseColor.a *= mix(0.35, 1.0, wshape);
-        // Floor owns the bottom: fade the last stretch so no floating
-        // translucent plane reads as a horizontal line.
         diffuseColor.a *= mix(0.2, 1.0, smoothstep(1.0, 0.82, wdepth));
         diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb * vec3(0.78, 0.95, 1.0) + vec3(0.0, 0.025, 0.04), wshape * 0.5);
         vec3 fdx = dFdx(vShadeW);
@@ -386,7 +364,6 @@ function placeContactShadow(mesh, patches, heightAt, inverse, point = new THREE.
       }
     }
   }
-  // Hidden sign buffers may wait until a resize; retain one merged pending range.
   const vertices = patches.length * 81
   if (position.updateRanges.length) position.updateRanges[0].count = Math.max(position.updateRanges[0].count, vertices * 3)
   else position.addUpdateRange(0, vertices * 3)
@@ -410,7 +387,7 @@ function contactDisc(radius, opacity, map) {
   return m
 }
 
-function buildScene({ hideFarRocks, liteWater = false } = {}) {
+function buildScene({ liteWater = false } = {}) {
   const scene = new THREE.Scene()
   scene.background = new THREE.Color(0x06121f)
   scene.fog = new THREE.FogExp2(0x06121f, 0.02)
@@ -474,7 +451,6 @@ function buildScene({ hideFarRocks, liteWater = false } = {}) {
     temp[slot].length = 0
   }
 
-  // ---- TEMPORARY primitives: replaced per-slot as GLBs land + validate ---- //
   const glassMat = new THREE.MeshStandardMaterial({
     color: 0xbfdce8,
     transparent: true,
@@ -559,7 +535,7 @@ function buildScene({ hideFarRocks, liteWater = false } = {}) {
   waterAlphaTex.wrapS = waterAlphaTex.wrapT = THREE.ClampToEdgeWrapping
   disposables.push(waterAlphaTex)
   const waterMat = new THREE.MeshBasicMaterial({
-    color: WATER_DEBUG ? 0x7fe8f5 : 0x3b8fa8,
+    color: 0x3b8fa8,
     transparent: true,
     opacity: 0.35,
     alphaMap: waterAlphaTex,
@@ -575,9 +551,9 @@ function buildScene({ hideFarRocks, liteWater = false } = {}) {
   scene.add(water)
 
   const waterVolMat = new THREE.MeshBasicMaterial({
-    color: WATER_DEBUG ? 0x2f8a90 : 0x2f7890,
+    color: 0x2f7890,
     transparent: true,
-    opacity: WATER_DEBUG ? 0.15 : 0.045,
+    opacity: 0.045,
     depthWrite: false,
     side: THREE.BackSide,
     toneMapped: false,
@@ -595,14 +571,11 @@ function buildScene({ hideFarRocks, liteWater = false } = {}) {
     { p: [-2.6, 0.69, -0.8], s: 1.35 },
     { p: [2.2, 0.63, -1.2], s: 0.95 },
     { p: [0.6, 0.59, 0.6], s: 0.75 },
-    { p: [-3.5, 0.8, -8], s: 2.2, far: true },
-    { p: [4, 1.1, -9], s: 2.8, far: true },
   ]
   const rockTone = [0x515c67, 0x5a6470, 0x49525c]
-  rockDefs.forEach(({ p, s, far }, i) => {
-    if (far && hideFarRocks) return
+  rockDefs.forEach(({ p, s }, i) => {
     const rm = new THREE.MeshStandardMaterial({
-      color: far ? 0x2c3e52 : rockTone[i % rockTone.length],
+      color: rockTone[i % rockTone.length],
       roughness: 0.9,
       flatShading: true,
     })
@@ -656,20 +629,17 @@ function buildScene({ hideFarRocks, liteWater = false } = {}) {
   return { scene, water, waterMat, waterVolMat, disposables, temp, rockDefs, kelpDefs, trackLoaded, retireTemp, lightsBase }
 }
 
-export default function AquariumDivePrototype({ backdrop = false, integrated = false, onHealthy, onFail, onReturnComplete, onProgress, onBackdropPaused, onArrivalProgress, pauseBackdrop = false, presentationReady = true, probeRef = null, children, diveProgress, introComplete = false, magneticLanding = false, landingRef, returningToP0 = false, qualityMode = 'normal', backdropStyle } = {}) {
+export default memo(function AquariumDivePrototype({ integrated = false, onHealthy, onFail, onReturnComplete, onProgress, onBackdropPaused, onArrivalProgress, pauseBackdrop = false, presentationReady = true, probeRef = null, children, diveProgress, introComplete = false, magneticLanding = false, landingRef, returningToP0 = false, qualityMode = 'normal', backdropStyle } = {}) {
   const mountRef = useRef(null)
   const heroRevealRef = useRef(null)
   const [debug, setDebug] = useState({ p: 0, phase: 'FRONT' })
   const [heroMounted, setHeroMounted] = useState(false)
-  const prog = useSectionProgress()
-  const progRef = useRef(prog)
-  progRef.current = prog
+  const { reduced: progReduced, dive94, reducedDive } = useSectionProgress(selectDiveProgress)
   const diveProgressRef = useRef(diveProgress)
   diveProgressRef.current = diveProgress
   const returningRef = useRef(returningToP0)
   returningRef.current = returningToP0
   const sceneCommandRef = useRef(null)
-  const backdropRef = useRef(backdrop)
   const integratedRef = useRef(integrated)
   const qualityModeRef = useRef(qualityMode)
   qualityModeRef.current = qualityMode
@@ -687,9 +657,9 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
   }, [pauseBackdrop])
 
   useLayoutEffect(() => {
-    if (!integratedRef.current || !prog.reduced || !sceneCommandRef.current) return
-    sceneCommandRef.current(diveProgressRef.current ?? prog.dive)
-  }, [prog.reduced, prog.dive, diveProgress])
+    if (!integratedRef.current || !progReduced || !sceneCommandRef.current) return
+    sceneCommandRef.current(diveProgressRef.current ?? reducedDive)
+  }, [progReduced, reducedDive, diveProgress])
 
   useEffect(() => {
     const mount = mountRef.current
@@ -778,7 +748,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       qState.mode = nextMode
       qState.runtime = q.runtime
       renderer.setPixelRatio(effectivePixelRatio(q.runtime))
-      const wantShadow = q.runtime.shadows && !backdropRef.current
+      const wantShadow = q.runtime.shadows
       if (renderer.shadowMap.enabled !== wantShadow) {
         renderer.shadowMap.enabled = wantShadow
         if (sceneData && sceneData.scene) {
@@ -805,20 +775,23 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         }
       }
       onFrame(mount.clientWidth, mount.clientHeight, true)
-      if (nextMode === 'normal' && !reduced && !backdropRef.current) track(prepareTransition(), 'transition')
+      if (nextMode === 'normal' && !reduced) track(prepareTransition(), 'transition')
       if (reduced) rerender()
+      else if (!document.hidden && !parked()) renderFrame(lastP, performance.now() / 1000)
     }
     renderer.outputColorSpace = THREE.SRGBColorSpace
     renderer.toneMapping = THREE.ACESFilmicToneMapping
     renderer.toneMappingExposure = 1.0
     renderer.setPixelRatio(effectivePixelRatio(qState.runtime))
-    renderer.setSize(mount.clientWidth, mount.clientHeight)
+    renderer.setSize(mount.clientWidth, mount.clientHeight, false)
     renderer.domElement.style.position = 'absolute'
     renderer.domElement.style.inset = '0'
+    renderer.domElement.style.width = '100%'
+    renderer.domElement.style.height = '100%'
     mount.appendChild(renderer.domElement)
     emit(0.08)
 
-    const sceneData = buildScene({ hideFarRocks: !backdropRef.current, liteWater: !qState.runtime.waterHigh })
+    const sceneData = buildScene({ liteWater: !qState.runtime.waterHigh })
     const { scene, waterMat, waterVolMat, disposables, temp, rockDefs, kelpDefs, trackLoaded, retireTemp, lightsBase } = sceneData
     const blobMap = getBlobTexture()
     disposables.push(blobMap)
@@ -829,28 +802,6 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
     scene.add(sign.group)
     const updateSign = (tSec, diveP) => {
       const wide = qState.lastW >= 720
-      if (backdropRef.current) {
-        sign.group.visible = wide
-
-        sign.group.position.set(
-          sign.base.x,
-          sign.base.y,
-          sign.base.z
-        )
-
-        sign.group.rotation.set(
-          0,
-          sign.base.yaw,
-          0
-        )
-
-        sign.mats.forEach((m) => {
-          m.opacity = 1
-        })
-
-        return
-      }
-
       const hidden = returningRef.current || !wide || diveP >= 0.94
       const fade = hidden
         ? 0
@@ -878,21 +829,6 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       sign.mats.forEach((m) => {
         m.opacity = fade
       })
-
-      if (SMOOTH_DEBUG) {
-        console.log(
-          '[smooth-debug] SIGN STATE: diveP=%s signVisible=%s fade=%s position=%s scale=%s',
-          Number(diveP).toFixed(3),
-          sign.group.visible,
-          fade.toFixed(3),
-          JSON.stringify(
-            sign.group.position.toArray().map((v) => Number(v.toFixed(3)))
-          ),
-          JSON.stringify(
-            sign.group.scale.toArray().map((v) => Number(v.toFixed(3)))
-          )
-        )
-      }
     }
     const _waterC = new THREE.Color()
     const camera = new THREE.PerspectiveCamera(
@@ -949,74 +885,6 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
     let lastP = 0
     let trans = null
     let preparingTransition = null
-    const MASK_DEBUG =
-      import.meta.env.DEV &&
-      typeof window !== 'undefined' &&
-      new URLSearchParams(window.location.search).has('mask-debug')
-        ? 1
-        : 0
-    const SMOOTH_DEBUG =
-      import.meta.env.DEV &&
-      typeof window !== 'undefined' &&
-      new URLSearchParams(window.location.search).has('smooth-debug')
-        ? 1
-        : 0
-    const KOI_DEBUG =
-      import.meta.env.DEV &&
-      typeof window !== 'undefined' &&
-      new URLSearchParams(window.location.search).has('koi-debug')
-        ? 1
-        : 0
-    const SHRIMP_DEBUG =
-      import.meta.env.DEV &&
-      typeof window !== 'undefined' &&
-      new URLSearchParams(window.location.search).has('shrimp-debug')
-        ? 1
-        : 0
-    const TREE_DEBUG =
-      import.meta.env.DEV &&
-      typeof window !== 'undefined' &&
-      new URLSearchParams(window.location.search).has('tree-debug')
-        ? 1
-        : 0
-    const TREE_SHADOW_DEBUG =
-      import.meta.env.DEV &&
-      typeof window !== 'undefined' &&
-      new URLSearchParams(window.location.search).has('tree-shadow-debug')
-        ? 1
-        : 0
-    const MOTION_DEBUG =
-      import.meta.env.DEV &&
-      typeof window !== 'undefined' &&
-      new URLSearchParams(window.location.search).has('motion-debug')
-        ? 1
-        : 0
-    const GRASS_DEBUG =
-      import.meta.env.DEV &&
-      typeof window !== 'undefined' &&
-      new URLSearchParams(window.location.search).has('grass-debug')
-        ? 1
-        : 0
-      typeof window !== 'undefined' &&
-      new URLSearchParams(window.location.search).has('sky-debug')
-        ? 1
-        : 0
-      typeof window !== 'undefined' &&
-      new URLSearchParams(window.location.search).has('horizon-debug')
-        ? 1
-        : 0
-    const HILL_DEBUG =
-      import.meta.env.DEV &&
-      typeof window !== 'undefined' &&
-      new URLSearchParams(window.location.search).has('hill-debug')
-        ? 1
-        : 0
-    const TABLE_SHADOW_DEBUG =
-      import.meta.env.DEV &&
-      typeof window !== 'undefined' &&
-      new URLSearchParams(window.location.search).has('table-shadow-debug')
-        ? 1
-        : 0
     const _rect = new THREE.Vector4(0.5, 0.5, 0.5, 0.5)
     const _pv = new THREE.Vector3()
     const _shadowWorld = new THREE.Vector3()
@@ -1086,7 +954,6 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
           uTime: { value: 0 },
           uAspect: { value: 1 },
           uTankRect: { value: new THREE.Vector4(0.5, 0.5, 0.5, 0.5) },
-          uDebugMask: { value: 0 },
         },
         vertexShader: `
           varying vec2 vUv;
@@ -1104,7 +971,6 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
           uniform float uTime;
           uniform float uAspect;
           uniform vec4 uTankRect;
-          uniform float uDebugMask;
           float hash21(vec2 p) {
             p = fract(p * vec2(123.34, 456.21));
             p += dot(p, p + 45.32);
@@ -1123,8 +989,6 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
           float fbm(vec2 p) {
             return vnoise(p) * 0.6 + vnoise(p * 2.13 + 11.7) * 0.4;
           }
-          // Interior cavity mask: 1 inside the tank opening, 0 on the frame
-          // and outside. Feather keeps the boundary invisible.
           float softRectMask(vec2 uv, vec4 r, float feather) {
             vec2 d = min(uv - r.xy, r.zw - uv);
             return smoothstep(0.0, feather, min(d.x, d.y));
@@ -1133,12 +997,6 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
             vec2 uv = vUv;
             vec2 auv = vec2(uv.x * uAspect, uv.y);
             float interior = softRectMask(uv, uTankRect, 0.035);
-            if (uDebugMask > 0.5) {
-              gl_FragColor = vec4(vec3(interior), 1.0);
-              #include <tonemapping_fragment>
-              #include <colorspace_fragment>
-              return;
-            }
             float t = uTime;
             float n1 = fbm(auv * 3.0 + vec2(t * 0.08, t * 0.05));
             float n2 = fbm(auv * 3.0 + vec2(4.7, 9.2) - vec2(t * 0.06, t * 0.04));
@@ -1167,11 +1025,11 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
     const renderFrame = (p, tSec) => {
       if (preparingTransition) return
       if (qState.mode === 'lite') {
-        setInstallVisible(p < 0.94)
+        setInstallVisible(p < 0.992)
         renderer.render(scene, camera)
         return
       }
-      if (backdropRef.current || p < 0.62) {
+      if (p < 0.62) {
         setInstallVisible(true)
         renderer.render(scene, camera)
         return
@@ -1189,7 +1047,6 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       u.uAspect.value = camera.aspect || 1
       if (tankRectUV()) u.uTankRect.value.copy(_rect)
       else u.uTankRect.value.set(0.5, 0.5, 0.5, 0.5)
-      u.uDebugMask.value = MASK_DEBUG
       setInstallVisible(true)
       renderer.setRenderTarget(tr.sceneRT)
       renderer.render(scene, camera)
@@ -1211,7 +1068,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
     }
 
     const prepareTransition = () => {
-      if (cancelled || reduced || backdropRef.current || qState.mode === 'lite') return Promise.resolve()
+      if (cancelled || reduced || qState.mode === 'lite') return Promise.resolve()
       const tr = ensureTransition()
       if (tr.preparation) return tr.preparation
       tr.preparation = (async () => {
@@ -1229,6 +1086,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
           preparingTransition = null
           const time = performance.now() / 1000
           renderFrame(0.62, time)
+          renderFrame(0.94, time)
           renderFrame(lastP, time)
         } finally {
           if (preparingTransition === tr) preparingTransition = null
@@ -1384,10 +1242,8 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       )
     }
 
-    // ---- Open-air dive environment (distant sky dome + matte ground + table) ----
     let unsubscribeWorld = null
     let environment = worldTime.getSnapshot().environment
-    // Actual objects; preserve the approved ambient/key channel mapping from updateOutdoor.
     const worldLights = {
       ambient: lightsBase.find(([light]) => light.isAmbientLight)[0],
       hemi: lightsBase.find(([light]) => light.isHemisphereLight)[0],
@@ -1400,13 +1256,11 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       color: new THREE.Color(), warm: new THREE.Color(),
     }
     let shadowAnchors = null
-    // The renderer does not dispose a scene light's retained shadow target.
     disposables.push(worldLights.key)
     const tableGroupRef = { current: null }
     const poc = {
       ground: null,
       rig: null, aquaRect: null, aquaSpot: null, aquaFill: null, aquaHemi: null,
-      waterBoundsHelper: null, waterBoundsBox: null,
     }
     const AQUA_WARM = new THREE.Color(0xfff4df)
     const AQUA_COOL = new THREE.Color(0xe8f0ff)
@@ -1428,10 +1282,10 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       { cx: -1.7, cz: 1.0, r: 0.45, floorY: 0.375, speed: 0.12, phase: 0.3 },
       { cx: 1.8, cz: 0.9, r: 0.45, floorY: 0.375, speed: 0.09, phase: 1.7 },
     ]
-    const shrimpList = [] // { node, cfg, heading, walk, floorY }
-    const kelpSway = [] // { pivot, phase } — kelp GLB clones, base-pivot sway
-    const treeSway = [] // { root, phase, amp } — tree clone inner roots
-    const charRigs = [] // { root, mixer, clips, state, t, waypoints, groundY } — ambient characters
+    const shrimpList = []
+    const kelpSway = []
+    const treeSway = []
+    const charRigs = []
     let characterReturning = false
     let charactersPresented = false
     const characterBounds = new THREE.Box3()
@@ -1471,7 +1325,6 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         c.offsetZ = offsetZ
       })
     }
-    let motionLogged = false
     const _pocD = new THREE.Color()
     const POC_DEEP = new THREE.Color(0x052033)
     const nightLiftMaterials = []
@@ -1640,7 +1493,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         g.name = 'TableShadow'
         const map = getTableShadowTexture()
         const mat = new THREE.MeshBasicMaterial({
-          color: TABLE_SHADOW_DEBUG ? 0x00ffff : 0x000000,
+          color: 0x000000,
           transparent: true,
           vertexColors: true,
           map,
@@ -1660,19 +1513,6 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         sign.group.add(signShadow)
         sign.mats.push(signShadow.material)
         poc.signShadow = signShadow
-        if (TABLE_SHADOW_DEBUG) {
-          const lineGeo = new THREE.BufferGeometry().setFromPoints([
-            new THREE.Vector3(),
-            new THREE.Vector3(),
-          ])
-          const line = new THREE.Line(
-            lineGeo,
-            new THREE.LineBasicMaterial({ color: 0x00ffff, toneMapped: false })
-          )
-          g.add(line)
-          poc.tableShadowLine = line
-          disposables.push(lineGeo, line.material)
-        }
         disposables.push(map, fp.geometry, mat, signShadow.geometry, signShadow.material)
         poc.tableShadowGroup = g
         poc.tableShadowFoot = fp
@@ -1718,12 +1558,6 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         postX: postCenter.x, postZ: postCenter.z, boardHeight: sign.group.children[0].position.y,
         inverse: signMatrix, heightAt,
       }
-      if (poc.tableShadowLine) {
-        const lp = poc.tableShadowLine.geometry.attributes.position
-        lp.setXYZ(0, fc.x, terrainY + 0.02, fc.z)
-        lp.setXYZ(1, fc.x + sdx * 3, terrainY + 0.02, fc.z + sdz * 3)
-        lp.needsUpdate = true
-      }
       if (!poc.tankBlob) {
         poc.tankBlob = contactDisc(0.5, 0.22, blobMap)
         tg.add(poc.tankBlob)
@@ -1762,15 +1596,6 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         waterU.topY.value = topY
         waterU.botY.value = 0
       }
-      if (WATER_DEBUG && vol) {
-        if (!poc.waterBoundsHelper) {
-          poc.waterBoundsBox = new THREE.Box3()
-          poc.waterBoundsHelper = new THREE.Box3Helper(poc.waterBoundsBox, 0xffff00)
-          aquariumRoot.add(poc.waterBoundsHelper)
-          disposables.push(poc.waterBoundsHelper)
-        }
-        poc.waterBoundsBox.setFromObject(vol)
-      }
     }
     seatWater()
 
@@ -1794,19 +1619,13 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       if (![size.x, size.y, size.z, center.x, center.y, center.z, box.max.y].every(Number.isFinite)) return
       if (size.x <= 0 || size.z <= 0) return
       poc.rig.position.set(center.x, box.max.y + 0.5, center.z)
-      poc.aquaRect.width = size.x * 0.75
-      poc.aquaRect.height = size.z * 0.55
       poc.rig.updateMatrixWorld(true)
       _aquaV.set(center.x, center.y, center.z)
-      poc.aquaRect.lookAt(_aquaV)
       if (poc.aquaFill) {
         poc.aquaFill.position.set(center.x, center.y + 1.2, center.z + size.z * 0.45)
-        poc.aquaFill.width = size.x * 0.8
-        poc.aquaFill.height = size.y * 0.6
         poc.aquaFill.updateMatrixWorld(true)
-        _aquaV.set(center.x, center.y - 0.5, center.z)
-        poc.aquaFill.lookAt(_aquaV)
       }
+      _aquaV.set(center.x, center.y - 0.5, center.z)
       if (poc.aquaSpot) {
         poc.aquaSpot.target.position.copy(_aquaV)
         poc.aquaSpot.target.updateMatrixWorld(true)
@@ -1832,7 +1651,6 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       state.direction.y = 0
       state.direction.normalize().multiplyScalar(Math.cos(elevation))
       state.direction.y = Math.sin(elevation)
-      // Radius 30 covers the existing near casters/receivers within the unchanged frustum.
       key.position.copy(state.target).addScaledVector(state.direction, 30)
       key.shadow.intensity = environment.shadowFactor
       state.color.fromArray(environment.keyColor).lerp(state.warm.fromArray(environment.skyGlow),
@@ -1864,13 +1682,19 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       state.sampler = poc.terrainHeightAt
     }
 
+    let lastNightLiftK = -1
+    let lastNightLiftCount = -1
     const updateOutdoor = (dt, p, tSec, snap) => {
       if (!poc.proceduralSky) return
       if (!snap && Number.isFinite(tSec)) shadeU.uTime.value = tSec % 3600
       const k = environment.darkness
-      for (let i = 0; i < nightLiftMaterials.length; i++) {
-        const [material, baseColor, factor] = nightLiftMaterials[i]
-        material.color.copy(baseColor).multiplyScalar(1 + (factor - 1) * k)
+      if (k !== lastNightLiftK || nightLiftMaterials.length !== lastNightLiftCount) {
+        lastNightLiftK = k
+        lastNightLiftCount = nightLiftMaterials.length
+        for (let i = 0; i < nightLiftMaterials.length; i++) {
+          const [material, baseColor, factor] = nightLiftMaterials[i]
+          material.color.copy(baseColor).multiplyScalar(1 + (factor - 1) * k)
+        }
       }
       const kEnter = smooth(Math.min(Math.max((p - 0.75) / 0.25, 0), 1))
       const kReveal = revealK(p)
@@ -1900,7 +1724,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
           1 - 0.02 * smooth(Math.min(Math.max((p - 0.63) / 0.07, 0), 1)) -
           0.13 * smooth(Math.min(Math.max((p - 0.7) / 0.15, 0), 1))
         const aquaMult = nightMult * ledK * (1 - 0.2 * kReveal)
-        poc.aquaRect.intensity = 5 * aquaMult
+        poc.aquaRect.intensity = 21 * aquaMult
         poc.aquaRect.color.copy(AQUA_WARM).lerp(AQUA_COOL, Math.min(1, k * 0.5 + kEnter * 0.5))
         if (poc.aquaSpot) {
           poc.aquaSpot.intensity = 0.65 * aquaMult
@@ -1910,7 +1734,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
           poc.aquaHemi.intensity = 0.5 * ledK
         }
       }
-      if (poc.aquaFill) poc.aquaFill.intensity = 0.45 + 0.08 * k
+      if (poc.aquaFill) poc.aquaFill.intensity = (0.45 + 0.08 * k) * 5.8
       if (titleState.group && titleState.mat) {
         titleState.group.position.y =
           titleState.baseY + 0.3 * smooth(Math.min(Math.max((p - 0.2) / 0.4, 0), 1))
@@ -1925,7 +1749,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         titleState.mat.emissive.copy(_titleC)
         titleState.mat.emissiveIntensity = 0.13 + 0.35 * k
       }
-      if (waterVolMat && !WATER_DEBUG) {
+      if (waterVolMat) {
         _waterC.fromArray(environment.waterVolume)
         waterVolMat.color.copy(_waterC)
       }
@@ -2125,13 +1949,9 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
           }
         })
       }
-      if (MOTION_DEBUG && !motionLogged) {
-        motionLogged = true
-        flog('motion fish=' + fishList.length + ' koi=' + koiList.length + ' shrimp=' + shrimpList.length + ' kelp=' + kelpSway.length + ' trees=' + treeSway.length + ' loop=active')
-      }
     }
 
-    if (!backdropRef.current) {
+    {
       renderer.shadowMap.enabled = qState.runtime.shadows
       renderer.shadowMap.type = THREE.PCFSoftShadowMap
       const pocSun = lightsBase[2][0]
@@ -2243,7 +2063,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       trackNightLift(hillMat, 1.12)
       if (qState.runtime.waterHigh) shadeMat(hillMat, { horizon: { start: HORIZON_START, end: HORIZON_END, cap: HORIZON_CAP } })
       const hillMesh = new THREE.Mesh(hillGeo, hillMat)
-      hillMesh.castShadow = true
+      hillMesh.castShadow = false
       hillMesh.receiveShadow = true
       poc.ground = new THREE.Group()
       poc.ground.name = 'HilltopGround'
@@ -2309,31 +2129,14 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
           `hill-${suf}`
         )
       })
-      if (HILL_DEBUG) {
-        let tankC = 'n/a'
-        try {
-          const tb = tankOuterBox()
-          if (tb) {
-            const c = new THREE.Vector3()
-            tb.getCenter(c)
-            tankC = `(${c.x.toFixed(2)}, ${c.z.toFixed(2)})`
-          }
-        } catch {
-        }
-        console.log(
-          `[hilltop] plateau x±8 z±6 blend 10, height [${hillMin.toFixed(2)}, ${hillMax.toFixed(2)}], tankCenter(x,z)=${tankC}`
-        )
-        hillMat.wireframe = true
-      }
 
-      RectAreaLightUniformsLib.init()
       poc.rig = new THREE.Group()
-      poc.aquaRect = new THREE.RectAreaLight(0xfff4df, 5, 6, 2.2)
+      poc.aquaRect = new THREE.PointLight(0xfff4df, 21, 16, 2)
       poc.rig.add(poc.aquaRect)
       poc.aquaSpot = new THREE.SpotLight(0xffffff, 0.65, 10, Math.PI / 3.6, 0.9, 2)
       poc.aquaSpot.castShadow = false
       poc.rig.add(poc.aquaSpot)
-      poc.aquaFill = new THREE.RectAreaLight(0xe7f2ff, 0.45, 6, 3)
+      poc.aquaFill = new THREE.PointLight(0xe7f2ff, 2.6, 16, 2)
       scene.add(poc.aquaFill)
       poc.aquaHemi = new THREE.HemisphereLight(0xbfe7ff, 0x6b5b45, 0.5)
       poc.aquaHemi.layers.set(1)
@@ -2410,9 +2213,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         if (reduced && !document.hidden) sceneCommandRef.current?.(lastP)
       })
 
-      const roomTableUrl = qState.runtime.extras
-        ? '/aquarium/room/props/side_table/side_table_01_4k.gltf'
-        : '/aquarium/lite/side-table-lite.glb'
+      const roomTableUrl = '/aquarium/lite/side-table-lite.glb'
       if (roomTableUrl) loadOptional('room-table', roomTableUrl, (root) => {
         const junk = []
         root.traverse((n) => {
@@ -2499,10 +2300,8 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       placeShrimps()
       seatTable()
       seatWater()
-      if (!backdropRef.current) {
-        seatAquariumLight()
-        if (reduced) { updateOutdoor(0, 1, 0, true); rerender() }
-      }
+      seatAquariumLight()
+      if (reduced) { updateOutdoor(0, 1, 0, true); rerender() }
       return { ok: true, slot: 'tank', group }
     })
 
@@ -2545,7 +2344,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         const b = new THREE.Box3().setFromObject(root)
         root.position.x -= (b.min.x + b.max.x) / 2
         root.position.z -= (b.min.z + b.max.z) / 2
-        root.position.y -= b.min.y // base -> y=0 (slab sits on tank interior, nothing below frame)
+        root.position.y -= b.min.y
         root.updateMatrixWorld(true)
         const nb = new THREE.Box3().setFromObject(root)
         const nd = new THREE.Vector3()
@@ -2579,8 +2378,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       const group = new THREE.Group()
       const rockVar = [1.0, 1.07, 0.93]
       let rockIdx = 0
-      rockDefs.forEach(({ p, s, far }) => {
-        if (far && !backdropRef.current) return
+      rockDefs.forEach(({ p, s }) => {
         const c = root.clone()
         c.scale.setScalar(f.s * s)
         c.updateMatrixWorld(true)
@@ -2590,8 +2388,8 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         c.position.x += p[0] - cc.x
         c.position.y += p[1] - cc.y
         c.position.z += p[2] - cc.z
-        const vf = far ? (backdropRef.current ? 0.42 : 0.55) : rockVar[rockIdx % rockVar.length]
-        rockIdx += far ? 0 : 1
+        const vf = rockVar[rockIdx % rockVar.length]
+        rockIdx += 1
         c.traverse((n) => {
           if (!n.isMesh || !n.material) return
           const tune = (mt) => {
@@ -2604,7 +2402,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
             return mc
           }
           n.material = Array.isArray(n.material) ? n.material.map(tune) : tune(n.material)
-          n.castShadow = !far
+          n.castShadow = true
           n.receiveShadow = true
         })
         const disc = contactDisc(s * 0.62, 0.22, blobMap)
@@ -2629,7 +2427,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         const cb = new THREE.Box3().setFromObject(c)
         c.position.x += x - (cb.min.x + cb.max.x) / 2
         c.position.z += z - (cb.min.z + cb.max.z) / 2
-        c.position.y -= cb.min.y // base -> y=0
+        c.position.y -= cb.min.y
         const vf = i % 2 ? 1.1 : 0.92
         c.traverse((n) => {
           if (!n.isMesh || !n.material) return
@@ -2704,7 +2502,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       return { ok: true, group }
     })
 
-    const fishBase = qState.mode === 'lite' ? '/aquarium/lite' : '/aquarium'
+    const fishBase = qState.mode === 'lite' ? '/aquarium/lite-geo' : '/aquarium'
     const fishSuffix = qState.mode === 'lite' ? '' : '-opt'
     const FISH_SOURCES = [
       { name: 'fish-a', url: `${fishBase}/fish_a${fishSuffix}.glb`, cfg: FISH_CFG[0] },
@@ -2746,7 +2544,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
             const maxDim = Math.max(m.size.x, m.size.y, m.size.z)
             return { ok: false, reason: `unit guard (maxDim=${maxDim.toFixed(3)} vs ~0.9, range 0.045-3.6)` }
           }
-          const baseScale = f.s * cfg.s * (backdropRef.current ? FISH_BACKDROP_SCALE : 1)
+          const baseScale = f.s * cfg.s
           root.scale.setScalar(baseScale)
           root.rotation.y += cfg.rotY
           root.updateMatrixWorld(true)
@@ -2793,10 +2591,12 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       )
     })
 
-    if (!backdropRef.current) {
+    {
+      const koiBase = qState.mode === 'lite' ? '/aquarium/lite-geo' : '/aquarium'
+      const koiSuffix = qState.mode === 'lite' ? '' : '-opt'
       const KOI_SOURCES = [
-        { name: 'butterfly-koi-a', url: `/aquarium/butterfly_koi_a${fishSuffix}.glb`, cfg: KOI_CFG[0], glow: 0.1 },
-        { name: 'butterfly-koi-b', url: `/aquarium/butterfly_koi_b${fishSuffix}.glb`, cfg: KOI_CFG[1], glow: 0.04 },
+        { name: 'butterfly-koi-a', url: `${koiBase}/butterfly_koi_a${koiSuffix}.glb`, cfg: KOI_CFG[0], glow: 0.1 },
+        { name: 'butterfly-koi-b', url: `${koiBase}/butterfly_koi_b${koiSuffix}.glb`, cfg: KOI_CFG[1], glow: 0.04 },
       ]
       const koiSources = mount.clientWidth < 720 ? KOI_SOURCES.slice(0, 1) : KOI_SOURCES
       koiSources.forEach(({ name, url, cfg, glow }) => {
@@ -2843,12 +2643,6 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
             group.add(root)
             koiList.push({ node: root, cfg, rotY: root.rotation.y, base: null, range: null })
             flog(name + ' scale=' + (f.s * cfg.s).toFixed(4) + ' rotY=' + root.rotation.y.toFixed(3))
-            if (KOI_DEBUG) {
-              const db = new THREE.Box3().setFromObject(root)
-              const ds = new THREE.Vector3()
-              db.getSize(ds)
-              flog(name + ' dims=' + fmtV(ds) + ' pos=(' + root.position.x.toFixed(2) + ', ' + root.position.y.toFixed(2) + ', ' + root.position.z.toFixed(2) + ')')
-            }
             placeKois()
             return { ok: true, group }
           },
@@ -2857,10 +2651,12 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       })
     }
 
-    if (!backdropRef.current) {
+    {
+      const shrimpBase = qState.mode === 'lite' ? '/aquarium/lite-geo' : '/aquarium'
+      const shrimpSuffix = qState.mode === 'lite' ? '' : '-opt'
       const SHRIMP_SOURCES = [
-        { name: 'shrimp-a', url: `/aquarium/shrimp_a${fishSuffix}.glb`, cfg: SHRIMP_CFG[0] },
-        { name: 'shrimp-b', url: `/aquarium/shrimp_b${fishSuffix}.glb`, cfg: SHRIMP_CFG[1] },
+        { name: 'shrimp-a', url: `${shrimpBase}/shrimp_a${shrimpSuffix}.glb`, cfg: SHRIMP_CFG[0] },
+        { name: 'shrimp-b', url: `${shrimpBase}/shrimp_b${shrimpSuffix}.glb`, cfg: SHRIMP_CFG[1] },
       ]
       const shrimpSources = mount.clientWidth < 720 ? SHRIMP_SOURCES.slice(0, 1) : SHRIMP_SOURCES
       shrimpSources.forEach(({ name, url, cfg }) => {
@@ -2902,12 +2698,6 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
             group.add(root)
             shrimpList.push({ node: root, cfg, heading: 0, walk: null, region: null })
             flog(name + ' scale=' + f.s.toFixed(4))
-            if (SHRIMP_DEBUG) {
-              const db = new THREE.Box3().setFromObject(root)
-              const ds = new THREE.Vector3()
-              db.getSize(ds)
-              flog(name + ' dims=' + fmtV(ds) + ' min.y=' + db.min.y.toFixed(3))
-            }
             placeShrimps()
             return { ok: true, group }
           },
@@ -2916,7 +2706,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       })
     }
 
-    if (!backdropRef.current && poc.ground) {
+    if (poc.ground) {
       const TREE_CFG = [
         { name: 'tree-left-near', x: -18, z: -19, s: 4.8, rotY: 0.2, ph: 0 },
         { name: 'tree-right-near', x: 18, z: -23, s: 4.5, rotY: 2.5, ph: 3.8 },
@@ -3051,45 +2841,6 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         loadedGroups[cfg.name] = group
         if (lastP >= 0.94) group.visible = false
         flog(cfg.name + ' scale=' + (f.s * cfg.s).toFixed(4) + ' pos=(' + cfg.x.toFixed(1) + ', ' + root.position.y.toFixed(3) + ', ' + cfg.z.toFixed(1) + ')')
-        if (TREE_DEBUG) {
-          const db = new THREE.Box3().setFromObject(root)
-          const ds = new THREE.Vector3()
-          db.getSize(ds)
-          flog(cfg.name + ' dims=' + fmtV(ds) + ' min.y=' + db.min.y.toFixed(3))
-          if (cfg.name === 'tree-left-near') {
-            const seen = new Set()
-            root.traverse((n) => {
-              if (!n.isMesh || !n.material) return
-              const mats = Array.isArray(n.material) ? n.material : [n.material]
-              mats.forEach((mt) => {
-                if (seen.has(mt.uuid)) return
-                seen.add(mt.uuid)
-                flog(cfg.name + ' mat=' + (mt.name || '?') + ' type=' + mt.type +
-                  ' color=#' + (mt.color ? mt.color.getHexString() : '?') +
-                  ' map=' + !!mt.map + ' normalMap=' + !!mt.normalMap +
-                  ' mrTex=' + !!mt.metalnessMap + ' rough=' + mt.roughness +
-                  ' metal=' + mt.metalness + ' vColors=' + !!mt.vertexColors +
-                  ' ds=' + (mt.side === THREE.DoubleSide))
-              })
-            })
-            flog(cfg.name + ' matCount=' + seen.size)
-          }
-        }
-        if (TREE_SHADOW_DEBUG) {
-          const sv = new THREE.Vector3(6.5, 8.5, 4.5)
-          const dv = sv.clone().multiplyScalar(-1 / sv.length())
-          const fb = new THREE.Box3().setFromObject(group)
-          let worst = 0
-          for (let cxi = 0; cxi < 8; cxi++) {
-            const v = new THREE.Vector3(
-              cxi & 1 ? fb.max.x : fb.min.x,
-              cxi & 2 ? fb.max.y : fb.min.y,
-              cxi & 4 ? fb.max.z : fb.min.z
-            )
-            worst = Math.max(worst, v.addScaledVector(dv, -v.dot(dv)).length())
-          }
-          flog(cfg.name + ' shadow-perp ' + worst.toFixed(1) + (worst <= 48 ? ' INSIDE' : ' OUTSIDE'))
-        }
         return true
       }
       track(
@@ -3261,7 +3012,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       }
 
       {
-        const thinCompact = mount.clientWidth < 720 ? 0.5 : 1
+        const thinCompact = mount.clientWidth < 720 ? (qState.mode === 'lite' ? 0.25 : 0.5) : 1
         const rng = (() => {
           let a = 1337
           return () => {
@@ -3325,13 +3076,9 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         for (let k = 0; k < 1300; k++) {
           slots.push([-45 + rng() * 90, -40 + rng() * 52, 0.32, -1])
         }
-        let exclusionRejects = 0
         const kept = slots.filter((slot) => {
           const [x, z, baseThreshold] = slot
-          if (Math.abs(x) < 7 && Math.abs(z) < 5) {
-            exclusionRejects++
-            return false
-          }
+          if (Math.abs(x) < 7 && Math.abs(z) < 5) return false
           let nearestTree = -1
           let nearestTreeD2 = 25
           treeXZ.forEach(([tx, tz], ti) => {
@@ -3357,12 +3104,8 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         ]
         const tierCount = [0, 0, 0, 0]
         const perVariant = [[], [], []]
-        const treeGrassCounts = [0, 0, 0, 0]
-        let centralGrassCount = 0
         const yMM = [Infinity, -Infinity]
-        kept.forEach(([x, z, , treeIndex]) => {
-          if (treeIndex >= 0) treeGrassCounts[treeIndex]++
-          if (Math.abs(x) < 10 && Math.abs(z) < 8) centralGrassCount++
+        kept.forEach(([x, z]) => {
           const n = groundN(x, z)
           const gy = terrainHeightAt(x, z) - 0.02
           if (gy < yMM[0]) yMM[0] = gy
@@ -3420,7 +3163,6 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         const leafMats4 = [[], [], []]
         const stemMats4 = []
         const bushPerTree = [0, 0, 0, 0]
-        const bushSizeCount = [0, 0, 0]
         let bushCount = 0
         let bushTopY = -Infinity
         const bushSizes = [[0.35, 0.65], [0.65, 1.0], [1.0, 1.4]]
@@ -3457,7 +3199,6 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
           placedBush.push([x, z])
           const sr = rng()
           const si = sr < 0.5 ? 0 : sr < 0.9 ? 1 : 2
-          bushSizeCount[si]++
           const S = bushSizes[si][0] + rng() * (bushSizes[si][1] - bushSizes[si][0])
           const gy = terrainHeightAt(x, z) - 0.02
           const cr = rng()
@@ -3514,29 +3255,30 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         poc.meadowBushes = bushGroup
         disposables.push(cubeGeo, ...bushLeafMats, stemMat)
         flog('grass clusters=' + kept.length + ' blades=' + totalBlades + ' tiers=[' + tierCount.join(',') + '] yRange=[' + yMM[0].toFixed(2) + ',' + yMM[1].toFixed(2) + '] variants=3')
-        if (GRASS_DEBUG) {
-          const drawCalls = grassGroup.children.length + bushGroup.children.length
-          flog('grass-debug clusters=' + kept.length + ' short=' + tierCount[0] + ' medium=' + tierCount[1] + ' tall=' + tierCount[2] + ' accent=' + tierCount[3] + ' blades=' + totalBlades + ' bushes=' + bushCount + ' bushSmall=' + bushSizeCount[0] + ' bushMedium=' + bushSizeCount[1] + ' bushLarge=' + bushSizeCount[2] + ' treeGrass=' + treeGrassCounts.join(',') + ' treeBushes=' + bushPerTree.join(',') + ' centralExclusions=' + exclusionRejects + ' centralCorridor=' + centralGrassCount + ' drawCalls=' + drawCalls)
-        }
       }
     }
 
+    let pendingSize = null
     const onFrame = (w, h, force = false) => {
-      if (!force && w === qState.lastW && h === qState.lastH) return
+      if (!force && w === qState.lastW && (h === qState.lastH || landingRef?.current.active)) return false
       qState.lastW = w
       qState.lastH = h
       camera.aspect = w / Math.max(h, 1)
       camera.fov = camera.aspect < 1 ? 62 : 45
       camera.updateProjectionMatrix()
-      renderer.setSize(w, h)
+      renderer.setSize(w, h, false)
 
       if (trans) {
         const s = renderer.getDrawingBufferSize(new THREE.Vector2())
-        trans.sceneRT.setSize(s.x, s.y)
-        trans.skyRT.setSize(s.x, s.y)
+        const rtScale = qState.runtime.transitionScale || 1
+        const rw = Math.max(1, Math.round(s.x * rtScale))
+        const rh = Math.max(1, Math.round(s.y * rtScale))
+        trans.sceneRT.setSize(rw, rh)
+        trans.skyRT.setSize(rw, rh)
       }
       applyCompact(w)
       layoutCharacters(w, h)
+      return true
     }
     const rerender = () => {
       renderer.render(scene, camera)
@@ -3559,8 +3301,6 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
     let raf = 0
     let displayed = reduced || diveProgressRef.current === 1 ? 1 : 0
     let renderLoop = null
-    // Finish the existing entry before handing GPU time to the Hero. The last
-    // underwater frame stays available beneath the boundary with About.
     const parked = () => pauseRef.current && displayed >= 0.9995 && !returningRef.current
     const syncLoop = () => {
       cancelAnimationFrame(raf)
@@ -3578,74 +3318,12 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       maybeHealthy()
     }
 
-    if (backdropRef.current) {
-      if (temp.fish[0]) temp.fish[0].scale.setScalar(FISH_BACKDROP_SCALE)
-      const roomFloorGeo = new THREE.PlaneGeometry(40, 40)
-      const roomFloorMat = new THREE.MeshStandardMaterial({ color: 0x141519, roughness: 1 })
-      disposables.push(roomFloorGeo, roomFloorMat)
-      const roomFloor = new THREE.Mesh(roomFloorGeo, roomFloorMat)
-      roomFloor.rotation.x = -Math.PI / 2
-      roomFloor.position.y = -0.1
-      scene.add(roomFloor)
-      if (qState.runtime.extras) loadOptional('side-table', '/aquarium/room/props/side_table/side_table_01_4k.gltf', (root) => {
-        const junk = []
-        root.traverse((n) => {
-          if (n.isCamera || n.isLight) junk.push(n)
-        })
-        junk.forEach((n) => {
-          if (n.parent) n.parent.remove(n)
-        })
-        root.rotation.y += 0.21
-        root.updateMatrixWorld(true)
-        const m = measureRoot(root)
-        if (!m) return { ok: false }
-        const f = fitScale(m.size, [1.4, 1.4, 1.4])
-        if (!f.ok) return f
-        root.scale.setScalar(f.s)
-        root.updateMatrixWorld(true)
-        const b = new THREE.Box3().setFromObject(root)
-        root.position.x += -5.2 - (b.min.x + b.max.x) / 2
-        root.position.z += -0.5 - (b.min.z + b.max.z) / 2
-        root.position.y += -0.1 - b.min.y
-        downscaleTextures(root, 2048, disposables)
-        const group = new THREE.Group()
-        group.add(root)
-        return { ok: true, group }
-      })
-      const sm = { pos: [...P4_POS], fog: 0.075, light: 1 }
-      applyProgress(1)
-      if (reduced) {
-        renderer.render(scene, camera)
-        markHealthy()
-      } else {
-        const tickBackdrop = () => {
-          const goal = SECTION_MOD[progRef.current.activeId] || SECTION_MOD.home
-          const L = 0.06
-          for (let i = 0; i < 3; i++) {
-            sm.pos[i] += ((P4_POS[i] + goal.d[i]) - sm.pos[i]) * L
-          }
-          sm.fog += (goal.fog - sm.fog) * L
-          sm.light += (goal.light - sm.light) * L
-          camera.position.set(sm.pos[0], sm.pos[1], sm.pos[2])
-          camera.lookAt(P4_TGT[0], P4_TGT[1], P4_TGT[2])
-          scene.fog.density = 0.075 * sm.fog
-          lightsBase.forEach(([light, base]) => {
-            light.intensity = base * sm.light
-          })
-          onFrame(mount.clientWidth, mount.clientHeight)
-          updateSign(performance.now() / 1000, 1)
-          renderer.render(scene, camera)
-          markHealthy()
-          raf = requestAnimationFrame(tickBackdrop)
-        }
-        renderLoop = tickBackdrop
-      }
-    } else if (reduced) {
-      syncReducedScene(integratedRef.current ? (diveProgressRef.current ?? progRef.current.dive) : 1)
+    if (reduced) {
+      syncReducedScene(integratedRef.current ? (diveProgressRef.current ?? getSectionProgress().dive) : 1)
       markHealthy()
     } else {
       const target = () => {
-        if (integratedRef.current) return diveProgressRef.current ?? progRef.current.dive
+        if (integratedRef.current) return diveProgressRef.current ?? getSectionProgress().dive
         const max = document.documentElement.scrollHeight - window.innerHeight
         return max > 0 ? Math.min(Math.max(window.scrollY / max, 0), 1) : 0
       }
@@ -3686,7 +3364,7 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         } else {
           returnStartedAt = null
           returnDoneSent = false
-          displayed += (goal - displayed) * 0.1
+          displayed += (goal - displayed) * (1 - Math.exp(-dt * 6.5))
           if (Math.abs(goal - displayed) < 0.0005) displayed = goal
         }
         applyProgress(displayed)
@@ -3696,6 +3374,11 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         updateSign(now / 1000, displayed)
         lastP = displayed
         if (!integratedRef.current && displayed > 0.96) setHeroMounted(true)
+        if (pendingSize && !landingRef?.current.active) {
+          const { w, h } = pendingSize
+          pendingSize = null
+          onFrame(w, h)
+        }
         renderFrame(displayed, now / 1000)
         markHealthy()
         if (probeActive && probeRef) {
@@ -3741,22 +3424,39 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       renderLoop = tick
     }
 
-    if (!backdropRef.current && !reduced && qState.mode === 'normal') {
+    if (!reduced && qState.mode === 'normal') {
       track(Promise.allSettled([...pendingStarts.keys()]).then(prepareTransition), 'transition')
     }
-    // ResizeObserver owns dimensions; render ticks do not force layout reads.
     onFrame(mount.clientWidth, mount.clientHeight)
     document.addEventListener('visibilitychange', syncLoop)
     syncLoop()
 
-    const ro = new ResizeObserver(() => {
-      onFrame(mount.clientWidth, mount.clientHeight)
-      if (reduced) renderer.render(scene, camera)
+    let heightResizeTimer = 0
+    const ro = new ResizeObserver((entries) => {
+      const rect = entries[entries.length - 1]?.contentRect
+      const w = rect ? Math.round(rect.width) : mount.clientWidth
+      const h = rect ? Math.round(rect.height) : mount.clientHeight
+      if (reduced) {
+        if (onFrame(w, h) && !document.hidden) renderer.render(scene, camera)
+        return
+      }
+      const heightOnlyBarShift =
+        w === qState.lastW && h !== qState.lastH && Math.abs(h - qState.lastH) < 180
+      if (heightOnlyBarShift) {
+        clearTimeout(heightResizeTimer)
+        heightResizeTimer = setTimeout(() => {
+          pendingSize = { w: mount.clientWidth, h: mount.clientHeight }
+        }, 150)
+      } else {
+        clearTimeout(heightResizeTimer)
+        pendingSize = { w, h }
+      }
     })
     ro.observe(mount)
 
     return () => {
       cancelled = true
+      clearTimeout(heightResizeTimer)
       cancelAnimationFrame(raf)
       sceneCommandRef.current = null
       runtimeApplyRef.current = null
@@ -3766,7 +3466,6 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       ro.disconnect()
       charRigs.forEach((c) => { c.mixer.stopAllAction(); c.mixer.uncacheRoot(c.root) })
       unsubscribeWorld?.()
-      // Final teardown only: parked/replay renderers keep their resources.
       const owned = new Set(disposables)
       scene.traverse((n) => {
         if (n.geometry) owned.add(n.geometry)
@@ -3778,11 +3477,6 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
           if (lookup && renderer.properties.has(lookup)) owned.add(lookup)
         }
       })
-      // Dive is the sole area-light consumer; release its shared lookup uploads/listeners.
-      for (const key of ['LTC_FLOAT_1', 'LTC_FLOAT_2', 'LTC_HALF_1', 'LTC_HALF_2']) {
-        const texture = THREE.UniformsLib[key]
-        if (texture && renderer.properties.has(texture)) owned.add(texture)
-      }
       owned.forEach((resource) => resource.dispose?.())
       renderer.dispose()
       renderer.forceContextLoss()
@@ -3796,11 +3490,10 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
     if (runtimeApplyRef.current) runtimeApplyRef.current(qualityMode)
   }, [qualityMode])
 
-  const revealProgress = integratedRef.current
-    ? returningToP0 ? 0 : diveProgress ?? prog.dive
-    : debug.p
-  const revealed = revealProgress >= 0.94
-  const rp = smooth(Math.min(Math.max((revealProgress - 0.94) / 0.06, 0), 1))
+  const revealed = integratedRef.current
+    ? (returningToP0 ? false : diveProgress != null ? diveProgress >= 0.94 : dive94)
+    : debug.p >= 0.94
+  const rp = smooth(Math.min(Math.max((debug.p - 0.94) / 0.06, 0), 1))
 
   useLayoutEffect(() => {
     if (heroRevealRef.current) heroRevealRef.current.inert = !revealed
@@ -3835,10 +3528,6 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
         </div>
       </>
     )
-  }
-
-  if (backdropRef.current) {
-    return <div ref={mountRef} className="webgl-backdrop" aria-hidden="true" style={backdropStyle} />
   }
 
   return (
@@ -3903,4 +3592,4 @@ export default function AquariumDivePrototype({ backdrop = false, integrated = f
       </div>
     </div>
   )
-}
+})

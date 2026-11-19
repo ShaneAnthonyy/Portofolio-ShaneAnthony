@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import ActionButton from './ActionButton.jsx'
 import { contact } from '../data/content.js'
 import { CONTACT_FISH } from '../data/fauna.js'
@@ -6,7 +6,7 @@ import AmbientFish from './AmbientFish.jsx'
 import { typeTimelines, useTypeReveal } from '../animation/typography.js'
 import { choreographyBuilders, useSectionChoreography } from '../animation/sectionChoreography.js'
 
-export default function Contact() {
+export default memo(function Contact() {
   const typeRef = useTypeReveal(typeTimelines.contact, 'contact')
   const choreoRef = useSectionChoreography(choreographyBuilders.contact, 'choreo-contact')
   const [form, setForm] = useState({ name: '', email: '', message: '' })
@@ -165,4 +165,4 @@ export default function Contact() {
       </div>
     </section>
   )
-}
+})

@@ -1,6 +1,7 @@
+import { memo } from 'react'
 import { choreographyBuilders, useSectionChoreography } from '../animation/sectionChoreography.js'
 
-export default function Separator() {
+export default memo(function Separator() {
   const choreoRef = useSectionChoreography(
     choreographyBuilders.separator,
     'choreo-sep'
@@ -10,4 +11,4 @@ export default function Separator() {
       <span className="depth-gap__line" />
     </div>
   )
-}
+})
