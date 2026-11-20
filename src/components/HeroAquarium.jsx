@@ -25,40 +25,98 @@ export default function HeroAquarium({ enabled, preview = false, sceneReady, pre
   useGSAP(() => {
     const surface = surfaceRef.current
     const home = surface.closest('#home')
+    const content = home?.querySelector('.hero__content')
+    const replay = home?.querySelector('.hero__replay')
     const scene = surface.querySelector('.hero-surface__scene')
     const clip = surface.querySelector('clipPath path')
     const reflection = surface.querySelector('.hero-surface__reflection')
     const meniscus = surface.querySelector('.hero-surface__meniscus')
     const media = gsap.matchMedia()
-    media.add({ compact: '(max-width: 720px)', full: '(min-width: 721px)', reduced: '(prefers-reduced-motion: reduce)' }, context => {
-      const { compact, reduced: simple } = context.conditions
+    media.add({ compact: '(max-width: 720px)', full: '(min-width: 721px)', reduced: '(prefers-reduced-motion: reduce)', fine: '(pointer: fine)' }, context => {
+      const { compact, reduced: simple, fine } = context.conditions
       const curveScale = compact ? .45 : 1
       const timeline = gsap.timeline({ paused: true, defaults: { ease: 'none' } })
       const travel = { progress: 0 }
       timeline.to(travel, { progress: 1, duration: 1 }, 0)
       if (!simple) {
+        if (content) {
+          timeline.fromTo(
+            content,
+            { y: 0, scale: 1, opacity: 1 },
+            { y: compact ? 18 : 28, scale: .965, opacity: 0, duration: .40, ease: 'power1.inOut' },
+            .04
+          )
+        }
+        if (replay) {
+          timeline.fromTo(
+            replay,
+            { xPercent: -50, x: 0, y: 0, opacity: 1 },
+            { xPercent: -50, x: 0, y: -8, opacity: 0, duration: .15, ease: 'power1.out' },
+            .01
+          )
+        }
         if (staticMode) {
-          timeline.fromTo(scene, { yPercent: 0 }, { yPercent: -112, duration: .68, ease: 'sine.inOut' }, .1)
-          timeline.fromTo(meniscus, { yPercent: 108 }, { yPercent: -12, duration: .68, ease: 'sine.inOut' }, .1)
-          timeline.fromTo(meniscus, { opacity: 0 }, { opacity: 1, duration: .12 }, .2)
-          timeline.to(meniscus, { opacity: 0, duration: .14 }, .64)
+          timeline.fromTo(scene, { yPercent: 0, opacity: 1 }, { yPercent: -112, duration: .74, ease: 'sine.inOut' }, .02)
+          timeline.to(scene, { opacity: 0, duration: .26, ease: 'sine.in' }, .48)
+          timeline.fromTo(meniscus, { yPercent: 108 }, { yPercent: -12, duration: .74, ease: 'sine.inOut' }, .02)
+          timeline.fromTo(meniscus, { opacity: 0 }, { opacity: 1, duration: .14, ease: 'sine.out' }, .04)
+          timeline.to(meniscus, { opacity: 0, duration: .18, ease: 'sine.in' }, .58)
         } else {
-          timeline.fromTo(approachRef.current, { value: 0 }, { value: 1, duration: .62, ease: 'sine.inOut' }, 0)
+          timeline.fromTo(approachRef.current, { value: 0 }, { value: 1, duration: .64, ease: 'sine.inOut' }, 0)
           timeline.fromTo(hostRef.current, { scaleX: 1, scaleY: 1, yPercent: 0 }, {
             scaleX: compact ? 1.012 : 1.025, scaleY: compact ? 1.035 : 1.065,
-            yPercent: compact ? -1 : -2, duration: .62, ease: 'sine.inOut',
+            yPercent: compact ? -1 : -2, duration: .64, ease: 'sine.inOut',
           }, 0)
-          timeline.fromTo(reflection, { opacity: 0, yPercent: 5 }, { opacity: .6, yPercent: -8, duration: .32, ease: 'sine.inOut' }, .04)
-          timeline.to(reflection, { opacity: 0, yPercent: -18, duration: .38 }, .36)
-          timeline.fromTo(clip, { attr: { transform: `translate(0 1.08) scale(1 ${curveScale})` } }, { attr: { transform: `translate(0 -0.12) scale(1 ${curveScale})` }, duration: .68, ease: 'sine.inOut' }, .1)
-          timeline.fromTo(meniscus, { yPercent: 108 }, { yPercent: -12, duration: .68, ease: 'sine.inOut' }, .1)
-          timeline.fromTo(meniscus, { opacity: 0 }, { opacity: 1, duration: .12 }, .2)
-          timeline.to(meniscus, { opacity: 0, duration: .14 }, .64)
+          timeline.fromTo(reflection, { opacity: 0, yPercent: 5 }, { opacity: .62, yPercent: -8, duration: .34, ease: 'sine.inOut' }, .02)
+          timeline.to(reflection, { opacity: 0, yPercent: -18, duration: .38, ease: 'sine.in' }, .36)
+          timeline.fromTo(clip, { attr: { transform: `translate(0 1.08) scale(1 ${curveScale})` } }, { attr: { transform: `translate(0 -0.12) scale(1 ${curveScale})` }, duration: .74, ease: 'sine.inOut' }, .02)
+          timeline.fromTo(meniscus, { yPercent: 108 }, { yPercent: -12, duration: .74, ease: 'sine.inOut' }, .02)
+          timeline.fromTo(meniscus, { opacity: 0 }, { opacity: 1, duration: .14, ease: 'sine.out' }, .04)
+          timeline.to(meniscus, { opacity: 0, duration: .18, ease: 'sine.in' }, .58)
         }
       }
       let previous = -1
+      let visualP = -1
+      let smoothRaf = 0
+      let smoothLastT = 0
       let resident = surface.dataset.resident !== 'false'
       let handoff = -1
+      const applyVisual = (vp) => {
+        visualP = vp
+        timeline.progress(vp)
+        sceneRef.current?.setApproach(approachRef.current.value)
+        surface.dataset.surfaceState = vp === 0 ? 'surface' : vp >= .8 ? 'submerged' : 'crossing'
+        surface.style.visibility = !simple && vp >= .8 ? 'hidden' : ''
+        scene.style.visibility = !simple && vp >= .76 ? 'hidden' : ''
+        const crossing = !simple && vp > .01 && vp < .78
+        const nextClip = !simple && !staticMode && vp > .01 ? `url(#surface-${id})` : 'none'
+        if (scene.style.clipPath !== nextClip) scene.style.clipPath = nextClip
+        const reflVis = crossing && !staticMode ? 'visible' : 'hidden'
+        const menVis = crossing ? 'visible' : 'hidden'
+        if (reflection.style.visibility !== reflVis) reflection.style.visibility = reflVis
+        if (meniscus.style.visibility !== menVis) meniscus.style.visibility = menVis
+        if (replay && !simple) {
+          const nextPtr = vp > .14 ? 'none' : ''
+          if (replay.style.pointerEvents !== nextPtr) replay.style.pointerEvents = nextPtr
+        }
+        loopRef.current?.()
+      }
+      const stepSmooth = (now) => {
+        smoothRaf = 0
+        if (document.hidden) {
+          applyVisual(previous)
+          return
+        }
+        const dt = Math.min((now - smoothLastT) / 1000, 0.05)
+        smoothLastT = now
+        const next = visualP + (previous - visualP) * (1 - Math.exp(-dt * 24))
+        if (Math.abs(previous - next) < 0.0008) {
+          applyVisual(previous)
+          return
+        }
+        applyVisual(next)
+        smoothRaf = requestAnimationFrame(stepSmooth)
+      }
       const update = () => {
         const rect = home.getBoundingClientRect()
         const distance = -rect.top / Math.max(rect.height, 1)
@@ -77,25 +135,24 @@ export default function HeroAquarium({ enabled, preview = false, sceneReady, pre
         if (p === previous) return
         previous = p
         progressRef.current = p
-        timeline.progress(p)
-        sceneRef.current?.setApproach(approachRef.current.value)
         surface.dataset.progress = p.toFixed(4)
-        surface.dataset.surfaceState = p === 0 ? 'surface' : p >= .8 ? 'submerged' : 'crossing'
-        surface.style.visibility = !simple && p >= .8 ? 'hidden' : ''
-        scene.style.visibility = !simple && p >= .76 ? 'hidden' : ''
-        const crossing = !simple && p > .01 && p < .78
-        const nextClip = !simple && !staticMode && p > .01 && p < .76 ? `url(#surface-${id})` : 'none'
-        if (scene.style.clipPath !== nextClip) scene.style.clipPath = nextClip
-        const reflVis = crossing && !staticMode ? 'visible' : 'hidden'
-        const menVis = crossing ? 'visible' : 'hidden'
-        if (reflection.style.visibility !== reflVis) reflection.style.visibility = reflVis
-        if (meniscus.style.visibility !== menVis) meniscus.style.visibility = menVis
-        loopRef.current?.()
+        const shouldSmooth = fine && !simple && !document.hidden && visualP >= 0 && Math.abs(p - visualP) <= .25
+        if (!shouldSmooth) {
+          if (smoothRaf) {
+            cancelAnimationFrame(smoothRaf)
+            smoothRaf = 0
+          }
+          applyVisual(p)
+        } else if (!smoothRaf) {
+          smoothLastT = performance.now()
+          smoothRaf = requestAnimationFrame(stepSmooth)
+        }
       }
       const unsubscribe = subscribeProgressFrame(update)
       const resize = new ResizeObserver(update)
       resize.observe(home)
       return () => {
+        if (smoothRaf) cancelAnimationFrame(smoothRaf)
         unsubscribe()
         resize.disconnect()
         surface.style.visibility = ''
@@ -103,6 +160,8 @@ export default function HeroAquarium({ enabled, preview = false, sceneReady, pre
         scene.style.clipPath = 'none'
         reflection.style.visibility = ''
         meniscus.style.visibility = ''
+        if (content) gsap.set(content, { clearProps: 'transform,opacity' })
+        if (replay) gsap.set(replay, { clearProps: 'transform,opacity,pointerEvents' })
       }
     })
     return () => media.revert()
@@ -234,13 +293,14 @@ export default function HeroAquarium({ enabled, preview = false, sceneReady, pre
           </clipPath>
           <linearGradient id={`water-${id}`} x1="0" y1="0" x2="0" y2="1">
             <stop offset="0" stopColor="var(--surface-shadow)" stopOpacity="0" />
-            <stop offset=".46" stopColor="var(--surface-shadow)" stopOpacity=".5" />
-            <stop offset=".62" stopColor="var(--surface-light)" stopOpacity=".2" />
+            <stop offset=".32" stopColor="var(--surface-shadow)" stopOpacity=".46" />
+            <stop offset=".55" stopColor="var(--surface-light)" stopOpacity=".30" />
+            <stop offset=".78" stopColor="var(--surface-light)" stopOpacity=".10" />
             <stop offset="1" stopColor="var(--surface-light)" stopOpacity="0" />
           </linearGradient>
         </defs>
       </svg>
-      <div className="hero-surface__scene" style={{ clipPath: 'none' }}>
+      <div className="hero-surface__scene">
         <div
           ref={hostRef}
           className="hero-aquarium"

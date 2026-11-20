@@ -61,7 +61,7 @@ export default memo(function WorldEnvironment({ enabled, diveActive, onOwnership
       if (!frame && opacity > 0 && !document.hidden) frame = requestAnimationFrame(() => { frame = 0; apply() })
     }
     const update = () => {
-      const next = smooth(.04, .3, -home.getBoundingClientRect().top / Math.max(home.offsetHeight, 1))
+      const next = smooth(.03, .36, -home.getBoundingClientRect().top / Math.max(home.offsetHeight, 1))
       if (next > 0 && !document.hidden) apply()
       if (next === 0 && frame) { cancelAnimationFrame(frame); frame = 0 }
       if (next !== opacity) {

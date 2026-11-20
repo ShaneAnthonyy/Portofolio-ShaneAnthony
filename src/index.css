@@ -1763,6 +1763,10 @@ html[data-perf='lite'] .aqua-root .footer {
   border-top-color: var(--aqua-line);
 }
 
+.aqua-root #about.section {
+  border-top-color: transparent;
+}
+
 .aqua-root main {
   position: relative;
   z-index: 10;

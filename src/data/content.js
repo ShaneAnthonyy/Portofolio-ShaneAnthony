@@ -14,7 +14,7 @@ export const profile = {
 
 export const stats = [
   { label: 'Projects', value: '6' },
-  { label: 'Skills', value: '23' },
+  { label: 'Skills', value: '30' },
   { label: 'GPA / 4.00', value: '3.48' },
 ]
 
@@ -61,6 +61,7 @@ export const skillGroups = [
       { name: 'C', tier: 'intermediate' },
       { name: 'PHP', tier: 'amateur' },
       { name: 'Java', tier: 'amateur' },
+      { name: 'MySQL', tier: 'amateur' },
     ],
   },
   {
@@ -68,10 +69,12 @@ export const skillGroups = [
     items: [
       { name: 'Visual Studio Code', tier: 'intermediate' },
       { name: 'Figma', tier: 'intermediate' },
+      { name: 'Git', tier: 'amateur' },
       { name: 'GitHub', tier: 'amateur' },
       { name: 'Laravel', tier: 'amateur' },
       { name: 'Vite', tier: 'amateur' },
       { name: 'phpMyAdmin', tier: 'amateur' },
+      { name: 'Vercel', tier: 'amateur' },
     ],
   },
   {
@@ -80,6 +83,10 @@ export const skillGroups = [
       { name: 'Machine Learning', tier: 'amateur' },
       { name: 'Natural Language Processing', tier: 'amateur' },
       { name: 'Computer Vision', tier: 'amateur' },
+      { name: 'OpenCV', tier: 'amateur' },
+      { name: 'CRF', tier: 'amateur' },
+      { name: 'UMAP', tier: 'amateur' },
+      { name: 'K-Means', tier: 'amateur' },
     ],
   },
   {

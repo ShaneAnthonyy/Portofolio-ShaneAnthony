@@ -26,19 +26,19 @@ const ZONES = [
     id: 'backend',
     label: 'Backend Development',
     desc: 'Working knowledge',
-    skills: ['Python', 'C', 'PHP', 'Java'],
+    skills: ['Python', 'C', 'PHP', 'Java', 'MySQL'],
   },
   {
     id: 'tools',
     label: 'Tools & Frameworks',
     desc: 'Daily workflow',
-    skills: ['Visual Studio Code', 'Figma', 'GitHub', 'Vite', 'Laravel', 'phpMyAdmin'],
+    skills: ['Visual Studio Code', 'Figma', 'Git', 'GitHub', 'Vite', 'Laravel', 'phpMyAdmin', 'Vercel'],
   },
   {
     id: 'ai',
     label: 'Artificial Intelligence',
     desc: 'Applied intelligence',
-    skills: ['Machine Learning', 'Natural Language Processing', 'Computer Vision'],
+    skills: ['Machine Learning', 'Natural Language Processing', 'Computer Vision', 'OpenCV', 'CRF', 'UMAP', 'K-Means'],
   },
   {
     id: 'professional',
