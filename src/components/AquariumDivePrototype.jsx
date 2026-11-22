@@ -654,7 +654,7 @@ export default memo(function AquariumDivePrototype({ integrated = false, onHealt
 
   useLayoutEffect(() => {
     loopControlRef.current?.()
-  }, [pauseBackdrop])
+  }, [pauseBackdrop, presentationReady])
 
   useLayoutEffect(() => {
     if (!integratedRef.current || !progReduced || !sceneCommandRef.current) return
@@ -669,10 +669,19 @@ export default memo(function AquariumDivePrototype({ integrated = false, onHealt
       window.matchMedia('(prefers-reduced-motion: reduce)').matches
     let cancelled = false
 
-    const readiness = { total: 0, settled: 0, frames: 0, healthy: false }
+    const readiness = { total: 0, settled: 0, frames: 0, postFrames: 0, healthy: false }
     const readyT0 = performance.now()
     const settleLog = []
     const pendingStarts = new Map()
+    const yieldFrame = () => new Promise((resolve) => requestAnimationFrame(() => resolve()))
+    const yieldPaint = () => yieldFrame().then(() => (cancelled ? undefined : yieldFrame()))
+    let attachQueue = Promise.resolve()
+    const enqueueAttach = (fn) => {
+      const next = attachQueue.then(() => (cancelled ? undefined : yieldPaint())).then(() => (cancelled ? undefined : fn()))
+      attachQueue = next.catch(() => {})
+      return next
+    }
+    let startGatedWarmup = null
     const emit = (p) => {
       try {
         cbRef.current.onProgress && cbRef.current.onProgress(p)
@@ -681,7 +690,12 @@ export default memo(function AquariumDivePrototype({ integrated = false, onHealt
     const maybeHealthy = () => {
       if (cancelled || readiness.healthy) return
       if (readiness.settled < readiness.total) return
+      if (integratedRef.current && !presentationRef.current && !reduced && readiness.postFrames < 2) {
+        startGatedWarmup?.()
+        return
+      }
       if (readiness.frames < 3) return
+      if (!reduced && readiness.postFrames < 2) return
       readiness.healthy = true
       emit(1)
       try {
@@ -706,7 +720,7 @@ export default memo(function AquariumDivePrototype({ integrated = false, onHealt
       if (cancelled || readiness.healthy) return
       readiness.settled += 1
       const total = Math.max(readiness.total, 1)
-      emit(0.15 + (0.7 * Math.min(readiness.settled, total)) / total)
+      emit(0.15 + (0.69 * Math.min(readiness.settled, total)) / total)
       maybeHealthy()
     }
     const track = (promise, label = 'asset') => {
@@ -917,8 +931,7 @@ export default memo(function AquariumDivePrototype({ integrated = false, onHealt
       return true
     }
     const installSet = () => {
-      const out = [aquariumRoot, tableGroupRef.current, poc.tableShadowGroup, poc.ground, poc.rig, poc.aquaFill, poc.aquaHemi, titleState.group, sign.group]
-      if (poc.aquaSpot && poc.aquaSpot.target) out.push(poc.aquaSpot.target)
+      const out = [aquariumRoot, tableGroupRef.current, poc.tableShadowGroup, poc.ground, titleState.group, sign.group]
       return out.filter(Boolean)
     }
     const setInstallVisible = (v) => {
@@ -934,6 +947,9 @@ export default memo(function AquariumDivePrototype({ integrated = false, onHealt
       const samples = qState.runtime.transitionSamples || 0
       const mkRT = () => {
         const rt = new THREE.WebGLRenderTarget(Math.max(1, Math.round(size.x * rtScale)), Math.max(1, Math.round(size.y * rtScale)), { depthBuffer: true, samples })
+        rt.isXRRenderTarget = true
+        rt.texture.colorSpace = THREE.SRGBColorSpace
+        rt.texture.internalFormat = 'RGBA8'
         rt.texture.minFilter = THREE.LinearFilter
         rt.texture.magFilter = THREE.LinearFilter
         return rt
@@ -1010,10 +1026,9 @@ export default memo(function AquariumDivePrototype({ integrated = false, onHealt
             float mask = smoothstep(edge - 0.22, edge + 0.08, mn);
             sceneCol.rgb = mix(sceneCol.rgb, sceneCol.rgb * 0.92 + vec3(0.020, 0.035, 0.050), uDissolve * 0.35 * (1.0 - mask));
             gl_FragColor = mix(sceneCol, skyCol, mask);
-            #include <tonemapping_fragment>
-            #include <colorspace_fragment>
           }
         `,
+        toneMapped: false,
         depthTest: false,
         depthWrite: false,
       })
@@ -1084,10 +1099,18 @@ export default memo(function AquariumDivePrototype({ integrated = false, onHealt
           await Promise.all([sceneReady, renderer.compileAsync(tr.quadScene, tr.quadCam)])
           if (cancelled || trans !== tr || qState.mode === 'lite') return
           preparingTransition = null
-          const time = performance.now() / 1000
-          renderFrame(0.62, time)
-          renderFrame(0.94, time)
-          renderFrame(lastP, time)
+          emit(0.86)
+          await yieldPaint()
+          if (cancelled || trans !== tr || qState.mode === 'lite') return
+          renderFrame(0.62, performance.now() / 1000)
+          emit(0.90)
+          await yieldPaint()
+          if (cancelled || trans !== tr || qState.mode === 'lite') return
+          renderFrame(0.94, performance.now() / 1000)
+          emit(0.93)
+          await yieldPaint()
+          if (cancelled || trans !== tr || qState.mode === 'lite') return
+          renderFrame(lastP, performance.now() / 1000)
         } finally {
           if (preparingTransition === tr) preparingTransition = null
           if (!cancelled) renderer.setRenderTarget(target)
@@ -1178,7 +1201,7 @@ export default memo(function AquariumDivePrototype({ integrated = false, onHealt
       return track(
         loader
           .loadAsync(url)
-          .then((gltf) => {
+          .then((gltf) => enqueueAttach(() => {
           if (cancelled) return
           const res = place(gltf.scene)
           if (!res.ok) {
@@ -1202,7 +1225,7 @@ export default memo(function AquariumDivePrototype({ integrated = false, onHealt
             log('FLOOR_GLTF_ACTIVE')
           }
           if (reduced) rerender()
-        })
+        }))
         .catch(() => {
           console.warn(`[dive-poc] ${name} missing/unreadable — keeping TEMP primitive`)
           log('TEMP_FLOOR_VISIBLE', 'loader rejected')
@@ -1217,7 +1240,7 @@ export default memo(function AquariumDivePrototype({ integrated = false, onHealt
       return track(
         loader
           .loadAsync(url)
-          .then((gltf) => {
+          .then((gltf) => enqueueAttach(() => {
           if (cancelled) return
           const res = place(gltf.scene)
           if (!res.ok) {
@@ -1233,7 +1256,7 @@ export default memo(function AquariumDivePrototype({ integrated = false, onHealt
           log('FISH_GLTF_ACTIVE')
           applyCompact(mount.clientWidth)
           if (reduced) rerender()
-        })
+        }))
         .catch((err) => {
           log('loader error', err?.message || err)
           log('FISH_TEMP_FALLBACK', 'loader rejected')
@@ -1260,15 +1283,11 @@ export default memo(function AquariumDivePrototype({ integrated = false, onHealt
     const tableGroupRef = { current: null }
     const poc = {
       ground: null,
-      rig: null, aquaRect: null, aquaSpot: null, aquaFill: null, aquaHemi: null,
     }
-    const AQUA_WARM = new THREE.Color(0xfff4df)
-    const AQUA_COOL = new THREE.Color(0xe8f0ff)
     const titleState = { group: null, mat: null, baseY: 0, baseS: 1, baseZ: 0 }
     const TITLE_LIGHT = new THREE.Color(0xfff8e8)
     const TITLE_DARK = new THREE.Color(0xf2f7ff)
     const _titleC = new THREE.Color()
-    const _aquaV = new THREE.Vector3()
     const FISH_CFG = [
       { s: 1.0, ox: 0.18, oy: 0.18, oz: 0.05, rotY: 0, speed: 0.5, bob: 0.1, sway: 0.12, depth: 0.1, phase: 0.0 },
       { s: 0.6, ox: -0.22, oy: 0.3, oz: -0.2, rotY: Math.PI - 0.25, speed: 0.42, bob: 0.07, sway: 0.1, depth: 0.08, phase: 2.1 },
@@ -1599,39 +1618,6 @@ export default memo(function AquariumDivePrototype({ integrated = false, onHealt
     }
     seatWater()
 
-    const seatAquariumLight = () => {
-      if (!poc.rig || !poc.aquaRect) return
-      const box = new THREE.Box3()
-      let found = false
-      const consider = (o) => {
-        if (!o) return
-        o.updateMatrixWorld(true)
-        box.expandByObject(o)
-        found = true
-      }
-      if (loadedGroups.tank) consider(loadedGroups.tank)
-      else (temp.tank || []).forEach(consider)
-      if (!found) return
-      const size = new THREE.Vector3()
-      const center = new THREE.Vector3()
-      box.getSize(size)
-      box.getCenter(center)
-      if (![size.x, size.y, size.z, center.x, center.y, center.z, box.max.y].every(Number.isFinite)) return
-      if (size.x <= 0 || size.z <= 0) return
-      poc.rig.position.set(center.x, box.max.y + 0.5, center.z)
-      poc.rig.updateMatrixWorld(true)
-      _aquaV.set(center.x, center.y, center.z)
-      if (poc.aquaFill) {
-        poc.aquaFill.position.set(center.x, center.y + 1.2, center.z + size.z * 0.45)
-        poc.aquaFill.updateMatrixWorld(true)
-      }
-      _aquaV.set(center.x, center.y - 0.5, center.z)
-      if (poc.aquaSpot) {
-        poc.aquaSpot.target.position.copy(_aquaV)
-        poc.aquaSpot.target.updateMatrixWorld(true)
-      }
-    }
-
     const updateWorldLighting = () => {
       const state = worldLighting
       if (state.minutes === environment.minutes && state.aspect === camera.aspect &&
@@ -1718,23 +1704,6 @@ export default memo(function AquariumDivePrototype({ integrated = false, onHealt
       renderer.toneMappingExposure = environment.exposure
       _pocD.fromArray(environment.fog).lerp(POC_DEEP, kEnter)
       scene.fog.color.copy(_pocD)
-      if (poc.aquaRect) {
-        const nightMult = lerp(1.0, 0.8, k)
-        const ledK =
-          1 - 0.02 * smooth(Math.min(Math.max((p - 0.63) / 0.07, 0), 1)) -
-          0.13 * smooth(Math.min(Math.max((p - 0.7) / 0.15, 0), 1))
-        const aquaMult = nightMult * ledK * (1 - 0.2 * kReveal)
-        poc.aquaRect.intensity = 21 * aquaMult
-        poc.aquaRect.color.copy(AQUA_WARM).lerp(AQUA_COOL, Math.min(1, k * 0.5 + kEnter * 0.5))
-        if (poc.aquaSpot) {
-          poc.aquaSpot.intensity = 0.65 * aquaMult
-          poc.aquaSpot.color.copy(poc.aquaRect.color)
-        }
-        if (poc.aquaHemi) {
-          poc.aquaHemi.intensity = 0.5 * ledK
-        }
-      }
-      if (poc.aquaFill) poc.aquaFill.intensity = (0.45 + 0.08 * k) * 5.8
       if (titleState.group && titleState.mat) {
         titleState.group.position.y =
           titleState.baseY + 0.3 * smooth(Math.min(Math.max((p - 0.2) / 0.4, 0), 1))
@@ -2130,21 +2099,6 @@ export default memo(function AquariumDivePrototype({ integrated = false, onHealt
         )
       })
 
-      poc.rig = new THREE.Group()
-      poc.aquaRect = new THREE.PointLight(0xfff4df, 21, 16, 2)
-      poc.rig.add(poc.aquaRect)
-      poc.aquaSpot = new THREE.SpotLight(0xffffff, 0.65, 10, Math.PI / 3.6, 0.9, 2)
-      poc.aquaSpot.castShadow = false
-      poc.rig.add(poc.aquaSpot)
-      poc.aquaFill = new THREE.PointLight(0xe7f2ff, 2.6, 16, 2)
-      scene.add(poc.aquaFill)
-      poc.aquaHemi = new THREE.HemisphereLight(0xbfe7ff, 0x6b5b45, 0.5)
-      poc.aquaHemi.layers.set(1)
-      scene.add(poc.aquaHemi)
-      scene.add(poc.aquaSpot.target)
-      aquariumRoot.add(poc.rig)
-      seatAquariumLight()
-
       track(
         new FontLoader()
           .loadAsync('/aquarium/fonts/BoldsPixels.typeface.json')
@@ -2300,7 +2254,6 @@ export default memo(function AquariumDivePrototype({ integrated = false, onHealt
       placeShrimps()
       seatTable()
       seatWater()
-      seatAquariumLight()
       if (reduced) { updateOutdoor(0, 1, 0, true); rerender() }
       return { ok: true, slot: 'tank', group }
     })
@@ -2846,7 +2799,7 @@ export default memo(function AquariumDivePrototype({ integrated = false, onHealt
       track(
         loader
           .loadAsync(treeUrl)
-          .then((gltf) => {
+          .then((gltf) => enqueueAttach(() => {
           if (cancelled) return
           const src = gltf.scene
           const junk = []
@@ -2872,7 +2825,7 @@ export default memo(function AquariumDivePrototype({ integrated = false, onHealt
           flog('trees active ' + okCount + '/' + treeCfgs.length)
           applyCompact(mount.clientWidth)
           if (reduced) rerender()
-        }, () => {
+        }), () => {
           flog('tree.glb missing/unreadable — no trees')
         }),
         'tree'
@@ -2880,7 +2833,7 @@ export default memo(function AquariumDivePrototype({ integrated = false, onHealt
       track(
         loader
           .loadAsync(greenTreeUrl)
-          .then((gltf) => {
+          .then((gltf) => enqueueAttach(() => {
           if (cancelled) return
           const src = gltf.scene
           const junk = []
@@ -2905,7 +2858,7 @@ export default memo(function AquariumDivePrototype({ integrated = false, onHealt
           flog('green trees active ' + okCount + '/' + greenCfgs.length)
           applyCompact(mount.clientWidth)
           if (reduced) rerender()
-        }, () => {
+        }), () => {
           flog('green_tree.glb missing/unreadable')
         }),
         'green-tree'
@@ -3007,8 +2960,8 @@ export default memo(function AquariumDivePrototype({ integrated = false, onHealt
           layoutCharacters(mount.clientWidth, mount.clientHeight)
           flog(kind + ' placed clips=' + Object.keys(clips).join(','))
         }
-        track(loader.loadAsync('/aquarium/environment/chicken_jockey_animated-05n.glb').then((g) => placeChar(g, 0, 'chicken'), () => flog('chicken missing')), 'chicken')
-        track(loader.loadAsync('/aquarium/environment/golem_animated-05nB.glb').then((g) => placeChar(g, 0, 'golem'), () => flog('golem missing')), 'golem')
+        track(loader.loadAsync('/aquarium/environment/chicken_jockey_animated-05n.glb').then((g) => enqueueAttach(() => placeChar(g, 0, 'chicken')), () => flog('chicken missing')), 'chicken')
+        track(loader.loadAsync('/aquarium/environment/golem_animated-05nB.glb').then((g) => enqueueAttach(() => placeChar(g, 0, 'golem')), () => flog('golem missing')), 'golem')
       }
 
       {
@@ -3299,22 +3252,55 @@ export default memo(function AquariumDivePrototype({ integrated = false, onHealt
     sceneCommandRef.current = syncReducedScene
 
     let raf = 0
+    let warmupRaf = 0
+    let warmupStarted = false
     let displayed = reduced || diveProgressRef.current === 1 ? 1 : 0
     let renderLoop = null
     const parked = () => pauseRef.current && displayed >= 0.9995 && !returningRef.current
+    const isGated = () => integratedRef.current && !presentationRef.current && !reduced
     const syncLoop = () => {
       cancelAnimationFrame(raf)
       raf = 0
       const paused = parked()
-      if (paused || document.hidden) charactersPresented = false
+      const gated = isGated()
+      if (paused || gated || document.hidden) charactersPresented = false
       cbRef.current.onBackdropPaused?.(paused)
-      mount.dataset.renderState = paused ? 'paused' : document.hidden ? 'hidden' : reduced ? 'static' : 'running'
-      if (!cancelled && !paused && !document.hidden && renderLoop) raf = requestAnimationFrame(renderLoop)
+      mount.dataset.renderState = paused ? 'paused' : gated ? 'gated' : document.hidden ? 'hidden' : reduced ? 'static' : 'running'
+      if (!cancelled && !paused && !gated && !document.hidden && renderLoop) raf = requestAnimationFrame(renderLoop)
     }
     loopControlRef.current = syncLoop
+    startGatedWarmup = () => {
+      if (cancelled || readiness.healthy || warmupStarted || !isGated()) return
+      warmupStarted = true
+      const step = () => {
+        warmupRaf = 0
+        if (cancelled || readiness.healthy) return
+        const now = performance.now()
+        applyProgress(displayed)
+        cbRef.current.onArrivalProgress?.(arrivalProgress(displayed), heroRevealRef.current)
+        applyRevealVisuals(revealK(displayed))
+        updateOutdoor(0, displayed, now / 1000, false)
+        updateSign(now / 1000, displayed)
+        lastP = displayed
+        renderFrame(displayed, now / 1000)
+        readiness.frames = Math.max(readiness.frames + 1, 3)
+        readiness.postFrames += 1
+        if (readiness.postFrames === 1) {
+          emit(0.96)
+          warmupRaf = requestAnimationFrame(step)
+        } else {
+          maybeHealthy()
+        }
+      }
+      warmupRaf = requestAnimationFrame(step)
+    }
     const markHealthy = () => {
       if (cancelled) return
       readiness.frames += 1
+      if (readiness.settled >= readiness.total) {
+        readiness.postFrames += 1
+        if (!readiness.healthy && readiness.postFrames === 1) emit(0.96)
+      }
       maybeHealthy()
     }
 
@@ -3418,7 +3404,7 @@ export default memo(function AquariumDivePrototype({ integrated = false, onHealt
             setDebug({ p: displayed, phase })
           }
         }
-        if (parked()) syncLoop()
+        if (parked() || isGated()) syncLoop()
         else raf = requestAnimationFrame(tick)
       }
       renderLoop = tick
@@ -3426,10 +3412,21 @@ export default memo(function AquariumDivePrototype({ integrated = false, onHealt
 
     if (!reduced && qState.mode === 'normal') {
       track(Promise.allSettled([...pendingStarts.keys()]).then(prepareTransition), 'transition')
+    } else if (!reduced) {
+      track(
+        Promise.allSettled([...pendingStarts.keys()]).then(async () => {
+          if (cancelled) return
+          await renderer.compileAsync(scene, camera)
+          if (cancelled) return
+          await yieldFrame()
+        }),
+        'shaders'
+      )
     }
     onFrame(mount.clientWidth, mount.clientHeight)
     document.addEventListener('visibilitychange', syncLoop)
     syncLoop()
+    maybeHealthy()
 
     let heightResizeTimer = 0
     const ro = new ResizeObserver((entries) => {
@@ -3458,6 +3455,8 @@ export default memo(function AquariumDivePrototype({ integrated = false, onHealt
       cancelled = true
       clearTimeout(heightResizeTimer)
       cancelAnimationFrame(raf)
+      cancelAnimationFrame(warmupRaf)
+      startGatedWarmup = null
       sceneCommandRef.current = null
       runtimeApplyRef.current = null
       loopControlRef.current = null

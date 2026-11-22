@@ -77,7 +77,11 @@ export default function App() {
   const [returningToP0, setReturningToP0] = useState(false)
   const [returnParked, setReturnParked] = useState(false)
   const [gateEntered, setGateEntered] = useState(false)
-  const [loadProgress, setLoadProgress] = useState(0)
+  const [gateVisible, setGateVisible] = useState(true)
+  const [loadDone, setLoadDone] = useState(false)
+  const [visualLoadReady, setVisualLoadReady] = useState(false)
+  const [heroPrewarmReady, setHeroPrewarmReady] = useState(false)
+  const loadProgressRef = useRef({ value: 0, listeners: new Set() })
   const [heroInView, setHeroInView] = useState(false)
   const [heroActive, setHeroActive] = useState(false)
   const [heroLive, setHeroLive] = useState(false)
@@ -121,7 +125,8 @@ export default function App() {
   const portfolioUnlocked = !shouldDive || (introComplete && !returningToP0)
   const visualEntered = entered || magneticLanding || (shouldDive && dive94)
   const diveProgress = (introComplete && !returningToP0) ? 1 : undefined
-  const heroPrewarm = shouldDive && loadProgress >= 1 && performanceMode !== 'lite' && !reduced
+  const loadReady = loadDone || webglFailed || !shouldDive
+  const heroPrewarm = shouldDive && loadReady && (heroPrewarmReady || gateEntered) && performanceMode !== 'lite' && !reduced
 
   useLayoutEffect(() => {
     const root = rootRef.current
@@ -170,9 +175,35 @@ export default function App() {
     refreshSectionProgress()
   }, [shouldDive])
 
+  const publishLoadProgress = useCallback((p) => {
+    const next = Math.min(Math.max(p, 0), 1)
+    const store = loadProgressRef.current
+    if (next > store.value) {
+      store.value = next
+      store.listeners.forEach((fn) => fn(next))
+    }
+    if (next >= 1) setLoadDone(true)
+  }, [])
+  const subscribeLoadProgress = useCallback((fn) => {
+    const store = loadProgressRef.current
+    store.listeners.add(fn)
+    fn(store.value)
+    return () => store.listeners.delete(fn)
+  }, [])
+
   useEffect(() => {
-    if (!shouldDive) setLoadProgress(1)
-  }, [shouldDive])
+    if (!shouldDive) publishLoadProgress(1)
+  }, [shouldDive, publishLoadProgress])
+
+  useEffect(() => {
+    if (!visualLoadReady || heroPrewarmReady) return
+    const timer = setTimeout(() => setHeroPrewarmReady(true), 120)
+    return () => clearTimeout(timer)
+  }, [visualLoadReady, heroPrewarmReady])
+
+  const handleVisualReady = useCallback(() => {
+    setVisualLoadReady(true)
+  }, [])
 
   useEffect(() => {
     if (gateEntered || isDivePoc) return
@@ -183,24 +214,25 @@ export default function App() {
     }
   }, [gateEntered])
 
-  const loadReady = loadProgress >= 1 || webglFailed || !shouldDive
   const enterPortfolio = useCallback(() => {
     setGateEntered(true)
+    if (reduced) setGateVisible(false)
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
     requestAnimationFrame(refreshSectionProgress)
+  }, [reduced])
+  const handleGateExited = useCallback(() => {
+    setGateVisible(false)
   }, [])
-  const handleDiveProgress = useCallback((p) => {
-    setLoadProgress((prev) => Math.max(prev, Math.min(Math.max(p, 0), 1)))
-  }, [])
+  const handleDiveProgress = publishLoadProgress
   const handleWebglHealthy = useCallback(() => {
     setWebglHealthy(true)
-    setLoadProgress(1)
-  }, [])
+    publishLoadProgress(1)
+  }, [publishLoadProgress])
   const handleWebglFail = useCallback(() => {
     setWebglHealthy(false)
     setWebglFailed(true)
-    setLoadProgress(1)
-  }, [])
+    publishLoadProgress(1)
+  }, [publishLoadProgress])
 
   useLayoutEffect(() => {
     if (!reduced || introComplete) return
@@ -578,8 +610,15 @@ export default function App() {
         </div>
       </main>
       <Footer hidden={!portfolioUnlocked} />
-      {!gateEntered && !isDivePoc && (
-        <LoadingScreen progress={loadProgress} ready={loadReady} onEnter={enterPortfolio} />
+      {gateVisible && !isDivePoc && (
+        <LoadingScreen
+          subscribeProgress={subscribeLoadProgress}
+          ready={loadReady}
+          exiting={gateEntered}
+          onVisualReady={handleVisualReady}
+          onEnter={enterPortfolio}
+          onExited={handleGateExited}
+        />
       )}
       {showProbe && <DiveProbe target={diveProbeRef} />}
     </div>
